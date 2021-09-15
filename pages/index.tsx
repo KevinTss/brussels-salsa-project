@@ -2,12 +2,14 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useClasses } from '../hooks';
 
 import styles from '../styles/Home.module.css';
-import { firebaseAuth } from '../utils/firebase/clientApp';
+import { fireStore, firebaseAuth } from '../utils/firebase/clientApp';
 
 const Home: NextPage = () => {
   const [user, loading, error] = useAuthState(firebaseAuth.getAuth());
+  const { data } = useClasses();
 
   if (loading) return <p>Loading...</p>;
 
@@ -25,6 +27,13 @@ const Home: NextPage = () => {
         <Link href='/auth'>
           <a>Login</a>
         </Link>
+        <ul>
+          {data.map((c) => (
+            <li key={c.id}>
+              {c.id} : level - {c.level}
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );
