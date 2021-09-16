@@ -1,10 +1,13 @@
 import type { NextPage } from 'next';
+import { useState } from 'react';
+import Router from 'next/router';
 
-import { firebaseAuth } from '../utils/firebase/clientApp';
+import { firebaseAuth, fireStore } from '../utils/firebase/clientApp';
+import { useAuth } from '../hooks';
 
-const provider = new firebaseAuth.GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-provider.setCustomParameters({
+const googleProvider = new firebaseAuth.GoogleAuthProvider();
+googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+googleProvider.setCustomParameters({
   login_hint: 'keke@example.com',
 });
 const auth = firebaseAuth.getAuth();
@@ -12,42 +15,83 @@ auth.languageCode = 'en';
 // To apply the default browser preference instead of explicitly setting it.
 // firebase.auth().useDeviceLanguage();
 
-const AuthPage: NextPage = () => (
-  <div>
-    <h3>Sign in</h3>
-    <button
-      onClick={() => {
-        firebaseAuth
-          .signInWithPopup(auth, provider)
-          .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential =
-              firebaseAuth.GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            // ...
-            console.log('token', token);
-            console.log('user', user);
-          })
-          .catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
-            const credential =
-              firebaseAuth.GoogleAuthProvider.credentialFromError(error);
-            // ...
-            console.log('code', errorCode);
-            console.log('error', error);
-          });
-      }}
-    >
-      Connect with google
-    </button>
-  </div>
-);
+type GoogleUser = {
+  accessToken: string;
+  displayName: string;
+  email: string;
+  photoUrl: string;
+  uid: string;
+  phoneNumber?: string;
+};
+
+const AuthPage: NextPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, set } = useAuth();
+
+  return (
+    <div>
+      <h3>Log in</h3>
+      <button
+        onClick={() => {
+          setIsLoading(true);
+          let u: GoogleUser;
+
+          firebaseAuth
+            .signInWithPopup(auth, googleProvider)
+            .then((result) => {
+              u = result.user;
+
+              const docRef = fireStore.doc(
+                fireStore.getFirestore(),
+                'users',
+                u.email
+              );
+
+              return fireStore.getDoc(docRef);
+            })
+            .then((docSnap) => {
+              if (docSnap.exists()) {
+                set({
+                  id: u.email,
+                  ...docSnap.data(),
+                });
+                setIsLoading(false);
+                Router.push('/');
+              } else {
+                console.log('no user', u);
+                setIsLoading(false);
+                const newUser = {
+                  accessToken: u.accessToken,
+                  accounts: [{ type: 'google', id: u.uid }],
+                  avatarUrl: u.photoURL,
+                  email: u.email,
+                  fullName: u.displayName,
+                  phone: u.phoneNumber,
+                };
+                return fireStore.setDoc(
+                  fireStore.doc(
+                    fireStore.getFirestore(),
+                    'users',
+                    newUser.email
+                  ),
+                  newUser
+                );
+              }
+            })
+            .then((res) => {
+              console.log('res', res);
+            })
+            .catch((error) => {
+              console.log('error', error);
+              setIsLoading(false);
+            });
+        }}
+      >
+        Connect with google
+        {isLoading && '...'}
+      </button>
+    </div>
+  );
+};
 
 export default AuthPage;

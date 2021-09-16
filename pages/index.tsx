@@ -1,19 +1,22 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useClasses } from '../hooks';
+import { useRouter } from 'next/router';
 
+import { useClasses, useAuth } from '../hooks';
 import styles from '../styles/Home.module.css';
-import { fireStore, firebaseAuth } from '../utils/firebase/clientApp';
 
 const Home: NextPage = () => {
-  const [user, loading, error] = useAuthState(firebaseAuth.getAuth());
+  const { user, loading, logout } = useAuth();
   const { data } = useClasses();
+  const router = useRouter();
 
   if (loading) return <p>Loading...</p>;
 
-  if (error) return <p>Something wrong happened...</p>;
+  if (!loading && !user) {
+    router.push('/auth');
+    return null;
+  }
 
   return (
     <div className={styles.container}>
@@ -23,17 +26,21 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main>
-        <div>Hello {user?.displayName}</div>
-        <Link href='/auth'>
-          <a>Login</a>
-        </Link>
-        <ul>
-          {data.map((c) => (
-            <li key={c.id}>
-              {c.id} : level - {c.level}
-            </li>
-          ))}
-        </ul>
+        <div>Hello {user?.fullName}</div>
+        {!user && (
+          <Link href='/auth'>
+            <a>Login</a>
+          </Link>
+        )}
+        {/* <ul>
+          {data?.length &&
+            data.map((c) => (
+              <li key={c.id}>
+                {c.id} : level - {c.level}
+              </li>
+            ))}
+        </ul> */}
+        {user && <button onClick={logout}>Logout</button>}
       </main>
     </div>
   );
