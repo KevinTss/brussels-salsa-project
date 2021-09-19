@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Router from 'next/router';
 
-import { firebaseAuth, fireStore } from '../utils/firebase/clientApp';
-import { useAuth } from '../hooks';
+import { firebaseAuth, fireStore } from '../../utils/firebase/clientApp';
+import { useAuth } from '../../hooks';
 
 const googleProvider = new firebaseAuth.GoogleAuthProvider();
 googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
