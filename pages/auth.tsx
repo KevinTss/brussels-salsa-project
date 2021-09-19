@@ -1,96 +1,18 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
-import Router from 'next/router';
 
-import { firebaseAuth, fireStore } from '../utils/firebase/clientApp';
-import { useAuth } from '../hooks';
-
-const googleProvider = new firebaseAuth.GoogleAuthProvider();
-googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-googleProvider.setCustomParameters({
-  login_hint: 'keke@example.com',
-});
-const auth = firebaseAuth.getAuth();
-auth.languageCode = 'en';
-// To apply the default browser preference instead of explicitly setting it.
-// firebase.auth().useDeviceLanguage();
-
-type GoogleUser = {
-  accessToken: string;
-  displayName: string;
-  email: string;
-  photoUrl: string;
-  uid: string;
-  phoneNumber?: string;
-};
+import Auth from '../views/auth';
+import DefaultLayout from '../components/layouts/DefaultLayout';
 
 const AuthPage: NextPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { user, set } = useAuth();
-
   return (
-    <div>
-      <h3>Log in</h3>
-      <button
-        onClick={() => {
-          setIsLoading(true);
-          let u: GoogleUser;
-
-          firebaseAuth
-            .signInWithPopup(auth, googleProvider)
-            .then((result) => {
-              u = result.user;
-
-              const docRef = fireStore.doc(
-                fireStore.getFirestore(),
-                'users',
-                u.email
-              );
-
-              return fireStore.getDoc(docRef);
-            })
-            .then((docSnap) => {
-              if (docSnap.exists()) {
-                set({
-                  id: u.email,
-                  ...docSnap.data(),
-                });
-                setIsLoading(false);
-                Router.push('/');
-              } else {
-                console.log('no user', u);
-                setIsLoading(false);
-                const newUser = {
-                  accessToken: u.accessToken,
-                  accounts: [{ type: 'google', id: u.uid }],
-                  avatarUrl: u.photoURL,
-                  email: u.email,
-                  fullName: u.displayName,
-                  phone: u.phoneNumber,
-                };
-                return fireStore.setDoc(
-                  fireStore.doc(
-                    fireStore.getFirestore(),
-                    'users',
-                    newUser.email
-                  ),
-                  newUser
-                );
-              }
-            })
-            .then((res) => {
-              console.log('res', res);
-            })
-            .catch((error) => {
-              console.log('error', error);
-              setIsLoading(false);
-            });
-        }}
-      >
-        Connect with google
-        {isLoading && '...'}
-      </button>
-    </div>
+    <DefaultLayout>
+      {/* <Head>
+      <title>Brussels Salsa Project</title>
+      <meta name='description' content='Salsa classes in Brussels' />
+      <link rel='icon' href='/favicon.ico' />
+    </Head> */}
+      <Auth />
+    </DefaultLayout>
   );
 };
 
