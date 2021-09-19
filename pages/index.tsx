@@ -1,30 +1,14 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-// import { useRouter } from 'next/router';
+import type { NextPage } from 'next';
 
 import DefaultLayout from '../components/layouts/DefaultLayout';
+import Head from '../components/head';
 import Home from '../views/home';
 
-const HomePage: NextPage = () => {
-  // const router = useRouter();
-
-  // if (false) return <p>Loading...</p>;
-
-  // if (false) {
-  //   router.push('/auth');
-  //   return null;
-  // }
-
-  return (
-    <DefaultLayout>
-      <Head>
-        <title>Brussels Salsa Project</title>
-        <meta name='description' content='Salsa classes in Brussels' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-      <Home />
-    </DefaultLayout>
-  );
-};
+const HomePage: NextPage = () => (
+  <DefaultLayout>
+    <Head />
+    <Home />
+  </DefaultLayout>
+);
 
 export default HomePage;
