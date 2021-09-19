@@ -3,7 +3,7 @@ import { firebaseAuth, fireStore } from '../utils/firebase/clientApp';
 
 export const AuthContext = createContext(null);
 
-const AuthProvider = ({ user, children }) => {
+export const AuthProvider = ({ user, children }) => {
   const [currentUser, setCurrentUser] = useState(user);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,5 +55,3 @@ const AuthProvider = ({ user, children }) => {
     </AuthContext.Provider>
   );
 };
-
-export default AuthProvider;

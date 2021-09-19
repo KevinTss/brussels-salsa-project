@@ -1,7 +1,9 @@
-import AuthProvider from '../../contexts/auth';
+import { AuthProvider, ClassesProvider } from '../../contexts';
 
-const DefaultLayout = ({ children }) => {
-  return <AuthProvider user={null}>{children}</AuthProvider>;
-};
+const DefaultLayout = ({ children }) => (
+  <AuthProvider user={null}>
+    <ClassesProvider>{children}</ClassesProvider>
+  </AuthProvider>
+);
 
 export default DefaultLayout;

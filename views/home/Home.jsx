@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { useAuth } from '../../hooks';
+import ClassesList from '../../components/classes/classes-list';
 
 const Home = () => {
   const { currentUser, isLoading, logout } = useAuth();
@@ -13,14 +14,7 @@ const Home = () => {
           <a>Login</a>
         </Link>
       )}
-      {/* <ul>
-      {data?.length &&
-        data.map((c) => (
-          <li key={c.id}>
-            {c.id} : level - {c.level}
-          </li>
-        ))}
-    </ul> */}
+      <ClassesList />
       {currentUser && <button onClick={logout}>Logout</button>}
     </main>
   );
