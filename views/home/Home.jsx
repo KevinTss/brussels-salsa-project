@@ -15,7 +15,14 @@ const Home = () => {
         </Link>
       )}
       <ClassesList />
-      {currentUser && <button onClick={logout}>Logout</button>}
+      {currentUser && (
+        <>
+          <button onClick={logout}>Logout</button>
+          <Link href='admin'>
+            <a>Admin</a>
+          </Link>
+        </>
+      )}
     </main>
   );
 };

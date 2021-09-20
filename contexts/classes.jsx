@@ -25,8 +25,15 @@ export const ClassesProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
+  const add = async (data) => {
+    await fireStore.addDoc(
+      fireStore.collection(fireStore.getFirestore(), 'classes'),
+      data
+    );
+  };
+
   return (
-    <ClassesContext.Provider value={{ list }}>
+    <ClassesContext.Provider value={{ list, add }}>
       {children}
     </ClassesContext.Provider>
   );
