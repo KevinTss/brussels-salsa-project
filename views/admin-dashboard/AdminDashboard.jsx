@@ -10,6 +10,9 @@ const AdminDashboard = () => {
     <main>
       <div>Admin</div>
       <CreateClassForm />
+      <Link href='/'>
+        <a>Back to home</a>
+      </Link>
     </main>
   );
 };

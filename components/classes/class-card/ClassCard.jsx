@@ -7,9 +7,11 @@ const ClassCard = ({ data }) => {
       <br />
       Level: {data.level}
       <br />
-      Spots: {data.spots}
+      Initial spots: {data.spots}
       <br />
-      Date: {data.date.toDate().toISOString()}
+      Time: {data.time}
+      <br />
+      Type: {data.type}
       <br />
     </div>
   );
