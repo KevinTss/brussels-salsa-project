@@ -13,6 +13,8 @@ const ClassCard = ({ data }) => {
       <br />
       Type: {data.type}
       <br />
+      Frequency: {data.frequency}
+      <br />
     </div>
   );
 };

@@ -10,6 +10,7 @@ const CreateClassForm = () => {
       spots: 10,
       time: '19:30',
       level: 'beginner',
+      weekDay: 'monday',
     },
     onSubmit: (values) => {
       add(values);
@@ -25,20 +26,27 @@ const CreateClassForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: 'flex', flexDirection: 'column', width: '250px' }}
+    >
       <label htmlFor='frequency'>Frequency</label>
-      <input
-        id='frequency'
-        name='frequency'
-        type='text'
-        onChange={handleChange}
-        value={values.frequency}
-      />
+      <select name='frequency' id='frequency' onChange={handleChange} disabled>
+        {['weekly'].map((frequency) => (
+          <option
+            key={frequency}
+            value={frequency}
+            selected={values.frequency === frequency}
+          >
+            {frequency}
+          </option>
+        ))}
+      </select>
       <label htmlFor='spots'>Spots</label>
       <input
         id='spots'
         name='spots'
-        type='spots'
+        type='number'
         onChange={handleChange}
         value={values.spots}
       />
@@ -65,6 +73,14 @@ const CreateClassForm = () => {
       <select name='min' id='min' onChange={handleTimeChange}>
         {['00', '30'].map((i) => (
           <option key={i} value={i} selected={i === min}>
+            {i}
+          </option>
+        ))}
+      </select>
+      <label htmlFor='weekDay'>Day of the week</label>
+      <select name='weekDay' id='weekDay' onChange={handleChange}>
+        {['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'].map((i) => (
+          <option key={i} value={i} selected={i === values.weekDay}>
             {i}
           </option>
         ))}
