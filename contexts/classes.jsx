@@ -5,11 +5,11 @@ export const ClassesContext = createContext(null);
 
 export const ClassesProvider = ({ children }) => {
   const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const query = fireStore.query(
       fireStore.collection(fireStore.getFirestore(), 'classes')
-      // where('state', '==', 'CA')
     );
     const unsubscribe = fireStore.onSnapshot(query, (querySnapshot) => {
       const classes = [];
@@ -20,6 +20,7 @@ export const ClassesProvider = ({ children }) => {
         });
       });
       setList(classes);
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -33,7 +34,7 @@ export const ClassesProvider = ({ children }) => {
   };
 
   return (
-    <ClassesContext.Provider value={{ list, add }}>
+    <ClassesContext.Provider value={{ list, add, loading }}>
       {children}
     </ClassesContext.Provider>
   );

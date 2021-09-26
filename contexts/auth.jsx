@@ -30,7 +30,7 @@ export const AuthProvider = ({ user, children }) => {
             }
           })
           .catch((e) => {
-            console.log('e', e);
+            console.log('error', e);
             setIsLoading(false);
           });
 
