@@ -16,11 +16,7 @@ const WeekDay = ({ dayName, classes, dayDate }: WeekDayProps) => {
   const { fetch: fetchEvents } = useEvents();
 
   useEffect(() => {
-    fetchEvents(dayDate).then((data: EventType[]) => {
-      console.log('data', data);
-      // console.log('data 2', data[0].class.get);
-      // TODO: write function to fetch all data inside an event (users and class)
-    });
+    fetchEvents(dayDate).then((data: EventType[]) => setDayEvents(data));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -29,7 +25,11 @@ const WeekDay = ({ dayName, classes, dayDate }: WeekDayProps) => {
       <h2>{dayName}</h2>
       <div>
         {classes.map((c) => (
-          <Event key={c.id} classData={c} />
+          <Event
+            key={c.id}
+            classData={c}
+            event={dayEvents.find((dayEvent) => c.id === dayEvent.class.id)}
+          />
         ))}
       </div>
     </WeekDayContainer>
