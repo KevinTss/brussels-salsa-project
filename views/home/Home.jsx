@@ -1,29 +1,26 @@
 import Link from 'next/link';
 
+import { Main } from './style';
 import { useAuth } from '../../hooks';
 import EventsCalendar from '../../components/event/calendar';
 
 const Home = () => {
-  const { currentUser, isLoading, logout } = useAuth();
+  const { currentUser } = useAuth();
 
   return (
-    <main>
-      <div>Hello {currentUser?.fullName}</div>
+    <Main>
       {!currentUser && (
         <Link href='/auth'>
           <a>Login</a>
         </Link>
       )}
-      {currentUser && (
-        <>
-          <button onClick={logout}>Logout</button>
-          <Link href='admin'>
-            <a>Admin</a>
-          </Link>
-          <EventsCalendar />
-        </>
+      {currentUser?.isAdmin && (
+        <Link href='admin'>
+          <a>Admin</a>
+        </Link>
       )}
-    </main>
+      {currentUser && <EventsCalendar />}
+    </Main>
   );
 };
 
