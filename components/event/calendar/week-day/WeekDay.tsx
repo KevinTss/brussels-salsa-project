@@ -3,20 +3,23 @@ import { useEffect, useState } from 'react';
 import { useEvents } from '../../../../hooks';
 import Event from './event';
 import { WeekDayContainer } from './style';
-import { Event as EventType } from '../../../../types';
+import { Event as EventType, Classe as ClasseType } from '../../../../types';
 
 type WeekDayProps = {
-  classes: object[];
+  classes: ClasseType[];
   dayDate: Date;
   dayName: string;
 };
 
 const WeekDay = ({ dayName, classes, dayDate }: WeekDayProps) => {
-  const [dayEvents, setDayEvents] = useState([]);
+  const [dayEvents, setDayEvents] = useState<EventType[]>([]);
   const { fetch: fetchEvents } = useEvents();
 
-  useEffect(() => {
+  const updateEvents = () =>
     fetchEvents(dayDate).then((data: EventType[]) => setDayEvents(data));
+
+  useEffect(() => {
+    updateEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -29,6 +32,8 @@ const WeekDay = ({ dayName, classes, dayDate }: WeekDayProps) => {
             key={c.id}
             classData={c}
             event={dayEvents.find((dayEvent) => c.id === dayEvent.class.id)}
+            fetchEvents={updateEvents}
+            dayDate={dayDate}
           />
         ))}
       </div>

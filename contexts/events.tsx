@@ -1,4 +1,4 @@
-import { createContext, ReactNode } from 'react';
+import { createContext, ReactNode, useState } from 'react';
 import { fireStore } from '../utils/firebase/clientApp';
 import { Event } from '../types';
 import { useUsers } from '../hooks';
@@ -11,6 +11,7 @@ type EventProviderProps = {
   children: ReactNode | ReactNode[];
 };
 export const EventsProvider = ({ children }: EventProviderProps) => {
+  // const [lastDateFetched, setLastDateFetched] = useState(null)
   const { list: usersList, getById: getUserById, add: addUser } = useUsers();
 
   const add = async (data: Event) => {
@@ -23,7 +24,7 @@ export const EventsProvider = ({ children }: EventProviderProps) => {
   const fetch = (dateFrom: Date) => {
     const eventQuery = fireStore.query(
       fireStore.collection(fireStoreInstance, 'events'),
-      fireStore.where('date', '==', dateFrom)
+      fireStore.where('date', '>=', dateFrom)
     );
 
     return new Promise((resolve, reject) => {
@@ -35,25 +36,32 @@ export const EventsProvider = ({ children }: EventProviderProps) => {
             ...(doc.data() as Event),
           });
         });
+        console.log('results', results);
+        const females = results?.[0]?.dancers?.females.map((f) => f.id) || [];
+        const males = results?.[0]?.dancers?.males.map((m) => m.id) || [];
 
-        const females = results?.[0].dancers?.females.map((f) => f.id);
-        const males = results?.[0].dancers?.males.map((m) => m.id);
+        const dancers = [...females, ...males].filter((u) => !!u);
+        console.log('ok', dancers);
 
-        const usersQuery = fireStore.query(
-          fireStore.collection(fireStoreInstance, 'users'),
-          fireStore.where('email', 'in', [...females, ...males])
-        );
+        if (dancers.length && dancers.every((item) => !!item)) {
+          const usersQuery = fireStore.query(
+            fireStore.collection(fireStoreInstance, 'users'),
+            fireStore.where('email', 'in', dancers)
+          );
 
-        fireStore.onSnapshot(usersQuery, (usersQuerySnapshot) => {
-          usersQuerySnapshot.forEach((doc) => {
-            addUser({
-              id: doc.id,
-              ...doc.data(),
+          fireStore.onSnapshot(usersQuery, (usersQuerySnapshot) => {
+            usersQuerySnapshot.forEach((doc) => {
+              addUser({
+                id: doc.id,
+                ...doc.data(),
+              });
             });
-          });
 
+            resolve(results);
+          });
+        } else {
           resolve(results);
-        });
+        }
       });
     });
   };

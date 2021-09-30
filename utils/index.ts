@@ -2,8 +2,18 @@
  * This function create a new date based on arg date (or today as default)
  * and return a new date by omitting time (hours and minutes will be zero)
  */
-export const getNewDate = (date?: Date): Date => {
+export const getNewDate = (date?: Date, withTime = false): Date => {
   const tempDate = date || new Date();
+
+  if (withTime) {
+    return new Date(
+      tempDate.getFullYear(),
+      tempDate.getMonth(),
+      tempDate.getDate(),
+      tempDate.getHours(),
+      tempDate.getMinutes()
+    );
+  }
 
   return new Date(
     tempDate.getFullYear(),
@@ -43,4 +53,13 @@ export const getNextXDayDate = (date: Date, offsetDays: number): Date => {
   tomorrow.setDate(getNewDate(date).getDate() + offsetDays);
 
   return tomorrow;
+};
+
+export const isAfterNow = (date: Date) => {
+  console.log('dare', date);
+  if (!(date instanceof Date)) throw Error('You should provide a date object');
+
+  const now = new Date();
+
+  return date > now;
 };
