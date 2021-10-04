@@ -7,17 +7,12 @@ import {
   FemalesContainer,
   SubTitle,
 } from './style';
-import { useUsers, useEvents, useAuth } from '../../../../../hooks';
+import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
 import { dayjsInstance } from '../../../../../utils';
 
-// const getMaleDancers = (event) => {
-
-// }
-
 const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
   const { getById, list } = useUsers();
-  // const { add: addEvent } = useEvents();
   const { currentUser } = useAuth();
 
   const males = event
@@ -51,15 +46,11 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
       const newEvent = {
         classId: classData.id,
         dancers: {
-          males: [],
-          females: [],
+          males: currentUser.gender === 'male' ? [currentUser.id] : [],
+          females: currentUser.gender === 'female' ? [currentUser.id] : [],
         },
         date: dayDate.hour(0).minute(0).second(0).toDate(),
       };
-      newEvent.dancers[
-        currentUser.gender === 'male' ? 'males' : 'females'
-      ].push(currentUser.id);
-      console.log('new-event', newEvent);
       await addEvent(newEvent);
       // refetch to keep of to date
       fetchEvents();
@@ -74,10 +65,17 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
     console.log('event', event);
   };
 
+  const isUserAlreadyInEvent =
+    currentUser.gender === 'male'
+      ? !!event?.dancers?.males?.find((maleId) => maleId === currentUser.id)
+      : !!event?.dancers?.females?.find(
+          (femaleId) => femaleId === currentUser.id
+        );
+
   return (
     <EventContainer>
       {classData.type} {classData.level}: {classData.time}
-      <Button onClick={joinHandle}>Join</Button>
+      {!isUserAlreadyInEvent && <Button onClick={joinHandle}>Join</Button>}
       <DancersContainer>
         <SubTitle>Dancers</SubTitle>
         <MalesContainer>
