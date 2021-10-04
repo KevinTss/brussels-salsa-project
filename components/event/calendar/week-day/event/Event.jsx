@@ -9,15 +9,15 @@ import {
 } from './style';
 import { useUsers, useEvents, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
-import { isAfterNow } from '../../../../../utils';
+import { dayjsInstance } from '../../../../../utils';
 
 // const getMaleDancers = (event) => {
 
 // }
 
-const Event = ({ classData, event, fetchEvents, dayDate }) => {
+const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
   const { getById, list } = useUsers();
-  const { add: addEvent } = useEvents();
+  // const { add: addEvent } = useEvents();
   const { currentUser } = useAuth();
 
   const males = event
@@ -29,43 +29,39 @@ const Event = ({ classData, event, fetchEvents, dayDate }) => {
 
   const joinHandle = async () => {
     // Check if event is still in the future
-    // const eventDate = event.date.toDate();
-    const d = new Date(
-      dayDate.getFullYear(),
-      dayDate.getMonth(),
-      dayDate.getDate(),
-      Number(classData.time.split(':')[0]), // Hours
-      Number(classData.time.split(':')[1]) // Minutes
-    );
+    const eventDate = dayjsInstance()
+      .year(dayDate.year())
+      .month(dayDate.month())
+      .date(dayDate.date())
+      .hour(Number(classData.time.split(':')[0]))
+      .minute(Number(classData.time.split(':')[1]));
+    // console.log('d', eventDate.format('DD/MM/YYYY - HH:mm'));
 
-    console.log('classDate', classData);
-
-    if (!isAfterNow(d)) {
+    // Error if event in past from now
+    if (eventDate.isBefore(dayjsInstance())) {
       // Error
       console.log('event is in the past');
       return;
     }
 
+    /**
+     * If no event we create one
+     */
     if (!event) {
-      // TODO: https://firebase.google.com/docs/storage/web/create-reference
-
-      // create one
-      console.log('no-event');
       const newEvent = {
-        class: `/classes/${classData.id}`,
+        classId: classData.id,
         dancers: {
           males: [],
           females: [],
         },
-        date: dayDate,
+        date: dayDate.hour(0).minute(0).second(0).toDate(),
       };
       newEvent.dancers[
         currentUser.gender === 'male' ? 'males' : 'females'
-      ].push(`/users/${currentUser.id}`);
-      // console.log('currentUser', currentUser);
-      // console.log('new Event', newEvent);
+      ].push(currentUser.id);
+      console.log('new-event', newEvent);
       await addEvent(newEvent);
-      // refetch
+      // refetch to keep of to date
       fetchEvents();
       return;
     } else {

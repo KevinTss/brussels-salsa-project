@@ -14,7 +14,7 @@ type WeekDayProps = {
 
 const WeekDay = ({ dayName, classes, dayDate, mondayDate }: WeekDayProps) => {
   const [dayEvents, setDayEvents] = useState<EventType[]>([]);
-  const { fetch: fetchEvents } = useEvents();
+  const { fetch: fetchEvents, add: addEvent } = useEvents();
 
   const fetchEventsHandler = () => {
     const dateFromToFetch = new Date(
@@ -50,6 +50,7 @@ const WeekDay = ({ dayName, classes, dayDate, mondayDate }: WeekDayProps) => {
             event={dayEvents.find((dayEvent) => c.id === dayEvent.classId)}
             fetchEvents={fetchEventsHandler}
             dayDate={dayDate}
+            addEvent={addEvent}
           />
         ))}
       </div>
