@@ -5,11 +5,12 @@ import {
   DancersContainer,
   MalesContainer,
   FemalesContainer,
-  SubTitle,
+  EventPrimariesInfo,
+  CallToActions,
 } from './style';
 import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
-import { dayjsInstance } from '../../../../../utils';
+import { dayjsInstance, getEventNameDisplay } from '../../../../../utils';
 
 const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
   const { getById, list } = useUsers();
@@ -65,6 +66,10 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
     console.log('event', event);
   };
 
+  const cancelHandle = () => {
+    console.log('want to cancel');
+  };
+
   const isUserAlreadyInEvent =
     currentUser.gender === 'male'
       ? !!event?.dancers?.males?.find((maleId) => maleId === currentUser.id)
@@ -74,10 +79,12 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
 
   return (
     <EventContainer>
-      {classData.type} {classData.level}: {classData.time}
-      {!isUserAlreadyInEvent && <Button onClick={joinHandle}>Join</Button>}
+      <EventPrimariesInfo>
+        <h4>{getEventNameDisplay(classData.type, classData.level)}</h4>
+        <div>{classData.time}</div>
+      </EventPrimariesInfo>
       <DancersContainer>
-        <SubTitle>Dancers</SubTitle>
+        <h4>Dancers</h4>
         <MalesContainer>
           <p>Mens</p>
           {males.map((m, i) => (
@@ -99,6 +106,18 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
           ))}
         </FemalesContainer>
       </DancersContainer>
+      <CallToActions>
+        {!isUserAlreadyInEvent && (
+          <Button appearance='primary' onClick={joinHandle}>
+            Join
+          </Button>
+        )}
+        {isUserAlreadyInEvent && (
+          <Button appearance='minimal' onClick={cancelHandle}>
+            Cancel
+          </Button>
+        )}
+      </CallToActions>
     </EventContainer>
   );
 };

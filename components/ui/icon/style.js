@@ -9,6 +9,6 @@ export const Icon = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    fill: ${({ theme }) => theme.color.primary};
+    fill: ${({ color }) => color};
   }
 `;

@@ -16,14 +16,16 @@ const ButtonEl = ({
   appearance,
   children,
   iconLeft,
+  iconRight,
   isDisabled,
   isLoading,
+  isIconReverse,
   ...props
 }) => {
   const [isHovering, setIsHovering] = useState(false);
   const Button = getButtonComponent(appearance);
   const iconColor = appearance === 'primary' ? 'white' : undefined;
-  const iconColorHover = appearance === 'primary' ? 'red' : undefined;
+  const iconColorHover = appearance === 'primary' ? 'white' : undefined;
 
   return (
     <Button
@@ -31,6 +33,7 @@ const ButtonEl = ({
       $hasMarginRight={!!children}
       $isDisabled={isDisabled || isLoading}
       $isLoading={isLoading}
+      $isIconReverse={isIconReverse}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -39,6 +42,13 @@ const ButtonEl = ({
       )}
       {isLoading && <Icon name='loading' />}
       {children}
+      {iconRight && !isLoading && (
+        <Icon
+          name={iconRight}
+          color={isHovering ? iconColorHover : iconColor}
+          data-position='right'
+        />
+      )}
     </Button>
   );
 };

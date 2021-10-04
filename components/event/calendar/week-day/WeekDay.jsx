@@ -32,8 +32,9 @@ const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
 
   return (
     <WeekDayContainer>
-      <h2>{dayName}</h2>
-      <h3>{dayDate.format('DD/MM/YYYY')}</h3>
+      <h2>
+        {dayName} - {dayDate.format('DD/MM/YYYY')}
+      </h2>
       <div>
         {classes.map((c) => (
           <Event

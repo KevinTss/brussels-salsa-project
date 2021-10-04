@@ -2,7 +2,12 @@ import { useState } from 'react';
 
 import { capitalize, dayjsInstance } from '../../../utils';
 import { useClasses } from '../../../hooks';
-import { WeekContainer } from './style';
+import {
+  CalendarContainer,
+  CockpitContainer,
+  DayDateContainer,
+  WeekContainer,
+} from './style';
 import WeekDay from './week-day';
 import { Button } from '../../ui';
 
@@ -23,17 +28,28 @@ const EventsCalendar = () => {
   };
 
   return (
-    <div>
-      Current: {currentDate.format('DD/MM/YYYY')}
-      <br />
-      Monday: {monday.format('DD/MM/YYYY')}
-      <br />
-      <Button appearance='primary' onClick={goToPreviousWeek}>
-        Previous Week
-      </Button>
-      <Button appearance='primary' onClick={goToNextWeek}>
-        Next Week
-      </Button>
+    <CalendarContainer>
+      <CockpitContainer>
+        <Button
+          appearance='primary'
+          onClick={goToPreviousWeek}
+          iconLeft='angle-right'
+          isIconReverse
+        >
+          Previous week
+        </Button>
+        <DayDateContainer>
+          {currentDate.format('dddd DD, MMMM YYYY')}
+        </DayDateContainer>
+        <Button
+          appearance='primary'
+          onClick={goToNextWeek}
+          iconRight='angle-right'
+        >
+          Next week
+        </Button>
+      </CockpitContainer>
+
       <WeekContainer>
         {dayjsInstance.weekdays().map((weekDay, dayIndex) => {
           const dayClasses = classes.filter(
@@ -55,7 +71,7 @@ const EventsCalendar = () => {
           );
         })}
       </WeekContainer>
-    </div>
+    </CalendarContainer>
   );
 };
 

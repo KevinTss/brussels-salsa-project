@@ -1,5 +1,5 @@
 import { useAuth } from '../../../hooks';
-import { AuthStateContainer } from './style';
+import { AuthStateContainer, InnerDropdown, MailContainer } from './style';
 import { Avatar, Dropdown, Button } from '../../ui';
 
 const AuthState = () => {
@@ -11,7 +11,14 @@ const AuthState = () => {
 
   return (
     <AuthStateContainer>
-      <Dropdown content={<Button onClick={logout}>Logout</Button>}>
+      <Dropdown
+        content={
+          <InnerDropdown>
+            <MailContainer>{currentUser.email}</MailContainer>
+            <Button onClick={logout}>Logout</Button>
+          </InnerDropdown>
+        }
+      >
         <Avatar firstName={firstName} lastName={lastName} />
       </Dropdown>
     </AuthStateContainer>

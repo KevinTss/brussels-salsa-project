@@ -2,7 +2,7 @@ import { ThemeProvider } from 'styled-components';
 
 const defaultTheme = {
   color: {
-    primary: 'red',
+    primary: '#F9395C',
   },
   fontFamily: {
     default: 'sans-serif',
