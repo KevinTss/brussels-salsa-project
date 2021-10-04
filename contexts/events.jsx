@@ -1,26 +1,23 @@
-import { createContext, ReactNode } from 'react';
+import { createContext } from 'react';
+
 import { fireStore } from '../utils/firebase/clientApp';
-import { Event } from '../types';
 import { useUsers } from '../hooks';
 
 const fireStoreInstance = fireStore.getFirestore();
 
 export const EventsContext = createContext(null);
 
-type EventProviderProps = {
-  children: ReactNode | ReactNode[];
-};
-export const EventsProvider = ({ children }: EventProviderProps) => {
+export const EventsProvider = ({ children }) => {
   const { list: usersList, getById: getUserById, add: addUser } = useUsers();
 
-  const add = async (data: Event) => {
+  const add = async (data) => {
     await fireStore.addDoc(
       fireStore.collection(fireStoreInstance, 'events'),
       data
     );
   };
 
-  const fetch = (dateFrom: Date, dateTo: Date) => {
+  const fetch = (dateFrom, dateTo) => {
     const eventQuery = fireStore.query(
       fireStore.collection(fireStoreInstance, 'events'),
       fireStore.where('date', '>=', dateFrom),
@@ -29,12 +26,11 @@ export const EventsProvider = ({ children }: EventProviderProps) => {
 
     return new Promise((resolve, reject) => {
       fireStore.onSnapshot(eventQuery, (querySnapshot) => {
-
-        const results: Event[] = [];
+        const results = [];
         querySnapshot.forEach((doc) => {
           results.push({
             id: doc.id,
-            ...(doc.data() as Event),
+            ...doc.data(),
           });
         });
 

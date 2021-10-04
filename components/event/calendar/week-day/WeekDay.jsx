@@ -3,17 +3,9 @@ import { useEffect, useState } from 'react';
 import { useEvents } from '../../../../hooks';
 import Event from './event';
 import { WeekDayContainer } from './style';
-import { Event as EventType, Classe as ClasseType } from '../../../../types';
 
-type WeekDayProps = {
-  classes: ClasseType[];
-  dayDate: Date | any;
-  mondayDate: Date | any;
-  dayName: string;
-};
-
-const WeekDay = ({ dayName, classes, dayDate, mondayDate }: WeekDayProps) => {
-  const [dayEvents, setDayEvents] = useState<EventType[]>([]);
+const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
+  const [dayEvents, setDayEvents] = useState([]);
   const { fetch: fetchEvents, add: addEvent } = useEvents();
 
   const fetchEventsHandler = () => {
@@ -28,7 +20,7 @@ const WeekDay = ({ dayName, classes, dayDate, mondayDate }: WeekDayProps) => {
       endOfWeekDate.month(),
       endOfWeekDate.date()
     );
-    fetchEvents(dateFromToFetch, dateToFetch).then((data: EventType[]) => {
+    fetchEvents(dateFromToFetch, dateToFetch).then((data) => {
       setDayEvents(data);
     });
   };

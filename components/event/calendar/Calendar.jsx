@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { ClasseType } from '../../../types';
 import { capitalize, dayjsInstance } from '../../../utils';
 import { useClasses } from '../../../hooks';
 import { WeekContainer } from './style';
@@ -37,8 +36,8 @@ const EventsCalendar = () => {
       </Button>
       <WeekContainer>
         {dayjsInstance.weekdays().map((weekDay, dayIndex) => {
-          const dayClasses: ClasseType[] = classes.filter(
-            ({ day }: ClasseType) => day === weekDay.toLocaleLowerCase()
+          const dayClasses = classes.filter(
+            ({ day }) => day === weekDay.toLocaleLowerCase()
           );
 
           if (!dayClasses.length) return null;
