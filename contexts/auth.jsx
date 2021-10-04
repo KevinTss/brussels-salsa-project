@@ -11,9 +11,8 @@ export const AuthProvider = ({ user, children }) => {
     const unsubscribe = firebaseAuth.onAuthStateChanged(
       firebaseAuth.getAuth(),
       (firebaseUser) => {
-        if (!firebaseUser) {
-          return;
-        }
+        if (!firebaseUser) return;
+
         const docRef = fireStore.doc(
           fireStore.getFirestore(),
           'users',
