@@ -20,8 +20,12 @@ const Event = ({ classData, event, fetchEvents, dayDate }) => {
   const { add: addEvent } = useEvents();
   const { currentUser } = useAuth();
 
-  const males = event ? event.dancers.males.map((m) => getById(m.id)) : [];
-  const females = event ? event.dancers.females.map((m) => getById(m.id)) : [];
+  const males = event
+    ? event.dancers.males.map((maleId) => getById(maleId))
+    : [];
+  const females = event
+    ? event.dancers.females.map((femaleId) => getById(femaleId))
+    : [];
 
   const joinHandle = async () => {
     // Check if event is still in the future

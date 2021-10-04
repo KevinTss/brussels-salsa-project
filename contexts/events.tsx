@@ -29,6 +29,7 @@ export const EventsProvider = ({ children }: EventProviderProps) => {
 
     return new Promise((resolve, reject) => {
       fireStore.onSnapshot(eventQuery, (querySnapshot) => {
+
         const results: Event[] = [];
         querySnapshot.forEach((doc) => {
           results.push({
@@ -37,8 +38,8 @@ export const EventsProvider = ({ children }: EventProviderProps) => {
           });
         });
 
-        const females = results?.[0]?.dancers?.females.map((f) => f.id) || [];
-        const males = results?.[0]?.dancers?.males.map((m) => m.id) || [];
+        const females = results?.[0]?.dancers?.females || [];
+        const males = results?.[0]?.dancers?.males || [];
 
         const dancers = [...females, ...males].filter((u) => !!u);
 
