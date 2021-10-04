@@ -1,15 +1,18 @@
-export type Classe = {
+import { Dayjs } from 'dayjs';
+
+export type ClasseType = {
   baseSpots: number;
   day: string;
   frequency: string;
+  id?: string;
   level: 'beginner' | 'improver';
   time: string;
   type: 'salsa';
 };
 
-export type Event = {
+export type EventType = {
   id?: string;
-  class: string;
+  classId: string;
   date: string;
   dancers: {
     female: string[];
@@ -17,12 +20,4 @@ export type Event = {
   };
 };
 
-export enum Weekday {
-  MONDAY = 'monday',
-  TUESDAY = 'tuesday',
-  WEDNESDAY = 'wednesday',
-  THURSDAY = 'thursday',
-  FRIDAY = 'friday',
-  SATURDAY = 'saturday',
-  SUNDAY = 'sunday',
-}
+export const DayjsType = Dayjs;

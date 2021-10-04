@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "dayjs": "^1.10.7",
     "firebase": "^9.0.2",
     "formik": "^2.2.9",
     "next": "11.1.2",
