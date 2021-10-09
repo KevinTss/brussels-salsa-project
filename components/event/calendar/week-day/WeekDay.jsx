@@ -6,7 +6,11 @@ import { WeekDayContainer } from './style';
 
 const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
   const [dayEvents, setDayEvents] = useState([]);
-  const { fetch: fetchEvents, add: addEvent } = useEvents();
+  const {
+    fetch: fetchEvents,
+    add: addEvent,
+    update: updateEvent,
+  } = useEvents();
 
   const fetchEventsHandler = () => {
     const dateFromToFetch = new Date(
@@ -44,6 +48,7 @@ const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
             fetchEvents={fetchEventsHandler}
             dayDate={dayDate}
             addEvent={addEvent}
+            updateEvent={updateEvent}
           />
         ))}
       </div>

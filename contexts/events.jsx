@@ -17,6 +17,12 @@ export const EventsProvider = ({ children }) => {
     );
   };
 
+  const update = async (id, newData) => {
+    const documentRef = fireStore.doc(fireStoreInstance, 'events', id);
+
+    await fireStore.updateDoc(documentRef, newData);
+  };
+
   const fetch = (dateFrom, dateTo) => {
     const eventQuery = fireStore.query(
       fireStore.collection(fireStoreInstance, 'events'),
@@ -24,6 +30,9 @@ export const EventsProvider = ({ children }) => {
       fireStore.where('date', '<', dateTo)
     );
 
+    /**
+     * @todo handle error with reject
+     */
     return new Promise((resolve, reject) => {
       fireStore.onSnapshot(eventQuery, (querySnapshot) => {
         const results = [];
@@ -63,7 +72,7 @@ export const EventsProvider = ({ children }) => {
   };
 
   return (
-    <EventsContext.Provider value={{ add, fetch }}>
+    <EventsContext.Provider value={{ add, fetch, update }}>
       {children}
     </EventsContext.Provider>
   );

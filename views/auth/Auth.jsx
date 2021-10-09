@@ -46,7 +46,6 @@ const Auth = () => {
                 setIsLoading(false);
                 Router.push('/');
               } else {
-                console.log('no user', u);
                 setIsLoading(false);
                 const newUser = {
                   accessToken: u.accessToken,
@@ -65,9 +64,6 @@ const Auth = () => {
                   newUser
                 );
               }
-            })
-            .then((res) => {
-              console.log('res', res);
             })
             .catch((error) => {
               console.log('error', error);

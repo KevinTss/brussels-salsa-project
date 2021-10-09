@@ -12,7 +12,14 @@ import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
 import { dayjsInstance, getEventNameDisplay } from '../../../../../utils';
 
-const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
+const Event = ({
+  classData,
+  event,
+  fetchEvents,
+  dayDate,
+  addEvent,
+  updateEvent,
+}) => {
   const { getById, list } = useUsers();
   const { currentUser } = useAuth();
 
@@ -23,25 +30,30 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
     ? event.dancers.females.map((femaleId) => getById(femaleId))
     : [];
 
+  const isUserAlreadyInEvent =
+    currentUser.gender === 'male'
+      ? !!event?.dancers?.males?.find((maleId) => maleId === currentUser.id)
+      : !!event?.dancers?.females?.find(
+          (femaleId) => femaleId === currentUser.id
+        );
+
   const joinHandle = async () => {
-    // Check if event is still in the future
     const eventDate = dayjsInstance()
       .year(dayDate.year())
       .month(dayDate.month())
       .date(dayDate.date())
       .hour(Number(classData.time.split(':')[0]))
       .minute(Number(classData.time.split(':')[1]));
-    // console.log('d', eventDate.format('DD/MM/YYYY - HH:mm'));
 
-    // Error if event in past from now
     if (eventDate.isBefore(dayjsInstance())) {
-      // Error
-      console.log('event is in the past');
+      /**
+       * @todo error toast if event in the past
+       */
       return;
     }
 
     /**
-     * If no event we create one
+     * If no event, create one
      */
     if (!event) {
       const newEvent = {
@@ -53,29 +65,55 @@ const Event = ({ classData, event, fetchEvents, dayDate, addEvent }) => {
         date: dayDate.hour(0).minute(0).second(0).toDate(),
       };
       await addEvent(newEvent);
-      // refetch to keep of to date
+      /**
+       * refetch to keep of to date
+       * @todo remove when we add real-time
+       */
       fetchEvents();
       return;
+    } else if (isUserAlreadyInEvent) {
+      /**
+       * @todo display toast error
+       */
     } else {
-      // Check is user is not already in
-      console.log('hey', males);
-      // Check if slot are not overflow
-      // Check if balance is respected
+      const baseAvailableSpots = classData.baseSpots;
+      if (males.length + females.length < baseAvailableSpots) {
+        /**
+         * No need to check balance since we allow 5 for each gender without
+         * check the balance
+         */
+        const updatedEvent = event;
+        const currentUserGender = `${currentUser.gender}s`;
+        updatedEvent.dancers[currentUserGender].push(currentUser.id);
+        updateEvent(event.id, updatedEvent);
+        fetchEvents();
+      } else if (true /** @todo Max spot if not reach */) {
+        /**
+         * We need to check is
+         */
+      } else {
+        /**
+         * @todo check balance
+         */
+      }
     }
-    console.log('wanna join class', classData.id);
-    console.log('event', event);
   };
 
   const cancelHandle = () => {
-    console.log('want to cancel');
+    if (!isUserAlreadyInEvent) {
+      /**
+       * @todo show error toast
+       */
+    }
+    const updatedEvent = event;
+    const currentUserGender = `${currentUser.gender}s`;
+    const userIdIndex = updatedEvent.dancers[currentUserGender].findIndex(
+      (userId) => userId === currentUser.id
+    );
+    updatedEvent.dancers[currentUserGender].splice(userIdIndex, 1);
+    updateEvent(event.id, updatedEvent);
+    fetchEvents();
   };
-
-  const isUserAlreadyInEvent =
-    currentUser.gender === 'male'
-      ? !!event?.dancers?.males?.find((maleId) => maleId === currentUser.id)
-      : !!event?.dancers?.females?.find(
-          (femaleId) => femaleId === currentUser.id
-        );
 
   return (
     <EventContainer>

@@ -14,11 +14,10 @@ export const UsersProvider = ({ children }) => {
   };
 
   const getById = (id) => {
-    console.log('aaaa', list, id);
     const userIndex = list.findIndex((user) => user.id === id);
-    console.log('user index', userIndex);
+
     if (userIndex === -1) return null;
-    console.log('list[userIndex];', list[userIndex]);
+
     return list[userIndex];
   };
 
