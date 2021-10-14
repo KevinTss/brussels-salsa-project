@@ -7,10 +7,14 @@ import { useAuth } from '../../hooks';
 import EventsCalendar from '../../components/event/calendar';
 
 const Home = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isLoading } = useAuth();
 
   useEffect(
-    () => typeof window !== undefined && !currentUser && Router.push('/auth')
+    () =>
+      typeof window !== undefined &&
+      !isLoading &&
+      !currentUser &&
+      Router.push('/auth')
   );
 
   return (
@@ -18,11 +22,6 @@ const Home = () => {
       {!currentUser && (
         <Link href='/auth'>
           <a>Login</a>
-        </Link>
-      )}
-      {currentUser?.isAdmin && (
-        <Link href='admin'>
-          <a>Admin</a>
         </Link>
       )}
       {currentUser && <EventsCalendar />}
