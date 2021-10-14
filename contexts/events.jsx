@@ -49,6 +49,7 @@ export const EventsProvider = ({ children }) => {
         const dancers = [...females, ...males].filter((u) => !!u);
 
         if (dancers.length && dancers.every((item) => !!item)) {
+          // TODO fetch only not-fetched-yet users
           const usersQuery = fireStore.query(
             fireStore.collection(fireStoreInstance, 'users'),
             fireStore.where('email', 'in', dancers)

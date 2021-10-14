@@ -46,9 +46,7 @@ const Event = ({
       .minute(Number(classData.time.split(':')[1]));
 
     if (eventDate.isBefore(dayjsInstance())) {
-      /**
-       * @todo error toast if event in the past
-       */
+      // TODO error toast if event in the past
       return;
     }
 
@@ -67,14 +65,12 @@ const Event = ({
       await addEvent(newEvent);
       /**
        * refetch to keep of to date
-       * @todo remove when we add real-time
        */
+      // TODO: remove when we add real-time
       fetchEvents();
       return;
     } else if (isUserAlreadyInEvent) {
-      /**
-       * @todo display toast error
-       */
+      // TODO: display toast error
     } else {
       const baseAvailableSpots = classData.baseSpots;
       if (males.length + females.length < baseAvailableSpots) {
@@ -87,7 +83,7 @@ const Event = ({
         updatedEvent.dancers[currentUserGender].push(currentUser.id);
         updateEvent(event.id, updatedEvent);
         fetchEvents();
-      } else if (true /** @todo Max spot if not reach */) {
+      } else if (true /** // TODO: Max spot if not reach */) {
         /**
          * We need to check is
          */
