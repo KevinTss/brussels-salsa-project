@@ -15,14 +15,20 @@ const EventsCalendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjsInstance());
   const { list: classes } = useClasses();
 
-  const monday = currentDate.weekday(0);
+  const monday = currentDate.weekday(0).hour(0).minute(0);
+  const isMondayInPast = monday.isBefore(dayjsInstance());
+  const isMondayIn1Week = monday.isAfter(dayjsInstance().add(7, 'day'));
 
   const goToNextWeek = () => {
+    if (isMondayIn1Week) return;
+
     const nextWeekDate = dayjsInstance(currentDate).add(1, 'week');
     setCurrentDate(nextWeekDate);
   };
 
   const goToPreviousWeek = () => {
+    if (isMondayInPast) return;
+
     const previousWeekDate = dayjsInstance(currentDate).subtract(1, 'week');
     setCurrentDate(previousWeekDate);
   };
@@ -35,6 +41,7 @@ const EventsCalendar = () => {
           onClick={goToPreviousWeek}
           iconLeft='angle-right'
           isIconReverse
+          isDisabled={isMondayInPast}
         >
           Previous week
         </Button>
@@ -45,6 +52,7 @@ const EventsCalendar = () => {
           appearance='primary'
           onClick={goToNextWeek}
           iconRight='angle-right'
+          isDisabled={isMondayIn1Week}
         >
           Next week
         </Button>
