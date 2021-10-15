@@ -2,12 +2,12 @@ import type { NextPage } from 'next';
 
 import DefaultLayout from '../../components/layouts/DefaultLayout';
 import Head from '../../components/head';
-import AdminDashboard from '../../views/admin-dashboard';
+import Admin from '../../views/admin';
 
 const AdminPage: NextPage = () => (
   <DefaultLayout>
     <Head />
-    <AdminDashboard />
+    <Admin />
   </DefaultLayout>
 );
 

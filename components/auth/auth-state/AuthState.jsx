@@ -1,3 +1,5 @@
+import Router from 'next/router';
+
 import { useAuth } from '../../../hooks';
 import { AuthStateContainer, InnerDropdown, MailContainer } from './style';
 import { Avatar, Dropdown, Button } from '../../ui';
