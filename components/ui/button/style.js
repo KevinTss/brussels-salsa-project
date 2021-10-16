@@ -8,6 +8,7 @@ const spin = keyframes`
 
 export const ButtonBase = styled.button`
   font-size: 16px;
+  font-family: ${({ theme }) => theme.fontFamily.default};
   line-height: 125%;
   display: inline-flex;
   align-items: center;

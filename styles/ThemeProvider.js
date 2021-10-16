@@ -7,7 +7,7 @@ const defaultTheme = {
     text: '#656686',
   },
   fontFamily: {
-    default: 'sans-serif',
+    default: "'Montserrat', sans-serif",
   },
   fontSize: {
     m: '1rem',
