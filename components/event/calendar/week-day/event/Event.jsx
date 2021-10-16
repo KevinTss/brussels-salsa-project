@@ -24,10 +24,10 @@ const Event = ({
   const { currentUser } = useAuth();
 
   const males = event
-    ? event.dancers.males.map((maleId) => getById(maleId))
+    ? event.dancers.males.map((dancer) => getById(dancer.userId))
     : [];
   const females = event
-    ? event.dancers.females.map((femaleId) => getById(femaleId))
+    ? event.dancers.females.map((dancer) => getById(dancer.userId))
     : [];
 
   const isUserAlreadyInEvent =
