@@ -1,5 +1,6 @@
-import { createPortal } from 'react-dom'
-import PropTypes from 'prop-types'
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import PropTypes from 'prop-types';
 
 import {
   Container,
@@ -10,30 +11,39 @@ import {
   OuterLargeDialog,
   OuterAsideDialog,
   LargeDialog,
-} from './style'
+} from './style';
 
 const dialogComponents = {
   aside: AsideDialog,
   default: DefaultDialog,
   large: LargeDialog,
-}
+};
 const outerDialogComponents = {
   aside: OuterAsideDialog,
   default: OuterDialog,
   large: OuterLargeDialog,
-}
+};
 const getDialog = (type, mode) =>
-  mode === 'inner' ? dialogComponents[type] : outerDialogComponents[type]
+  mode === 'inner' ? dialogComponents[type] : outerDialogComponents[type];
 
 const DialogEl = ({ type, children, isOpen, onClose }) => {
-  const Dialog = getDialog(type, 'inner')
-  const OuterDialog = getDialog(type, 'outer')
+  const [isMounted, setIsMounted] = useState(false);
+  const Dialog = getDialog(type, 'inner');
+  const OuterDialog = getDialog(type, 'outer');
 
-  const onOverlayClicked = e => {
+  const onOverlayClicked = (e) => {
     if (e.target.dataset.el === 'closable' && onClose) {
-      onClose()
+      onClose();
     }
-  }
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+
+    return () => setIsMounted(false);
+  }, []);
+
+  if (!isMounted) return null;
 
   return createPortal(
     <Container isVisible={isOpen}>
@@ -44,16 +54,16 @@ const DialogEl = ({ type, children, isOpen, onClose }) => {
       </Overlay>
     </Container>,
     document.getElementById('dialog-root')
-  )
-}
+  );
+};
 
 DialogEl.defaultProps = {
   type: 'default',
-}
+};
 
 DialogEl.propTypes = {
   type: PropTypes.oneOf(Object.keys(dialogComponents)),
   onClose: PropTypes.func,
-}
+};
 
-export default DialogEl
+export default DialogEl;
