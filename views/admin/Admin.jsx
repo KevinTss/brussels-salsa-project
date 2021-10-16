@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import Router from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Main } from './style';
 import { useAuth } from '../../hooks';
-import CreateClassForm from '../../components/classes/create-class-form';
+import CreateClassDrawer from '../../components/classes/create-class-drawer';
+import { Button } from '../../components/ui';
 
 const Home = () => {
   const { currentUser, isLoading } = useAuth();
+  const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === undefined || isLoading) return;
@@ -22,10 +24,16 @@ const Home = () => {
   return (
     <Main>
       <div>Admin</div>
-      <CreateClassForm />
       <Link href='/'>
         <a>Back to home</a>
       </Link>
+      <Button onClick={() => setIsCreateClassDrawerOpen(true)}>
+        Add class
+      </Button>
+      <CreateClassDrawer
+        isOpen={isCreateClassDrawerOpen}
+        onClose={() => setIsCreateClassDrawerOpen(false)}
+      />
     </Main>
   );
 };

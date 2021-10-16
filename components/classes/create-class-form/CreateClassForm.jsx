@@ -1,6 +1,7 @@
 import { useFormik } from 'formik';
 
 import { useClasses } from '../../../hooks';
+import { Input } from '../../ui';
 
 const CreateClassForm = () => {
   const { add } = useClasses();
@@ -45,7 +46,7 @@ const CreateClassForm = () => {
         ))}
       </select>
       <label htmlFor='spots'>Spots</label>
-      <input
+      <Input
         id='spots'
         name='spots'
         type='number'
