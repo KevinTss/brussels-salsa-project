@@ -2,6 +2,8 @@ import Router from 'next/router';
 import { createContext, useState, useEffect } from 'react';
 import { firebaseAuth, fireStore } from '../utils/firebase/clientApp';
 
+const fireStoreInstance = fireStore.getFirestore();
+
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ user, children }) => {
@@ -17,33 +19,26 @@ export const AuthProvider = ({ user, children }) => {
           return;
         }
 
-        const docRef = fireStore.doc(
-          fireStore.getFirestore(),
-          'users',
-          firebaseUser?.email
-        );
-        fireStore
-          .getDoc(docRef)
-          .then((docSnap) => {
-            if (docSnap.exists()) {
-              setCurrentUser({
-                id: firebaseUser.email,
-                ...docSnap.data(),
-              });
-              setIsLoading(false);
-            } else {
-              setIsLoading(false);
-            }
-          })
-          .catch((e) => {
-            console.log('error', e);
-            setIsLoading(false);
-          });
+        fetch(firebaseUser?.email).then(() => setIsLoading(false));
 
         return unsubscribe;
       }
     );
   }, []);
+
+  const fetch = (id) => {
+    const docRef = fireStore.doc(fireStoreInstance, 'users', id);
+
+    return fireStore.getDoc(docRef).then((docSnap) => {
+      if (docSnap.exists()) {
+        const user = {
+          id,
+          ...docSnap.data(),
+        };
+        setCurrentUser(user);
+      }
+    });
+  };
 
   const logout = () => {
     if (!currentUser) return;
@@ -53,9 +48,21 @@ export const AuthProvider = ({ user, children }) => {
     });
   };
 
+  const update = async (newData) => {
+    const documentRef = fireStore.doc(
+      fireStoreInstance,
+      'users',
+      currentUser.id
+    );
+
+    delete newData.id;
+
+    return fireStore.updateDoc(documentRef, newData);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ currentUser, setCurrentUser, isLoading, logout }}
+      value={{ currentUser, setCurrentUser, isLoading, logout, update }}
     >
       {children}
     </AuthContext.Provider>

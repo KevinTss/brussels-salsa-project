@@ -1,30 +1,19 @@
-import Link from 'next/link';
 import Router from 'next/router';
-import { useEffect } from 'react';
 
 import { Main } from './style';
-import { useAuth } from '../../hooks';
+import { useOnlyAuthGuard } from '../../hooks';
 import EventsCalendar from '../../components/event/calendar';
+import { Spinner } from '../../components/ui';
 
 const Home = () => {
-  const { currentUser, isLoading } = useAuth();
+  const { currentUser, isLoading } = useOnlyAuthGuard();
 
-  useEffect(
-    () =>
-      typeof window !== undefined &&
-      !isLoading &&
-      !currentUser &&
-      Router.push('/auth')
-  );
+  if (!isLoading && !currentUser.gender) Router.push('/onboarding');
 
   return (
     <Main>
-      {!currentUser && (
-        <Link href='/auth'>
-          <a>Login</a>
-        </Link>
-      )}
-      {currentUser && <EventsCalendar />}
+      {(isLoading || !currentUser) && <Spinner />}
+      {!isLoading && currentUser?.gender && <EventsCalendar />}
     </Main>
   );
 };

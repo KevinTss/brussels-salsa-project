@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   html {
@@ -16,3 +16,11 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 export default GlobalStyle;
+
+export const Title = styled.h1`
+  color: ${({ theme }) => theme.color.title};
+`;
+
+export const TitleDescription = styled.p`
+  color: ${({ theme }) => theme.color.text};
+`;
