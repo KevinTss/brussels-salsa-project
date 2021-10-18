@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 
 import {
   EventContainer,
@@ -11,6 +11,7 @@ import {
 import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
 import { dayjsInstance, getEventNameDisplay } from '../../../../../utils';
+import DetailsDrawer from './details-drawer';
 
 const Event = ({
   classData,
@@ -19,9 +20,11 @@ const Event = ({
   dayDate,
   addEvent,
   updateEvent,
+  isAdminMode,
 }) => {
   const { getById, list } = useUsers();
   const { currentUser } = useAuth();
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const males = event
     ? event.dancers.males.map((dancer) => getById(dancer.userId))
@@ -30,12 +33,19 @@ const Event = ({
     ? event.dancers.females.map((dancer) => getById(dancer.userId))
     : [];
 
-  const isUserAlreadyInEvent =
-    currentUser.gender === 'male'
-      ? !!event?.dancers?.males?.find((maleId) => maleId === currentUser.id)
-      : !!event?.dancers?.females?.find(
-          (femaleId) => femaleId === currentUser.id
-        );
+  let isUserAlreadyInEvent = false;
+  if (!isAdminMode) {
+    isUserAlreadyInEvent =
+      currentUser?.gender === 'male'
+        ? !!event?.dancers?.males?.find((maleId) => maleId === currentUser.id)
+        : !!event?.dancers?.females?.find(
+            (femaleId) => femaleId === currentUser.id
+          );
+  }
+
+  let waitingListLength =
+    (event?.waitingList?.males?.length || 0) +
+    (event?.waitingList?.females?.length || 0);
 
   const joinHandle = async () => {
     const eventDate = dayjsInstance()
@@ -117,41 +127,65 @@ const Event = ({
         <h4>{getEventNameDisplay(classData.type, classData.level)}</h4>
         <div>{classData.time}</div>
       </EventPrimariesInfo>
-      <DancersContainer>
-        <h4>Dancers</h4>
+      <DancersContainer $isHidden={!isAdminMode}>
+        <h4>
+          Dancers
+          {!!waitingListLength && (
+            <span>{waitingListLength} on waiting list</span>
+          )}
+        </h4>
         <MalesContainer>
           <p>Mens</p>
-          {males.map((m, i) => (
-            <Avatar
-              key={`m-${i}`}
-              firstName={m?.fullName?.split(' ')[0]}
-              lastName={m?.fullName?.split(' ')[1]}
-            />
-          ))}
+          <div>
+            {males.map((m, i) => (
+              <Avatar
+                key={`m-${i}`}
+                firstName={m?.fullName?.split(' ')[0]}
+                lastName={m?.fullName?.split(' ')[1]}
+              />
+            ))}
+          </div>
         </MalesContainer>
         <FemalesContainer>
           <p>Girls</p>
-          {females.map((f, i) => (
-            <Avatar
-              key={`f-${i}`}
-              firstName={f?.fullName?.split(' ')[0]}
-              lastName={f?.fullName?.split(' ')[1]}
-            />
-          ))}
+          <div>
+            {females.map((f, i) => (
+              <Avatar
+                key={`f-${i}`}
+                firstName={f?.fullName?.split(' ')[0]}
+                lastName={f?.fullName?.split(' ')[1]}
+              />
+            ))}
+          </div>
         </FemalesContainer>
       </DancersContainer>
       <CallToActions>
-        {!isUserAlreadyInEvent && (
+        {!isAdminMode && !isUserAlreadyInEvent && (
           <Button appearance='primary' onClick={joinHandle}>
             Join
           </Button>
         )}
-        {isUserAlreadyInEvent && (
+        {!isAdminMode && isUserAlreadyInEvent && (
           <Button appearance='minimal' onClick={cancelHandle}>
             Cancel
           </Button>
         )}
+        {isAdminMode && (
+          <Button
+            appearance='default'
+            onClick={() => setIsDetailsModalOpen(true)}
+          >
+            See details
+          </Button>
+        )}
       </CallToActions>
+      <DetailsDrawer
+        dayDate={dayDate}
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        event={event}
+        classe={classData}
+      />
     </EventContainer>
   );
 };

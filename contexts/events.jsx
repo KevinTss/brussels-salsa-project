@@ -30,9 +30,7 @@ export const EventsProvider = ({ children }) => {
       fireStore.where('date', '<', dateTo)
     );
 
-    /**
-     * @todo handle error with reject
-     */
+    // TODO handle error with reject
     return new Promise((resolve, _reject) => {
       fireStore.onSnapshot(eventQuery, (querySnapshot) => {
         const results = [];

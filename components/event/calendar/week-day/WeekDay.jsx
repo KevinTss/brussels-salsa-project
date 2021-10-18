@@ -4,7 +4,7 @@ import { useEvents } from '../../../../hooks';
 import Event from './event';
 import { WeekDayContainer } from './style';
 
-const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
+const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
   const [dayEvents, setDayEvents] = useState([]);
   const {
     fetch: fetchEvents,
@@ -18,7 +18,7 @@ const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
       dayDate.month(),
       dayDate.date()
     );
-    const endOfWeekDate = mondayDate.add(1, 'week');
+    const endOfWeekDate = dayDate.add(1, 'day');
     const dateToFetch = new Date(
       endOfWeekDate.year(),
       endOfWeekDate.month(),
@@ -49,6 +49,7 @@ const WeekDay = ({ dayName, classes, dayDate, mondayDate }) => {
             dayDate={dayDate}
             addEvent={addEvent}
             updateEvent={updateEvent}
+            isAdminMode={isAdminMode}
           />
         ))}
       </div>

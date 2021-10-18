@@ -19,8 +19,18 @@ export default GlobalStyle;
 
 export const Title = styled.h1`
   color: ${({ theme }) => theme.color.title};
+  font-size: ${({ theme }) => theme.fontSize.xl};
+`;
+
+export const SubTitle = styled.h2`
+  color: ${({ theme }) => theme.color.title};
+  font-size: ${({ theme }) => theme.fontSize.l};
 `;
 
 export const TitleDescription = styled.p`
+  color: ${({ theme }) => theme.color.text};
+`;
+
+export const Text = styled.p`
   color: ${({ theme }) => theme.color.text};
 `;

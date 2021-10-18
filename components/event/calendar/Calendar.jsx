@@ -11,7 +11,7 @@ import {
 import WeekDay from './week-day';
 import { Button } from '../../ui';
 
-const EventsCalendar = () => {
+const EventsCalendar = ({ isAdminMode }) => {
   const [currentDate, setCurrentDate] = useState(dayjsInstance());
   const { list: classes } = useClasses();
 
@@ -20,14 +20,14 @@ const EventsCalendar = () => {
   const isMondayIn1Week = monday.isAfter(dayjsInstance().add(7, 'day'));
 
   const goToNextWeek = () => {
-    if (isMondayIn1Week) return;
+    if (!isAdminMode && isMondayIn1Week) return;
 
     const nextWeekDate = dayjsInstance(currentDate).add(1, 'week');
     setCurrentDate(nextWeekDate);
   };
 
   const goToPreviousWeek = () => {
-    if (isMondayInPast) return;
+    if (!isAdminMode && isMondayInPast) return;
 
     const previousWeekDate = dayjsInstance(currentDate).subtract(1, 'week');
     setCurrentDate(previousWeekDate);
@@ -41,18 +41,18 @@ const EventsCalendar = () => {
           onClick={goToPreviousWeek}
           iconLeft='angle-right'
           isIconReverse
-          isDisabled={isMondayInPast}
+          isDisabled={!isAdminMode && isMondayInPast}
         >
           Previous week
         </Button>
         <DayDateContainer>
-          {currentDate.format('dddd DD, MMMM YYYY')}
+          Week of {monday.format('dddd DD, MMMM YYYY')}
         </DayDateContainer>
         <Button
           appearance='primary'
           onClick={goToNextWeek}
           iconRight='angle-right'
-          isDisabled={isMondayIn1Week}
+          isDisabled={!isAdminMode && isMondayIn1Week}
         >
           Next week
         </Button>
@@ -74,7 +74,7 @@ const EventsCalendar = () => {
               classes={dayClasses}
               dayName={capitalize(weekDay)}
               dayDate={offsetDays ? monday.add(offsetDays, 'day') : monday}
-              mondayDate={monday}
+              isAdminMode={isAdminMode}
             />
           );
         })}

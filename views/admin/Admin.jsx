@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Main } from './style';
 import { useAuth } from '../../hooks';
 import CreateClassDrawer from '../../components/classes/create-class-drawer';
+import Calendar from '../../components/event/calendar';
 import { Button } from '../../components/ui';
 
 const Home = () => {
@@ -30,6 +31,7 @@ const Home = () => {
       <Button onClick={() => setIsCreateClassDrawerOpen(true)}>
         Add class
       </Button>
+      <Calendar isAdminMode />
       <CreateClassDrawer
         isOpen={isCreateClassDrawerOpen}
         onClose={() => setIsCreateClassDrawerOpen(false)}

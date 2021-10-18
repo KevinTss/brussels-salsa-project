@@ -33,9 +33,15 @@ export const EventPrimariesInfo = styled.div`
 `;
 
 export const DancersContainer = styled.div`
-  display: flex;
+  display: ${({ $isHidden }) => ($isHidden ? 'none' : 'flex')};
   flex-direction: column;
   flex: 2;
+
+  span {
+    font-weight: ${({ theme }) => theme.fontWeight.thin};
+    font-size: ${({ theme }) => theme.fontSize.s};
+    margin-left: 10px;
+  }
 
   ${MEDIA_QUERY.MOBILE_AND_DOWN} {
     margin-bottom: 20px;
@@ -44,11 +50,17 @@ export const DancersContainer = styled.div`
 
 export const MalesContainer = styled.div`
   display: flex;
-`;
+  flex-direction: column;
 
-export const FemalesContainer = styled.div`
-  display: flex;
+  &:last-child {
+    margin-top: 20px;
+  }
+
+  > div {
+    display: flex;
+  }
 `;
+export const FemalesContainer = styled(MalesContainer)``;
 
 export const CallToActions = styled.div`
   display: flex;
