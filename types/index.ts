@@ -1,7 +1,10 @@
 import { Dayjs } from 'dayjs';
 
 export type ClasseType = {
-  baseSpots: number;
+  spots: {
+    base: number;
+    max?: number;
+  };
   day: string;
   frequency: string;
   id?: string;
