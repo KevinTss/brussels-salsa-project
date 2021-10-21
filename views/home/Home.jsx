@@ -8,7 +8,8 @@ import { Spinner } from '../../components/ui';
 const Home = () => {
   const { currentUser, isLoading } = useOnlyAuthGuard();
 
-  if (!isLoading && !currentUser.gender) Router.push('/onboarding');
+  if (!isLoading && currentUser && !currentUser.gender)
+    Router.push('/onboarding');
 
   return (
     <Main>
