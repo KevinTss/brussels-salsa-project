@@ -1,26 +1,17 @@
 import Link from 'next/link';
-import Router from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Main } from './style';
-import { useAuth } from '../../hooks';
+import { useOnlyAuthGuard } from '../../hooks';
 import CreateClassDrawer from '../../components/classes/create-class-drawer';
 import Calendar from '../../components/event/calendar';
 import { Button } from '../../components/ui';
 
 const Home = () => {
-  const { currentUser, isLoading } = useAuth();
+  const { currentUser } = useOnlyAuthGuard();
   const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    if (typeof window === undefined || isLoading) return;
-
-    if (!currentUser) {
-      Router.push('/auth');
-    } else if (!currentUser?.isAdmin) {
-      Router.push('/');
-    }
-  });
+  if (!currentUser?.isAdmin) return null;
 
   return (
     <Main>
