@@ -41,15 +41,17 @@ export const EventsProvider = ({ children }) => {
           });
         });
 
-        const females =
-          results?.[0]?.dancers?.females.map((dancer) => dancer.userId) || [];
-        const males =
-          results?.[0]?.dancers?.males.map((dancer) => dancer.userId) || [];
+        const users = [
+          ...(results?.[0]?.dancers?.females.map(({ userId }) => userId) || []),
+          ...(results?.[0]?.dancers?.males.map(({ userId }) => userId) || []),
+          ...(results?.[0]?.waitingList?.females.map(({ userId }) => userId) ||
+            []),
+          ...(results?.[0]?.waitingList?.males.map(({ userId }) => userId) ||
+            []),
+        ];
+        const dancers = users.filter((u) => !!u && !getUserById(u));
 
-        const dancers = [...females, ...males].filter((u) => !!u);
-
-        if (dancers.length && dancers.every((item) => !!item)) {
-          // TODO fetch only not-fetched-yet users
+        if (dancers.length) {
           const usersQuery = fireStore.query(
             fireStore.collection(fireStoreInstance, 'users'),
             fireStore.where('email', 'in', dancers)
