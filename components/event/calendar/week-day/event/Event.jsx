@@ -173,7 +173,7 @@ const Event = ({
         <h4>{getEventNameDisplay(classData.type, classData.level)}</h4>
         <div>{classData.time}</div>
       </EventPrimariesInfo>
-      <DancersContainer $isHidden={!isAdminMode && false}>
+      <DancersContainer $isHidden={!isAdminMode}>
         <h4>
           Dancers
           {!!waitingListLength && (
