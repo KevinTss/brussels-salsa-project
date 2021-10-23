@@ -22,7 +22,7 @@ const Event = ({
   updateEvent,
   isAdminMode,
 }) => {
-  const { getById, list } = useUsers();
+  const { getById } = useUsers();
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 

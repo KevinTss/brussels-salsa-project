@@ -33,4 +33,6 @@ export const TitleDescription = styled.p`
 
 export const Text = styled.p`
   color: ${({ theme }) => theme.color.text};
+  font-weight: ${({ theme, $isBold }) =>
+    $isBold ? theme.fontWeight.bold : theme.fontWeight.thin};
 `;
