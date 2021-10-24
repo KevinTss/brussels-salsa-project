@@ -73,9 +73,9 @@ const CreateClassForm = ({ onClose }) => {
       />
       <Label htmlFor='baseSpots'>Base spots</Label>
       <Text>
-        The amount of free spots where the balance won't be respected. Until the
-        spot reached the dancers won't be able to join except the balance
-        man/woman is respected (with a difference of 1)
+        {
+          "The amount of free spots where the balance won't be respected. Until the spot reached the dancers won't be able to join except the balance man/woman is respected (with a difference of 1)"
+        }
       </Text>
       <Input
         id='baseSpots'
