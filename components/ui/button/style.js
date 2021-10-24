@@ -67,8 +67,4 @@ export const ButtonMinimal = styled(ButtonBase)`
   border-radius: 8px;
   padding: 14px 24px;
   background-color: rgba(255, 255, 255, 0);
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;

@@ -77,7 +77,6 @@ const EventsCalendar = ({ isAdminMode }) => {
             isIconReverse
             isDisabled={!isAdminMode && isMondayInPast}
           />
-
           <Button
             appearance='primary'
             onClick={goToThisWeek}

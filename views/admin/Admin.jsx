@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import { useState } from 'react';
 
 import { Main } from './style';
 import { useOnlyAuthGuard } from '../../hooks';
 import CreateClassDrawer from '../../components/classes/create-class-drawer';
 import Calendar from '../../components/event/calendar';
-import { Button } from '../../components/ui';
+import Cockpit from '../../components/admin/cockpit';
 
 const Home = () => {
   const { currentUser } = useOnlyAuthGuard();
@@ -15,13 +14,7 @@ const Home = () => {
 
   return (
     <Main>
-      <div>Admin</div>
-      <Link href='/'>
-        <a>Back to home</a>
-      </Link>
-      <Button onClick={() => setIsCreateClassDrawerOpen(true)}>
-        Add class
-      </Button>
+      <Cockpit onAddClass={() => setIsCreateClassDrawerOpen(true)} />
       <Calendar isAdminMode />
       <CreateClassDrawer
         isOpen={isCreateClassDrawerOpen}
