@@ -41,15 +41,23 @@ export const EventsProvider = ({ children }) => {
           });
         });
 
-        const users = [
-          ...(results?.[0]?.dancers?.females.map(({ userId }) => userId) || []),
-          ...(results?.[0]?.dancers?.males.map(({ userId }) => userId) || []),
-          ...(results?.[0]?.waitingList?.females.map(({ userId }) => userId) ||
-            []),
-          ...(results?.[0]?.waitingList?.males.map(({ userId }) => userId) ||
-            []),
-        ];
-        const dancers = users.filter((u) => !!u && !getUserById(u));
+        const userListIds = usersList.map((u) => u.id);
+        const dancers = results.reduce((acc, event) => {
+          let newUsers = [];
+          const extractUserIds = ({ userId }) => {
+            if (!userListIds.includes(userId) && !newUsers.includes(userId)) {
+              newUsers.push(userId);
+            }
+          };
+          event.dancers.males.forEach(extractUserIds);
+          event.dancers.females.forEach(extractUserIds);
+          if (event.waitingList) {
+            event.waitingList.males.forEach(extractUserIds);
+            event.waitingList.females.forEach(extractUserIds);
+          }
+
+          return [...acc, ...newUsers];
+        }, []);
 
         if (dancers.length) {
           const usersQuery = fireStore.query(
