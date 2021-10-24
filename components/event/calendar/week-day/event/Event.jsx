@@ -33,20 +33,23 @@ const Event = ({
     ? event.dancers.females.map((dancer) => getById(dancer.userId))
     : [];
 
-  let isUserAlreadyInEvent = false;
+  let isUserInDancers = false;
+  let isUserInWaitingList = false;
   if (!isAdminMode) {
-    isUserAlreadyInEvent =
+    isUserInDancers =
       currentUser?.gender === 'male'
         ? !!event?.dancers?.males?.find(
-            ({ userId }) => userId === currentUser.id
-          ) ||
-          !!event?.waitingList?.males?.find(
             ({ userId }) => userId === currentUser.id
           )
         : !!event?.dancers?.females?.find(
             ({ userId }) => userId === currentUser.id
-          ) ||
-          !!event?.waitingList?.females?.find(
+          );
+    isUserInWaitingList =
+      currentUser?.gender === 'male'
+        ? !!event?.waitingList?.males?.find(
+            ({ userId }) => userId === currentUser.id
+          )
+        : !!event?.waitingList?.females?.find(
             ({ userId }) => userId === currentUser.id
           );
   }
@@ -101,7 +104,7 @@ const Event = ({
       await addEvent(newEvent);
       fetchEvents();
       return;
-    } else if (isUserAlreadyInEvent) {
+    } else if (isUserInDancers || isUserInWaitingList) {
       // TODO: display toast error
       console.warn('user-already-in-event');
     } else {
@@ -148,7 +151,7 @@ const Event = ({
   };
 
   const cancelHandle = () => {
-    if (!isUserAlreadyInEvent) {
+    if (!isUserInDancers && !isUserInWaitingList) {
       /**
        * @todo show error toast
        */
@@ -171,6 +174,8 @@ const Event = ({
     <EventContainer>
       <EventPrimariesInfo>
         <h4>{getEventNameDisplay(classData.type, classData.level)}</h4>
+        {isUserInDancers && <p>Joined</p>}
+        {isUserInWaitingList && <p>On waiting list</p>}
         <div>{classData.time}</div>
       </EventPrimariesInfo>
       <DancersContainer $isHidden={!isAdminMode}>
@@ -206,12 +211,12 @@ const Event = ({
         </FemalesContainer>
       </DancersContainer>
       <CallToActions>
-        {!isAdminMode && !isUserAlreadyInEvent && (
+        {!isAdminMode && !isUserInDancers && !isUserInWaitingList && (
           <Button appearance='primary' onClick={joinHandle}>
             Join
           </Button>
         )}
-        {!isAdminMode && isUserAlreadyInEvent && (
+        {!isAdminMode && (isUserInDancers || isUserInWaitingList) && (
           <Button appearance='minimal' onClick={cancelHandle}>
             Cancel
           </Button>
@@ -225,13 +230,15 @@ const Event = ({
           </Button>
         )}
       </CallToActions>
-      <DetailsDrawer
-        dayDate={dayDate}
-        isOpen={isDetailsModalOpen}
-        onClose={() => setIsDetailsModalOpen(false)}
-        event={event}
-        classe={classData}
-      />
+      {isAdminMode && (
+        <DetailsDrawer
+          dayDate={dayDate}
+          isOpen={isDetailsModalOpen}
+          onClose={() => setIsDetailsModalOpen(false)}
+          event={event}
+          classe={classData}
+        />
+      )}
     </EventContainer>
   );
 };
