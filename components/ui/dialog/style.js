@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import { MEDIA_QUERY } from '../../../utils';
+
 export const Container = styled.div`
   display: flex;
   transform: ${({ isVisible }) =>
@@ -85,4 +87,9 @@ export const AsideDialog = styled(BaseDialog)`
   overflow: auto;
   transform: ${({ isVisible }) =>
     isVisible ? 'translateX(0)' : 'translateX(100%)'};
+
+  ${MEDIA_QUERY.MOBILE_AND_DOWN} {
+    width: calc(100% - 20px);
+    padding: 20px;
+  }
 `;
