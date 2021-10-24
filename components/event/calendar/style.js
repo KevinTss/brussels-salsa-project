@@ -27,9 +27,22 @@ export const CockpitContainer = styled.div`
 export const DayDateContainer = styled.div`
   display: flex;
   height: 100%;
-  margin: 0 20px;
+  flex: 1;
 
   ${MEDIA_QUERY.MOBILE_AND_DOWN} {
     margin: 20px 0;
+  }
+`;
+
+export const CTAs = styled.div`
+  display: ${({ $onlyMobile }) => ($onlyMobile ? 'none' : 'flex')};
+  justify-content: flex-start;
+
+  ${MEDIA_QUERY.MOBILE_AND_DOWN} {
+    display: ${({ $onlyMobile }) => ($onlyMobile ? 'flex' : 'none')};
+  }
+
+  > button:not(:last-child) {
+    margin-right: 10px;
   }
 `;

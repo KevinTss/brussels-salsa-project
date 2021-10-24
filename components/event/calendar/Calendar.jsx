@@ -7,6 +7,7 @@ import {
   CockpitContainer,
   DayDateContainer,
   WeekContainer,
+  CTAs,
 } from './style';
 import WeekDay from './week-day';
 import { Button } from '../../ui';
@@ -25,37 +26,75 @@ const EventsCalendar = ({ isAdminMode }) => {
     const nextWeekDate = dayjsInstance(currentDate).add(1, 'week');
     setCurrentDate(nextWeekDate);
   };
-
   const goToPreviousWeek = () => {
     if (!isAdminMode && isMondayInPast) return;
 
     const previousWeekDate = dayjsInstance(currentDate).subtract(1, 'week');
     setCurrentDate(previousWeekDate);
   };
+  const goToThisWeek = () => setCurrentDate(dayjsInstance());
 
   return (
     <CalendarContainer>
       <CockpitContainer>
-        <Button
-          appearance='primary'
-          onClick={goToPreviousWeek}
-          iconLeft='angle-right'
-          isIconReverse
-          isDisabled={!isAdminMode && isMondayInPast}
-        >
-          Previous week
-        </Button>
         <DayDateContainer>
           Week of {monday.format('dddd DD, MMMM YYYY')}
         </DayDateContainer>
-        <Button
-          appearance='primary'
-          onClick={goToNextWeek}
-          iconRight='angle-right'
-          isDisabled={!isAdminMode && isMondayIn1Week}
-        >
-          Next week
-        </Button>
+        <CTAs>
+          <Button
+            appearance='primary'
+            onClick={goToPreviousWeek}
+            iconLeft='angle-right'
+            isIconReverse
+            isDisabled={!isAdminMode && isMondayInPast}
+          >
+            Previous week
+          </Button>
+          <Button
+            appearance='primary'
+            onClick={goToThisWeek}
+            isDisabled={
+              currentDate.weekday(0).hour(0).minute(0).format('DD/MM/YYYY') ===
+              dayjsInstance().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
+            }
+          >
+            This week
+          </Button>
+          <Button
+            appearance='primary'
+            onClick={goToNextWeek}
+            iconRight='angle-right'
+            isDisabled={!isAdminMode && isMondayIn1Week}
+          >
+            Next week
+          </Button>
+        </CTAs>
+        <CTAs $onlyMobile>
+          <Button
+            appearance='primary'
+            onClick={goToPreviousWeek}
+            iconLeft='angle-right'
+            isIconReverse
+            isDisabled={!isAdminMode && isMondayInPast}
+          />
+
+          <Button
+            appearance='primary'
+            onClick={goToThisWeek}
+            isDisabled={
+              currentDate.weekday(0).hour(0).minute(0).format('DD/MM/YYYY') ===
+              dayjsInstance().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
+            }
+          >
+            This week
+          </Button>
+          <Button
+            appearance='primary'
+            onClick={goToNextWeek}
+            iconRight='angle-right'
+            isDisabled={!isAdminMode && isMondayIn1Week}
+          />
+        </CTAs>
       </CockpitContainer>
 
       <WeekContainer>

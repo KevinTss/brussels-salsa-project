@@ -18,6 +18,7 @@ export const ButtonBase = styled.button`
   cursor: ${({ $isDisabled }) => ($isDisabled ? 'not-allowed' : 'pointer')};
   background: none;
   border: none;
+  opacity: ${({ $isDisabled }) => ($isDisabled ? '0.8' : '1')};
 
   > ${Icon} {
     margin-right: ${({ $hasMarginRight }) => ($hasMarginRight ? '5px' : '0')};
@@ -47,8 +48,11 @@ export const ButtonPrimary = styled(ButtonBase)`
   padding: 14px 24px;
 
   &:hover {
-    background-color: ${({ theme }) => theme.color.primary}aa;
-    border: 1px solid ${({ theme }) => theme.color.primary}aa;
+    background-color: ${({ theme, $isDisabled }) =>
+      $isDisabled ? theme.color.primary : `${theme.color.primary}aa`};
+    border: 1px solid
+      ${({ theme, $isDisabled }) =>
+        $isDisabled ? theme.color.primary : `${theme.color.primary}aa`};
 
     ${({ $isDisabled }) => {
       if (!$isDisabled)
