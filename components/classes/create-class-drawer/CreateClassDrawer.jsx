@@ -10,7 +10,7 @@ const CreateClassDrawer = ({ isOpen, onClose }) => (
       will allow dancers to join <b>event</b>. An event doesn't exist since at
       least one dancer join.
     </Text>
-    <CreateClassForm />
+    <CreateClassForm onClose={onClose} />
   </Dialog>
 );
 

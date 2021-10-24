@@ -23,7 +23,7 @@ const weekDayOptions = dayjsInstance.weekdays().map((day) => ({
   label: day,
 }));
 
-const CreateClassForm = () => {
+const CreateClassForm = ({ onClose }) => {
   const { add } = useClasses();
   const { handleSubmit, handleChange, values, setFieldValue } = useFormik({
     initialValues: {
@@ -35,7 +35,7 @@ const CreateClassForm = () => {
       level: 'beginner',
       weekDay: 'monday',
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const objectToSend = {
         day: values.weekDay,
         frequency: values.frequency,
@@ -47,7 +47,8 @@ const CreateClassForm = () => {
         time: `${values.hour}:${values.min}`,
         type: 'salsa',
       };
-      add(objectToSend);
+      await add(objectToSend);
+      onClose();
     },
   });
 
