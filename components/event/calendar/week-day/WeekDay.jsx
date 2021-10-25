@@ -12,7 +12,7 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
     update: updateEvent,
   } = useEvents();
 
-  const fetchEventsHandler = () => {
+  const fetchEventsHandler = async () => {
     const dateFromToFetch = new Date(
       dayDate.year(),
       dayDate.month(),
@@ -24,9 +24,8 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
       endOfWeekDate.month(),
       endOfWeekDate.date()
     );
-    fetchEvents(dateFromToFetch, dateToFetch).then((data) => {
-      setDayEvents(data);
-    });
+    const data = await fetchEvents(dateFromToFetch, dateToFetch);
+    setDayEvents(data);
   };
 
   useEffect(() => {

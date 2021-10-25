@@ -32,6 +32,13 @@ const Event = ({
   const females = event
     ? event.dancers.females.map((dancer) => getById(dancer.userId))
     : [];
+  const eventDate = dayjsInstance()
+    .year(dayDate.year())
+    .month(dayDate.month())
+    .date(dayDate.date())
+    .hour(Number(classData.time.split(':')[0]))
+    .minute(Number(classData.time.split(':')[1]));
+  const isEventPast = eventDate.isBefore(dayjsInstance());
 
   let isUserInDancers = false;
   let isUserInWaitingList = false;
@@ -59,115 +66,115 @@ const Event = ({
     (event?.waitingList?.females?.length || 0);
 
   const joinHandle = async () => {
-    if (isAdminMode) return;
+    if (isAdminMode || isEventPast) return;
 
-    const eventDate = dayjsInstance()
-      .year(dayDate.year())
-      .month(dayDate.month())
-      .date(dayDate.date())
-      .hour(Number(classData.time.split(':')[0]))
-      .minute(Number(classData.time.split(':')[1]));
+    await fetchEvents();
 
-    if (eventDate.isBefore(dayjsInstance())) {
-      // TODO error toast if event in the past
-      return;
-    }
-
-    /**
-     * If no event, create one
-     */
-    if (!event) {
-      const newEvent = {
-        classId: classData.id,
-        dancers: {
-          males:
-            currentUser.gender === 'male'
-              ? [
-                  {
-                    joinOn: new Date(),
-                    userId: currentUser.id,
-                  },
-                ]
-              : [],
-          females:
-            currentUser.gender === 'female'
-              ? [
-                  {
-                    joinOn: new Date(),
-                    userId: currentUser.id,
-                  },
-                ]
-              : [],
-        },
-        date: dayDate.hour(0).minute(0).second(0).toDate(),
-      };
-      await addEvent(newEvent);
-      fetchEvents();
-      return;
-    } else if (isUserInDancers || isUserInWaitingList) {
-      // TODO: display toast error
-      console.warn('user-already-in-event');
-    } else {
-      const totalDancers = males.length + females.length;
-      const updatedEvent = event;
-      if (
-        totalDancers < classData.spots.base &&
-        totalDancers < (classData?.spots?.max || 999)
-      ) {
-        updatedEvent.dancers[`${currentUser.gender}s`].push({
-          joinOn: new Date(),
-          userId: currentUser.id,
-        });
-      } else if (
-        totalDancers >= classData.spots.base &&
-        classData?.spots?.max &&
-        totalDancers < classData.spots.max
-      ) {
-        // We need to check the balance
-        const sameGenderAmount =
-          currentUser.gender === 'male' ? males.length : females.length;
-        const oppositeGenderAmount =
-          currentUser.gender === 'male' ? females.length : males.length;
-        let listToAddTheNewDancer;
-        if (sameGenderAmount > oppositeGenderAmount) {
-          listToAddTheNewDancer = `waitingList`;
-        } else {
-          listToAddTheNewDancer = `dancers`;
+    try {
+      if (!event) {
+        const newEvent = {
+          classId: classData.id,
+          dancers: {
+            males:
+              currentUser.gender === 'male'
+                ? [
+                    {
+                      joinOn: new Date(),
+                      userId: currentUser.id,
+                    },
+                  ]
+                : [],
+            females:
+              currentUser.gender === 'female'
+                ? [
+                    {
+                      joinOn: new Date(),
+                      userId: currentUser.id,
+                    },
+                  ]
+                : [],
+          },
+          waitingList: {
+            males: [],
+            females: [],
+          },
+          date: dayDate.hour(0).minute(0).second(0).toDate(),
+        };
+        await addEvent(newEvent);
+        await fetchEvents();
+        return;
+      } else if (isUserInDancers || isUserInWaitingList) {
+        // TODO: display toast error
+        console.warn('user-already-in-event');
+      } else {
+        const totalDancers = males.length + females.length;
+        const updatedEvent = event;
+        if (
+          totalDancers < classData.spots.base &&
+          totalDancers < (classData?.spots?.max || 999)
+        ) {
+          updatedEvent.dancers[`${currentUser.gender}s`].push({
+            joinOn: new Date(),
+            userId: currentUser.id,
+          });
+        } else if (
+          totalDancers >= classData.spots.base &&
+          classData?.spots?.max &&
+          totalDancers < classData.spots.max
+        ) {
+          // We need to check the balance
+          const sameGenderAmount =
+            currentUser.gender === 'male' ? males.length : females.length;
+          const oppositeGenderAmount =
+            currentUser.gender === 'male' ? females.length : males.length;
+          let listToAddTheNewDancer;
+          if (sameGenderAmount > oppositeGenderAmount) {
+            listToAddTheNewDancer = `waitingList`;
+          } else {
+            listToAddTheNewDancer = `dancers`;
+          }
+          updatedEvent[listToAddTheNewDancer][`${currentUser.gender}s`].push({
+            joinOn: new Date(),
+            userId: currentUser.id,
+          });
+        } else if (
+          classData?.spots?.max &&
+          totalDancers >= classData.spots.max
+        ) {
+          // Add the user to the waiting list
+          updatedEvent.waitingList[`${currentUser.gender}s`].push({
+            joinOn: new Date(),
+            userId: currentUser.id,
+          });
         }
-        updatedEvent[listToAddTheNewDancer][`${currentUser.gender}s`].push({
-          joinOn: new Date(),
-          userId: currentUser.id,
-        });
-      } else if (classData?.spots?.max && totalDancers >= classData.spots.max) {
-        // Add the user to the waiting list
-        updatedEvent.waitingList[`${currentUser.gender}s`].push({
-          joinOn: new Date(),
-          userId: currentUser.id,
-        });
+        await updateEvent(event.id, updatedEvent);
+        await fetchEvents();
       }
-      updateEvent(event.id, updatedEvent);
-      fetchEvents();
+    } catch (error) {
+      console.warn('error on join', error);
     }
   };
 
-  const cancelHandle = () => {
-    if (!isUserInDancers && !isUserInWaitingList) {
-      /**
-       * @todo show error toast
-       */
+  const cancelHandle = async () => {
+    await fetchEvents();
+    try {
+      if (!isUserInDancers && !isUserInWaitingList) return;
+
+      const currentUserGender = `${currentUser.gender}s`;
+      const isUserOnWaitingList = !!event.waitingList[currentUserGender].find(
+        ({ userId }) => userId === currentUser.id
+      );
+      const updatedEvent = event;
+      const list = isUserOnWaitingList ? 'waitingList' : 'dancers';
+      const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
+        (userId) => userId === currentUser.id
+      );
+      updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
+      await updateEvent(event.id, updatedEvent);
+      await fetchEvents();
+    } catch (error) {
+      console.warn('error on cancel', error);
     }
-    const currentUserGender = `${currentUser.gender}s`;
-    const isUserOnWaitingList = !!event.waitingList[currentUserGender].find(
-      ({ userId }) => userId === currentUser.id
-    );
-    const updatedEvent = event;
-    const list = isUserOnWaitingList ? 'waitingList' : 'dancers';
-    const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
-      (userId) => userId === currentUser.id
-    );
-    updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
-    updateEvent(event.id, updatedEvent);
-    fetchEvents();
   };
 
   return (
@@ -211,11 +218,22 @@ const Event = ({
         </FemalesContainer>
       </DancersContainer>
       <CallToActions>
-        {!isAdminMode && !isUserInDancers && !isUserInWaitingList && (
-          <Button appearance='primary' onClick={joinHandle}>
-            Join
-          </Button>
-        )}
+        {!isAdminMode &&
+          !isUserInDancers &&
+          !isUserInWaitingList &&
+          !isEventPast && (
+            <Button appearance='primary' onClick={joinHandle}>
+              Join
+            </Button>
+          )}
+        {!isAdminMode &&
+          !isUserInDancers &&
+          !isUserInWaitingList &&
+          isEventPast && (
+            <Button appearance='minimal' isDisabled>
+              Past
+            </Button>
+          )}
         {!isAdminMode && (isUserInDancers || isUserInWaitingList) && (
           <Button appearance='minimal' onClick={cancelHandle}>
             Cancel

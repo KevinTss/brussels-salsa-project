@@ -17,10 +17,10 @@ export const EventsProvider = ({ children }) => {
     );
   };
 
-  const update = async (id, newData) => {
+  const update = (id, newData) => {
     const documentRef = fireStore.doc(fireStoreInstance, 'events', id);
 
-    await fireStore.updateDoc(documentRef, newData);
+    return fireStore.updateDoc(documentRef, newData);
   };
 
   const fetch = (dateFrom, dateTo) => {
