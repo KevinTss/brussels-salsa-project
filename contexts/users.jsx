@@ -10,7 +10,7 @@ export const UsersProvider = ({ children }) => {
 
     if (userIndex > -1) return;
 
-    setList([...list, newUser]);
+    setList((previousList) => [...previousList, newUser]);
   };
 
   const getById = (id) => {
