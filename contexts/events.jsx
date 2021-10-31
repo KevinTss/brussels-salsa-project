@@ -82,8 +82,36 @@ export const EventsProvider = ({ children }) => {
     });
   };
 
+  const fetchOne = async ({ classId, dateFrom, dateTo, eventId }) => {
+    if (eventId) {
+      const docRef = fireStore.doc(fireStoreInstance, 'events', eventId);
+      const docSnap = await fireStore.getDoc(docRef);
+
+      return docSnap.exists() ? { id: eventId, ...docSnap.data() } : null;
+    } else if (classId && dateFrom && dateTo) {
+      const eventQuery = fireStore.query(
+        fireStore.collection(fireStoreInstance, 'events'),
+        fireStore.where('classId', '==', classId),
+        fireStore.where('date', '>=', dateFrom),
+        fireStore.where('date', '<', dateTo)
+      );
+      const querySnapshot = await fireStore.getDocs(eventQuery);
+      let event = null;
+      querySnapshot.forEach((doc) => {
+        if (!event) {
+          event = {
+            id: doc.id,
+            ...doc.data(),
+          };
+        }
+      });
+
+      return event;
+    }
+  };
+
   return (
-    <EventsContext.Provider value={{ add, fetch, update }}>
+    <EventsContext.Provider value={{ add, fetch, update, fetchOne }}>
       {children}
     </EventsContext.Provider>
   );

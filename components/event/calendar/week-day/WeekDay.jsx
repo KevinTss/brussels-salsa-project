@@ -8,6 +8,7 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
   const [dayEvents, setDayEvents] = useState([]);
   const {
     fetch: fetchEvents,
+    fetchOne: fetchEvent,
     add: addEvent,
     update: updateEvent,
   } = useEvents();
@@ -45,6 +46,7 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
             classData={c}
             event={dayEvents.find((dayEvent) => c.id === dayEvent.classId)}
             fetchEvents={fetchEventsHandler}
+            fetchEvent={fetchEvent}
             dayDate={dayDate}
             addEvent={addEvent}
             updateEvent={updateEvent}

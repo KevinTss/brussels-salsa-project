@@ -10,13 +10,24 @@ import {
 } from './style';
 import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
-import { dayjsInstance, getEventNameDisplay } from '../../../../../utils';
+import {
+  dayjsInstance,
+  getEventNameDisplay,
+  getMalesDancerIds,
+  getFemalesDancerIds,
+  getTotalDancers,
+  getTotalWaitingList,
+  getIsUserInDancers,
+  getIsUserInWaitingList,
+  getNewEvent,
+} from '../../../../../utils';
 import DetailsDrawer from './details-drawer';
 
 const Event = ({
   classData,
   event,
   fetchEvents,
+  fetchEvent,
   dayDate,
   addEvent,
   updateEvent,
@@ -26,12 +37,6 @@ const Event = ({
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  const males = event
-    ? event.dancers.males.map((dancer) => getById(dancer.userId))
-    : [];
-  const females = event
-    ? event.dancers.females.map((dancer) => getById(dancer.userId))
-    : [];
   const eventDate = dayjsInstance()
     .year(dayDate.year())
     .month(dayDate.month())
@@ -39,76 +44,46 @@ const Event = ({
     .hour(Number(classData.time.split(':')[0]))
     .minute(Number(classData.time.split(':')[1]));
   const isEventPast = eventDate.isBefore(dayjsInstance());
-
-  let isUserInDancers = false;
-  let isUserInWaitingList = false;
-  if (!isAdminMode) {
-    isUserInDancers =
-      currentUser?.gender === 'male'
-        ? !!event?.dancers?.males?.find(
-            ({ userId }) => userId === currentUser.id
-          )
-        : !!event?.dancers?.females?.find(
-            ({ userId }) => userId === currentUser.id
-          );
-    isUserInWaitingList =
-      currentUser?.gender === 'male'
-        ? !!event?.waitingList?.males?.find(
-            ({ userId }) => userId === currentUser.id
-          )
-        : !!event?.waitingList?.females?.find(
-            ({ userId }) => userId === currentUser.id
-          );
-  }
-
-  let waitingListLength =
-    (event?.waitingList?.males?.length || 0) +
-    (event?.waitingList?.females?.length || 0);
+  const isUserInDancers = getIsUserInDancers(event, currentUser);
+  const isUserInWaitingList = getIsUserInWaitingList(event, currentUser);
+  const waitingListLength = getTotalWaitingList(event);
 
   const joinHandle = async () => {
-    if (isAdminMode || isEventPast) return;
+    if (isAdminMode || isEventPast || isUserInDancers || isUserInWaitingList)
+      return;
 
-    await fetchEvents();
+    let newlyFetchedEvent;
+    if (event) {
+      newlyFetchedEvent = await fetchEvent({ eventId: event.id });
+    } else {
+      const dateFrom = new Date(
+        dayDate.year(),
+        dayDate.month(),
+        dayDate.date()
+      );
+      const nextDay = dayDate.add(1, 'day');
+      const dateTo = new Date(nextDay.year(), nextDay.month(), nextDay.date());
+      newlyFetchedEvent = await fetchEvent({
+        classId: classData.id,
+        dateFrom,
+        dateTo,
+      });
+    }
 
     try {
-      if (!event) {
-        const newEvent = {
-          classId: classData.id,
-          dancers: {
-            males:
-              currentUser.gender === 'male'
-                ? [
-                    {
-                      joinOn: new Date(),
-                      userId: currentUser.id,
-                    },
-                  ]
-                : [],
-            females:
-              currentUser.gender === 'female'
-                ? [
-                    {
-                      joinOn: new Date(),
-                      userId: currentUser.id,
-                    },
-                  ]
-                : [],
-          },
-          waitingList: {
-            males: [],
-            females: [],
-          },
-          date: dayDate.hour(0).minute(0).second(0).toDate(),
-        };
+      if (!newlyFetchedEvent) {
+        const newEvent = getNewEvent(currentUser);
         await addEvent(newEvent);
         await fetchEvents();
+
         return;
-      } else if (isUserInDancers || isUserInWaitingList) {
-        // TODO: display toast error
-        console.warn('user-already-in-event');
       } else {
-        const totalDancers = males.length + females.length;
-        const updatedEvent = event;
+        /**
+         * Refetch the event just before update it so we make sure data are
+         * up to date at the moment of the action
+         */
+        const updatedEvent = newlyFetchedEvent;
+        const totalDancers = getTotalDancers(updatedEvent);
         if (
           totalDancers < classData.spots.base &&
           totalDancers < (classData?.spots?.max || 999)
@@ -147,7 +122,7 @@ const Event = ({
             userId: currentUser.id,
           });
         }
-        await updateEvent(event.id, updatedEvent);
+        await updateEvent(updatedEvent.id, updatedEvent);
         await fetchEvents();
       }
     } catch (error) {
@@ -156,25 +131,26 @@ const Event = ({
   };
 
   const cancelHandle = async () => {
-    await fetchEvents();
-    try {
-      if (!isUserInDancers && !isUserInWaitingList) return;
+    console.log('classData', classData);
+    // await fetchEvents();
+    // try {
+    //   if (!isUserInDancers && !isUserInWaitingList) return;
 
-      const currentUserGender = `${currentUser.gender}s`;
-      const isUserOnWaitingList = !!event.waitingList[currentUserGender].find(
-        ({ userId }) => userId === currentUser.id
-      );
-      const updatedEvent = event;
-      const list = isUserOnWaitingList ? 'waitingList' : 'dancers';
-      const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
-        (userId) => userId === currentUser.id
-      );
-      updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
-      await updateEvent(event.id, updatedEvent);
-      await fetchEvents();
-    } catch (error) {
-      console.warn('error on cancel', error);
-    }
+    //   const currentUserGender = `${currentUser.gender}s`;
+    //   const isUserOnWaitingList = !!event.waitingList[currentUserGender].find(
+    //     ({ userId }) => userId === currentUser.id
+    //   );
+    //   const updatedEvent = event;
+    //   const list = isUserOnWaitingList ? 'waitingList' : 'dancers';
+    //   const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
+    //     (userId) => userId === currentUser.id
+    //   );
+    //   updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
+    //   await updateEvent(event.id, updatedEvent);
+    //   await fetchEvents();
+    // } catch (error) {
+    //   console.warn('error on cancel', error);
+    // }
   };
 
   return (
@@ -185,7 +161,7 @@ const Event = ({
         {isUserInWaitingList && <p>On waiting list</p>}
         <div>{classData.time}</div>
       </EventPrimariesInfo>
-      <DancersContainer $isHidden={!isAdminMode}>
+      <DancersContainer $isHidden={!isAdminMode && false}>
         <h4>
           Dancers
           {!!waitingListLength && (
@@ -195,25 +171,33 @@ const Event = ({
         <MalesContainer>
           <p>Mens</p>
           <div>
-            {males.map((m, i) => (
-              <Avatar
-                key={`m-${i}`}
-                firstName={m?.fullName?.split(' ')[0]}
-                lastName={m?.fullName?.split(' ')[1]}
-              />
-            ))}
+            {getMalesDancerIds(event).map(({ userId }, i) => {
+              const user = getById(userId);
+
+              return (
+                <Avatar
+                  key={`m-${i}`}
+                  firstName={user?.fullName?.split(' ')[0]}
+                  lastName={user?.fullName?.split(' ')[1]}
+                />
+              );
+            })}
           </div>
         </MalesContainer>
         <FemalesContainer>
           <p>Girls</p>
           <div>
-            {females.map((f, i) => (
-              <Avatar
-                key={`f-${i}`}
-                firstName={f?.fullName?.split(' ')[0]}
-                lastName={f?.fullName?.split(' ')[1]}
-              />
-            ))}
+            {getFemalesDancerIds(event).map(({ userId }, i) => {
+              const user = getById(userId);
+
+              return (
+                <Avatar
+                  key={`f-${i}`}
+                  firstName={user?.fullName?.split(' ')[0]}
+                  lastName={user?.fullName?.split(' ')[1]}
+                />
+              );
+            })}
           </div>
         </FemalesContainer>
       </DancersContainer>
