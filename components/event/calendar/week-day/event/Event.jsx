@@ -131,26 +131,50 @@ const Event = ({
   };
 
   const cancelHandle = async () => {
-    console.log('classData', classData);
-    // await fetchEvents();
-    // try {
-    //   if (!isUserInDancers && !isUserInWaitingList) return;
+    if (
+      !event?.id ||
+      isAdminMode ||
+      isEventPast ||
+      (!isUserInDancers && !isUserInWaitingList)
+    )
+      return;
 
-    //   const currentUserGender = `${currentUser.gender}s`;
-    //   const isUserOnWaitingList = !!event.waitingList[currentUserGender].find(
-    //     ({ userId }) => userId === currentUser.id
-    //   );
-    //   const updatedEvent = event;
-    //   const list = isUserOnWaitingList ? 'waitingList' : 'dancers';
-    //   const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
-    //     (userId) => userId === currentUser.id
-    //   );
-    //   updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
-    //   await updateEvent(event.id, updatedEvent);
-    //   await fetchEvents();
-    // } catch (error) {
-    //   console.warn('error on cancel', error);
-    // }
+    const newlyFetchedEvent = await fetchEvent({ eventId: event.id });
+    const isUserInDancersNewly = getIsUserInDancers(
+      newlyFetchedEvent,
+      currentUser
+    );
+    const isUserInWaitingListNewly = getIsUserInWaitingList(
+      newlyFetchedEvent,
+      currentUser
+    );
+    const currentUserGender = `${currentUser.gender}s`;
+    const updatedEvent = newlyFetchedEvent;
+    const list = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
+    const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
+      (userId) => userId === currentUser.id
+    );
+    updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
+
+    if (isUserInDancersNewly) {
+      // Check in waiting list to replace dancer
+      // Get waiting list from the same gender
+      const sameGenderWaitingList = updatedEvent.waitingList[currentUserGender];
+      if (sameGenderWaitingList.length) {
+        // Remove the user where the date joinOn is the first
+        const sortedList = sameGenderWaitingList.sort(
+          (a, b) => a.joinOn.toDate() - b.joinOn.toDate()
+        );
+        const userToAddInDancers = sortedList.shift();
+        updatedEvent.dancers[currentUserGender].push({
+          userId: userToAddInDancers.useId,
+          joinOn: new Date(),
+        });
+      }
+    }
+    delete updatedEvent.id;
+    await updateEvent(event.id, updatedEvent);
+    await fetchEvents();
   };
 
   return (
@@ -243,6 +267,6 @@ const Event = ({
       )}
     </EventContainer>
   );
-};
+};;
 
 export default Event;
