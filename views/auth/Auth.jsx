@@ -109,8 +109,9 @@ const Auth = () => {
         }
       })
       .catch((error) => {
-        console.log('error', error);
         setIsLoading(false);
+        triggerToast.error('An error occurred, try later or contact us');
+        console.dir(error);
       });
   };
 
