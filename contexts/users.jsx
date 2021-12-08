@@ -1,5 +1,9 @@
 import { createContext, useState } from 'react';
 
+import { fireStore } from '../utils/firebase/clientApp';
+
+const fireStoreInstance = fireStore.getFirestore();
+
 export const UsersContext = createContext(null);
 
 export const UsersProvider = ({ children }) => {
@@ -21,8 +25,14 @@ export const UsersProvider = ({ children }) => {
     return list[userIndex];
   };
 
+  const create = async (newData) =>
+    await fireStore.setDoc(
+      fireStore.doc(fireStoreInstance, 'users', newData.email),
+      newData
+    );
+
   return (
-    <UsersContext.Provider value={{ list, add, getById }}>
+    <UsersContext.Provider value={{ list, add, getById, create }}>
       {children}
     </UsersContext.Provider>
   );

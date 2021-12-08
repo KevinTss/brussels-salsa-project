@@ -46,3 +46,23 @@ export const LoginButton = styled.button`
     margin-right: 10px !important;
   }
 `;
+
+export const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const Text = styled.p`
+  color: ${({ theme }) => theme.color.text};
+  font-size: ${({ theme }) => theme.fontSize.s};
+  margin-top: 10px;
+`;
+
+export const OrSeparation = styled.p`
+  width: 50%;
+  text-align: center;
+  color: ${({ theme }) => theme.color.text};
+  font-size: ${({ theme }) => theme.fontSize.m};
+  margin: 20px auto;
+  position: relative;
+`;

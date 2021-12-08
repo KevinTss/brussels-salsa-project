@@ -60,9 +60,31 @@ export const AuthProvider = ({ user, children }) => {
     return fireStore.updateDoc(documentRef, newData);
   };
 
+  const signUpWithEmail = async (email, password) =>
+    await firebaseAuth.createUserWithEmailAndPassword(
+      firebaseAuth.getAuth(),
+      email,
+      password
+    );
+
+  const loginWithEmail = async (email, password) =>
+    await firebaseAuth.signInWithEmailAndPassword(
+      firebaseAuth.getAuth(),
+      email,
+      password
+    );
+
   return (
     <AuthContext.Provider
-      value={{ currentUser, setCurrentUser, isLoading, logout, update }}
+      value={{
+        currentUser,
+        isLoading,
+        logout,
+        setCurrentUser,
+        signUpWithEmail,
+        update,
+        loginWithEmail,
+      }}
     >
       {children}
     </AuthContext.Provider>
