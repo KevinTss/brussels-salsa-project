@@ -9,7 +9,6 @@ import { useAuth, useUsers } from '../../hooks';
 import { Button, Field, triggerToast } from '../../components/ui';
 
 const googleProvider = new firebaseAuth.GoogleAuthProvider();
-googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 googleProvider.setCustomParameters({
   login_hint: 'keke@example.com',
 });
