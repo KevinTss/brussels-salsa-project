@@ -2,68 +2,68 @@
   min-height: 45px !important;
 }
 
-.compliment-toast-container > div {
+.custom-toast-container > div {
   margin-bottom: 10px;
   box-shadow: 0 5px 45px 0 rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
-.Toastify__toast--default .compliment-progress {
-  background: #7ed3ba !important;
+.Toastify__toast--default .custom-progress {
+  background: #F9395C !important;
   height: 3px !important;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.Toastify__toast--error .compliment-progress {
+.Toastify__toast--error .custom-progress {
   background: #842029 !important;
   height: 3px !important;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.Toastify__toast--info .compliment-progress {
+.Toastify__toast--info .custom-progress {
   background: #084298 !important;
   height: 3px !important;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.Toastify__toast--success .compliment-progress {
+.Toastify__toast--success .custom-progress {
   background: #0f5132 !important;
   height: 3px !important;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.Toastify__toast--warning .compliment-progress {
+.Toastify__toast--warning .custom-progress {
   background: #664d03 !important;
   height: 3px !important;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.compliment-body {
+.custom-body {
   margin: 0 !important;
 }
 
-.Toastify__toast--error .compliment-body {
+.Toastify__toast--error .custom-body {
   color: #842029;
 }
 
-.Toastify__toast--info .compliment-body {
+.Toastify__toast--info .custom-body {
   color: #084298;
 }
 
-.Toastify__toast--success .compliment-body {
+.Toastify__toast--success .custom-body {
   color: #0f5132;
 }
 
-.Toastify__toast--warning .compliment-body {
+.Toastify__toast--warning .custom-body {
   color: #664d03;
 }
 
-.Toastify__toast--default .compliment-body {
+.Toastify__toast--default .custom-body {
   color: black;
 }
 

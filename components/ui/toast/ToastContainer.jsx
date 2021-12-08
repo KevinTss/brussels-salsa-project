@@ -1,13 +1,12 @@
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify';
 
-import './style.css'
-
-export const ToastContainerEl = props => <ToastContainer {...props} />
+export const triggerToast = toast;
+export const ToastContainerEl = (props) => <ToastContainer {...props} />;
 
 ToastContainerEl.defaultProps = {
   position: 'top-center',
   autoClose: 5000,
-  className: 'compliment-toast-container',
-  progressClassName: 'compliment-progress',
-  bodyClassName: 'compliment-body',
-}
+  className: 'custom-toast-container',
+  progressClassName: 'custom-progress',
+  bodyClassName: 'custom-body',
+};

@@ -20,6 +20,6 @@ export { default as Tag } from './tag';
 export { default as TagsGroup } from './tags-group';
 export { default as Textarea } from './textarea';
 export { default as Tooltip } from './tooltip';
-// export { ToastContainer } from './toast';
+export * from './toast';
 
 // TODO: fix ui to typescript and only use those it useful
