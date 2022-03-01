@@ -1,7 +1,7 @@
 import { Button } from '../../../ui';
 import { CockpitContainer, DayDateContainer, CTAs } from './style';
 import { View } from '../../../../utils/types';
-import { dayjsInstance } from '../../../../utils';
+import { djs } from '../../../../utils';
 
 type CalendarCockpitProps = {
   currentDate: any;
@@ -48,7 +48,7 @@ export default function CalendarCockpit({
           onClick={goToThisWeek}
           isDisabled={
             currentDate.weekday(0).hour(0).minute(0).format('DD/MM/YYYY') ===
-            dayjsInstance().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
+            djs().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
           }
           iconLeft={undefined}
           iconRight={undefined}
@@ -86,7 +86,7 @@ export default function CalendarCockpit({
           onClick={goToThisWeek}
           isDisabled={
             currentDate.weekday(0).hour(0).minute(0).format('DD/MM/YYYY') ===
-            dayjsInstance().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
+            djs().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
           }
           iconLeft={undefined}
           iconRight={undefined}

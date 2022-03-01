@@ -1,33 +1,39 @@
 import { useState } from 'react';
 
-import { capitalize, dayjsInstance, CALENDAR_VIEW } from '../../../utils';
+import {
+  capitalize,
+  djs,
+  CALENDAR_VIEW,
+  getDisplayDayOfWeek,
+} from '../../../utils';
 import { useClasses } from '../../../hooks';
 import { CalendarContainer, WeekContainer } from './style';
 import WeekDay from './week-day';
 import CalendarCockpit from './cockpit';
+import { getDayClasses } from './utils';
 
 const EventsCalendar = ({ isAdminMode }) => {
   const [view] = useState(CALENDAR_VIEW.DAY);
-  const [currentDate, setCurrentDate] = useState(dayjsInstance());
+  const [currentDate, setCurrentDate] = useState(djs());
   const { list: classes } = useClasses();
 
   const monday = currentDate.weekday(0).hour(0).minute(0);
-  const isMondayInPast = monday.isBefore(dayjsInstance());
-  const isMondayIn1Week = monday.isAfter(dayjsInstance().add(7, 'day'));
+  const isMondayInPast = monday.isBefore(djs());
+  const isMondayIn1Week = monday.isAfter(djs().add(7, 'day'));
 
   const goToNextWeek = () => {
     if (!isAdminMode && isMondayIn1Week) return;
 
-    const nextWeekDate = dayjsInstance(currentDate).add(1, 'week');
+    const nextWeekDate = djs(currentDate).add(1, 'week');
     setCurrentDate(nextWeekDate);
   };
   const goToPreviousWeek = () => {
     if (!isAdminMode && isMondayInPast) return;
 
-    const previousWeekDate = dayjsInstance(currentDate).subtract(1, 'week');
+    const previousWeekDate = djs(currentDate).subtract(1, 'week');
     setCurrentDate(previousWeekDate);
   };
-  const goToThisWeek = () => setCurrentDate(dayjsInstance());
+  const goToThisWeek = () => setCurrentDate(djs());
 
   return (
     <CalendarContainer>
@@ -42,12 +48,10 @@ const EventsCalendar = ({ isAdminMode }) => {
         view={view}
       />
 
-      {view === CALENDAR_VIEW.WEEK && (
+      {view === CALENDAR_VIEW.WEEK ? (
         <WeekContainer>
-          {dayjsInstance.weekdays().map((weekDay, dayIndex) => {
-            const dayClasses = classes.filter(
-              ({ day }) => day === weekDay.toLocaleLowerCase()
-            );
+          {djs.weekdays().map((weekDay, dayIndex) => {
+            const dayClasses = getDayClasses(classes, weekDay);
 
             if (!dayClasses.length) return null;
 
@@ -64,6 +68,14 @@ const EventsCalendar = ({ isAdminMode }) => {
             );
           })}
         </WeekContainer>
+      ) : (
+        <div>
+          <WeekDay
+            classes={getDayClasses(classes, getDisplayDayOfWeek())}
+            dayName={capitalize(getDisplayDayOfWeek())}
+            dayDate={currentDate}
+          />
+        </div>
       )}
     </CalendarContainer>
   );

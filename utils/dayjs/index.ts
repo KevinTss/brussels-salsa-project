@@ -10,4 +10,8 @@ dayjs.updateLocale('en', {
 });
 dayjs.extend(weekday);
 
-export const dayjsInstance = dayjs;
+export const djs = dayjs;
+
+export const getDisplayDayOfWeek = (date: any): string =>
+  djs.weekdays()[(date || djs()).day() - 1];
+

@@ -4,7 +4,7 @@ import { useClasses } from '../../../hooks';
 import { Input, Label, Button, Field, FieldGroup } from '../../ui';
 import { Form } from './style';
 import { Text } from '../../../styles/GlobalStyle';
-import { dayjsInstance } from '../../../utils';
+import { djs } from '../../../utils';
 
 const levelOptions = [
   { value: 'beginner', label: 'Beginner' },
@@ -18,7 +18,7 @@ const minuteOptions = [
   { value: '30', label: '30' },
   { value: '00', label: '00' },
 ];
-const weekDayOptions = dayjsInstance.weekdays().map((day) => ({
+const weekDayOptions = djs.weekdays().map((day) => ({
   value: day.toLowerCase(),
   label: day,
 }));

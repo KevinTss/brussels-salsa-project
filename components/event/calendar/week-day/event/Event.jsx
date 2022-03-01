@@ -11,7 +11,7 @@ import {
 import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar } from '../../../../ui';
 import {
-  dayjsInstance,
+  djs,
   getEventNameDisplay,
   getMalesDancerIds,
   getFemalesDancerIds,
@@ -37,13 +37,13 @@ const Event = ({
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  const eventDate = dayjsInstance()
+  const eventDate = djs()
     .year(dayDate.year())
     .month(dayDate.month())
     .date(dayDate.date())
     .hour(Number(classData.time.split(':')[0]))
     .minute(Number(classData.time.split(':')[1]));
-  const isEventPast = eventDate.isBefore(dayjsInstance());
+  const isEventPast = eventDate.isBefore(djs());
   const isUserInDancers = getIsUserInDancers(event, currentUser);
   const isUserInWaitingList = getIsUserInWaitingList(event, currentUser);
   const waitingListLength = getTotalWaitingList(event);
