@@ -72,7 +72,7 @@ const Event = ({
 
     try {
       if (!newlyFetchedEvent) {
-        const newEvent = getNewEvent(currentUser);
+        const newEvent = getNewEvent(currentUser, classData, dayDate);
         await addEvent(newEvent);
         await fetchEvents();
 

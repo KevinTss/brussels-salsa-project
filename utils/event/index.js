@@ -27,7 +27,7 @@ export const getIsUserInWaitingList = (event, currentUser) =>
         ({ userId }) => userId === currentUser.id
       );
 
-export const getNewEvent = (currentUser) => ({
+export const getNewEvent = (currentUser, classData, dayDate) => ({
   classId: classData.id,
   dancers: {
     males:
