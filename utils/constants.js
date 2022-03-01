@@ -11,3 +11,8 @@ export const MEDIA_QUERY = {
   TABLET_AND_DOWN: `@media only screen and (max-width: ${BREAKPOINT.M})`,
   MOBILE_AND_DOWN: `@media only screen and (max-width: ${BREAKPOINT.S})`,
 };
+
+export const CALENDAR_VIEW = {
+  DAY: 'DAY',
+  WEEK: 'WEEK',
+};
