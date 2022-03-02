@@ -34,16 +34,26 @@ const EventsCalendar = ({ isAdminMode }) => {
     setCurrentDate(previousWeekDate);
   };
   const goToThisWeek = () => setCurrentDate(djs());
+  const goToNextDay = () => {
+    const nextDayDate = djs(currentDate).add(1, 'day');
+    setCurrentDate(nextDayDate);
+  };
+  const goToPreviousDay = () => {
+    const previousDayDate = djs(currentDate).subtract(1, 'day');
+    setCurrentDate(previousDayDate);
+  };
 
   return (
     <CalendarContainer>
       <CalendarCockpit
         currentDate={currentDate}
-        goToNextWeek={goToNextWeek}
-        goToPreviousWeek={goToPreviousWeek}
+        goToNextWeek={view === CALENDAR_VIEW.WEEK ? goToNextWeek : goToNextDay}
+        goToPreviousWeek={
+          view === CALENDAR_VIEW.WEEK ? goToPreviousWeek : goToPreviousDay
+        }
         goToThisWeek={goToThisWeek}
-        isMondayIn1Week={isMondayIn1Week}
-        isMondayInPast={isMondayInPast}
+        isNextDisabled={isMondayIn1Week}
+        isPreviousDisabled={isMondayInPast}
         monday={monday}
         view={view}
       />
@@ -71,8 +81,8 @@ const EventsCalendar = ({ isAdminMode }) => {
       ) : (
         <div>
           <WeekDay
-            classes={getDayClasses(classes, getDisplayDayOfWeek())}
-            dayName={capitalize(getDisplayDayOfWeek())}
+            classes={getDayClasses(classes, getDisplayDayOfWeek(currentDate))}
+            dayName={capitalize(getDisplayDayOfWeek(currentDate))}
             dayDate={currentDate}
           />
         </div>

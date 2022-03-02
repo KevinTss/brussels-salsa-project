@@ -8,8 +8,8 @@ type CalendarCockpitProps = {
   goToNextWeek: () => {};
   goToPreviousWeek: () => {};
   goToThisWeek: () => {};
-  isMondayIn1Week: boolean;
-  isMondayInPast: boolean;
+  isNextDisabled: boolean;
+  isPreviousDisabled: boolean;
   monday: any;
   view: View;
 };
@@ -19,8 +19,8 @@ export default function CalendarCockpit({
   goToNextWeek,
   goToPreviousWeek,
   goToThisWeek,
-  isMondayIn1Week,
-  isMondayInPast,
+  isNextDisabled,
+  isPreviousDisabled,
   monday,
   view,
 }: CalendarCockpitProps) {
@@ -29,55 +29,61 @@ export default function CalendarCockpit({
       <DayDateContainer>
         {view === View.WEEK
           ? `Week of ${monday.format('dddd DD, MMMM YYYY')}`
-          : monday.format('dddd DD, MMMM YYYY')}
+          : null}
       </DayDateContainer>
       <CTAs>
         <Button
           appearance='primary'
-          onClick={goToPreviousWeek}
+          onClick={isPreviousDisabled ? () => {} : goToPreviousWeek}
           iconLeft='angle-right'
           isIconReverse
-          isDisabled={isMondayInPast}
+          isDisabled={isPreviousDisabled}
           iconRight={undefined}
           isLoading={undefined}
         >
-          Previous week
+          Previous
         </Button>
         <Button
           appearance='primary'
           onClick={goToThisWeek}
           isDisabled={
-            currentDate.weekday(0).hour(0).minute(0).format('DD/MM/YYYY') ===
-            djs().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
+            view === View.WEEK
+              ? currentDate
+                  .weekday(0)
+                  .hour(0)
+                  .minute(0)
+                  .format('DD/MM/YYYY') ===
+                djs().weekday(0).hour(0).minute(0).format('DD/MM/YYYY')
+              : currentDate.isToday()
           }
           iconLeft={undefined}
           iconRight={undefined}
           isLoading={undefined}
           isIconReverse={undefined}
         >
-          This week
+          Today
         </Button>
         <Button
           appearance='primary'
-          onClick={goToNextWeek}
+          onClick={isNextDisabled ? () => {} : goToNextWeek}
           iconRight='angle-right'
-          isDisabled={isMondayIn1Week}
+          isDisabled={isNextDisabled}
           iconLeft={undefined}
           isLoading={undefined}
           isIconReverse={undefined}
         >
-          Next week
+          Next
         </Button>
       </CTAs>
       <CTAs $onlyMobile>
         <Button
           appearance='primary'
-          onClick={goToPreviousWeek}
+          onClick={isPreviousDisabled ? () => {} : goToPreviousWeek}
           iconLeft='angle-right'
           isIconReverse
           // eslint-disable-next-line react/no-children-prop
           children={undefined}
-          isDisabled={isMondayInPast}
+          isDisabled={isPreviousDisabled}
           iconRight={undefined}
           isLoading={undefined}
         />
@@ -93,13 +99,13 @@ export default function CalendarCockpit({
           isLoading={undefined}
           isIconReverse={undefined}
         >
-          This week
+          Today
         </Button>
         <Button
           appearance='primary'
-          onClick={goToNextWeek}
+          onClick={isNextDisabled ? () => {} : goToNextWeek}
           iconRight='angle-right'
-          isDisabled={isMondayIn1Week}
+          isDisabled={isNextDisabled}
           // eslint-disable-next-line react/no-children-prop
           children={undefined}
           iconLeft={undefined}
