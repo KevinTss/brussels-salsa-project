@@ -9,31 +9,31 @@ import {
 import { useClasses } from '../../../hooks';
 import { CalendarContainer, WeekContainer } from './style';
 import WeekDay from './week-day';
-// import CalendarCockpit from './cockpit';
+import CalendarCockpit from './cockpit';
 import { getDayClasses } from './utils';
 
 const EventsCalendar = ({ isAdminMode }) => {
-  const [view] = useState(CALENDAR_VIEW.DAY);
+  const [view] = useState(isAdminMode ? CALENDAR_VIEW.WEEK : CALENDAR_VIEW.DAY);
   const [currentDate, setCurrentDate] = useState(djs());
   const { list: classes } = useClasses();
 
   const monday = currentDate.weekday(0).hour(0).minute(0);
-  // const isMondayInPast = monday.isBefore(djs());
-  // const isMondayIn1Week = monday.isAfter(djs().add(7, 'day'));
+  const isMondayInPast = monday.isBefore(djs());
+  const isMondayIn1Week = monday.isAfter(djs().add(7, 'day'));
 
-  // const goToNextWeek = () => {
-  //   if (!isAdminMode && isMondayIn1Week) return;
+  const goToNextWeek = () => {
+    if (!isAdminMode && isMondayIn1Week) return;
 
-  //   const nextWeekDate = djs(currentDate).add(1, 'week');
-  //   setCurrentDate(nextWeekDate);
-  // };
-  // const goToPreviousWeek = () => {
-  //   if (!isAdminMode && isMondayInPast) return;
+    const nextWeekDate = djs(currentDate).add(1, 'week');
+    setCurrentDate(nextWeekDate);
+  };
+  const goToPreviousWeek = () => {
+    if (!isAdminMode && isMondayInPast) return;
 
-  //   const previousWeekDate = djs(currentDate).subtract(1, 'week');
-  //   setCurrentDate(previousWeekDate);
-  // };
-  // const goToThisWeek = () => setCurrentDate(djs());
+    const previousWeekDate = djs(currentDate).subtract(1, 'week');
+    setCurrentDate(previousWeekDate);
+  };
+  const goToThisWeek = () => setCurrentDate(djs());
   // const goToNextDay = () => {
   //   const nextDayDate = djs(currentDate).add(1, 'day');
   //   setCurrentDate(nextDayDate);
@@ -45,18 +45,18 @@ const EventsCalendar = ({ isAdminMode }) => {
 
   return (
     <CalendarContainer>
-      {/* <CalendarCockpit
-        currentDate={currentDate}
-        goToNextWeek={view === CALENDAR_VIEW.WEEK ? goToNextWeek : goToNextDay}
-        goToPreviousWeek={
-          view === CALENDAR_VIEW.WEEK ? goToPreviousWeek : goToPreviousDay
-        }
-        goToThisWeek={goToThisWeek}
-        isNextDisabled={isMondayIn1Week}
-        isPreviousDisabled={isMondayInPast}
-        monday={monday}
-        view={view}
-      /> */}
+      {view === CALENDAR_VIEW.WEEK && (
+        <CalendarCockpit
+          currentDate={currentDate}
+          goToNextWeek={goToNextWeek}
+          goToPreviousWeek={goToPreviousWeek}
+          goToThisWeek={goToThisWeek}
+          // isNextDisabled={isMondayIn1Week}
+          // isPreviousDisabled={isMondayInPast}
+          monday={monday}
+          view={view}
+        />
+      )}
 
       {view === CALENDAR_VIEW.WEEK ? (
         <WeekContainer>
