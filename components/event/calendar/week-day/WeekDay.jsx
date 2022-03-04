@@ -40,19 +40,23 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
         {dayName} - {dayDate.format('DD/MM/YYYY')}
       </h2>
       <div>
-        {classes.map((c) => (
-          <Event
-            key={c.id}
-            classData={c}
-            event={dayEvents.find((dayEvent) => c.id === dayEvent.classId)}
-            fetchEvents={fetchEventsHandler}
-            fetchEvent={fetchEvent}
-            dayDate={dayDate}
-            addEvent={addEvent}
-            updateEvent={updateEvent}
-            isAdminMode={isAdminMode}
-          />
-        ))}
+        {!!classes.length ? (
+          classes.map((c) => (
+            <Event
+              key={c.id}
+              classData={c}
+              event={dayEvents.find((dayEvent) => c.id === dayEvent.classId)}
+              fetchEvents={fetchEventsHandler}
+              fetchEvent={fetchEvent}
+              dayDate={dayDate}
+              addEvent={addEvent}
+              updateEvent={updateEvent}
+              isAdminMode={isAdminMode}
+            />
+          ))
+        ) : (
+          <p>No class today</p>
+        )}
       </div>
     </WeekDayContainer>
   );
