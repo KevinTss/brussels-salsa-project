@@ -1,17 +1,7 @@
 import { Dayjs } from 'dayjs';
 
-export type ClasseType = {
-  spots: {
-    base: number;
-    max?: number;
-  };
-  day: string;
-  frequency: string;
-  id?: string;
-  level: 'beginner' | 'improver';
-  time: string;
-  type: 'salsa';
-};
+export * from './dates';
+export * from './classes';
 
 export type EventType = {
   id?: string;
@@ -24,3 +14,15 @@ export type EventType = {
 };
 
 export const DayjsType = Dayjs;
+
+export enum CalendarView {
+  DAY,
+  WEEK,
+}
+
+export enum AdminView {
+  CALENDAR,
+  CLASSES,
+}
+
+export type Children = JSX.Element | JSX.Element[] | string;

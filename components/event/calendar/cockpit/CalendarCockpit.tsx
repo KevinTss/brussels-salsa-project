@@ -1,6 +1,6 @@
 import { Button } from '../../../ui';
 import { CockpitContainer, DayDateContainer, CTAs } from './style';
-import { View } from '../../../../utils/types';
+import { CalendarView } from '../../../../types';
 import { djs } from '../../../../utils';
 
 type CalendarCockpitProps = {
@@ -11,7 +11,7 @@ type CalendarCockpitProps = {
   isNextDisabled: boolean;
   isPreviousDisabled: boolean;
   monday: any;
-  view: View;
+  view: CalendarView;
 };
 
 export default function CalendarCockpit({
@@ -27,7 +27,7 @@ export default function CalendarCockpit({
   return (
     <CockpitContainer>
       <DayDateContainer>
-        {view === View.WEEK
+        {view === CalendarView.WEEK
           ? `Week of ${monday.format('dddd DD, MMMM YYYY')}`
           : null}
       </DayDateContainer>
@@ -47,7 +47,7 @@ export default function CalendarCockpit({
           appearance='primary'
           onClick={goToThisWeek}
           isDisabled={
-            view === View.WEEK
+            view === CalendarView.WEEK
               ? currentDate
                   .weekday(0)
                   .hour(0)

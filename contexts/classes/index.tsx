@@ -1,10 +1,18 @@
 import { createContext, useState, useEffect } from 'react';
-import { fireStore } from '../utils/firebase/clientApp';
 
-export const ClassesContext = createContext(null);
+import { fireStore } from '../../utils/firebase/clientApp';
 
-export const ClassesProvider = ({ children }) => {
-  const [list, setList] = useState([]);
+import type {
+  ClasseType,
+  Children,
+  ClassesContext as ClassesContextType,
+  NewClasseData,
+} from '../../types';
+
+export const ClassesContext = createContext<ClassesContextType | null>(null);
+
+export const ClassesProvider = ({ children }: { children: Children }) => {
+  const [list, setList] = useState<ClasseType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,12 +20,12 @@ export const ClassesProvider = ({ children }) => {
       fireStore.collection(fireStore.getFirestore(), 'classes')
     );
     const unsubscribe = fireStore.onSnapshot(query, (querySnapshot) => {
-      const classes = [];
+      const classes: ClasseType[] = [];
       querySnapshot.forEach((doc) => {
         classes.push({
           id: doc.id,
           ...doc.data(),
-        });
+        } as ClasseType);
       });
       setList(classes);
       setLoading(false);
@@ -26,7 +34,7 @@ export const ClassesProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const add = async (data) => {
+  const add = async (data: NewClasseData) => {
     await fireStore.addDoc(
       fireStore.collection(fireStore.getFirestore(), 'classes'),
       data
