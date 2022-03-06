@@ -14,6 +14,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es5",
+    "downlevelIteration": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

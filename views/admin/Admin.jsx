@@ -7,10 +7,12 @@ import Calendar from '../../components/event/calendar';
 import Cockpit from '../../components/admin/cockpit';
 import { AdminView } from '../../types';
 import ClassesRecurringList from '../../components/classes/recurring/list';
+import EditClassDrawer from '../../components/classes/edit-class-drawer';
 
 const Home = () => {
   const { currentUser } = useOnlyAuthGuard();
   const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
+  const [editClassId, setEditClassId] = useState('');
   const [view, setView] = useState(AdminView.CALENDAR);
 
   if (!currentUser?.isAdmin) return null;
@@ -25,10 +27,17 @@ const Home = () => {
       {view === AdminView.CALENDAR && <Calendar isAdminMode />}
       {view === AdminView.CLASSES && (
         <>
-          <ClassesRecurringList />
+          <ClassesRecurringList
+            onEdit={(classeId) => setEditClassId(classeId)}
+          />
           <CreateClassDrawer
             isOpen={isCreateClassDrawerOpen}
             onClose={() => setIsCreateClassDrawerOpen(false)}
+          />
+          <EditClassDrawer
+            classeId={editClassId}
+            isOpen={!!editClassId}
+            onClose={() => setEditClassId('')}
           />
         </>
       )}

@@ -1,5 +1,5 @@
 import { Dialog } from '../../ui';
-import CreateClassForm from '../create-class-form';
+import CreateClassForm from '../form';
 import { Title, Text } from '../../../styles/GlobalStyle';
 import { Header } from './style';
 

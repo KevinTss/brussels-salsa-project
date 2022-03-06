@@ -41,8 +41,14 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
     );
   };
 
+  const getById = (id: string) => {
+    if (!list.length) return null;
+
+    return list.find((classe) => classe.id === id) || null;
+  };
+
   return (
-    <ClassesContext.Provider value={{ list, add, loading }}>
+    <ClassesContext.Provider value={{ list, add, loading, getById }}>
       {children}
     </ClassesContext.Provider>
   );

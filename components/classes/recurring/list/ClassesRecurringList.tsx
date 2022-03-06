@@ -1,15 +1,77 @@
-import ClassCard from '../../class-card';
 import { useClasses } from '../../../../hooks';
-import { ClasseType } from '../../../../types';
+import {
+  Table,
+  THead,
+  TBody,
+  TR,
+  TD,
+  TH,
+  ActionContainer,
+  MenuContainer,
+} from './style';
+import { Dropdown, Button } from '../../../ui';
+import ClassesRecurringCard from '../card';
 
-export default function ClassesRecurringList() {
+type ClassesRecurringListProps = {
+  onEdit: (id: string) => void;
+};
+
+export default function ClassesRecurringList({
+  onEdit,
+}: ClassesRecurringListProps) {
   const { list } = useClasses();
 
+  console.log('list', list);
+
   return (
-    <div>
-      {list.map((i) => (
-        <p key={i.id}>{i.id}</p>
-      ))}
-    </div>
+    <Table>
+      <THead>
+        <TR>
+          <TH>Recurring classes</TH>
+          <TH right>Action</TH>
+        </TR>
+      </THead>
+      <TBody>
+        {list.map(({ id, day, time, type }) => (
+          <TR key={id}>
+            <TD>
+              <ClassesRecurringCard day={day} type={type} time={time} />
+            </TD>
+            <TD>
+              <ActionContainer>
+                <Dropdown
+                  content={
+                    <MenuContainer>
+                      <Button
+                        onClick={() => onEdit(id as string)}
+                        appearance={undefined}
+                        iconLeft={undefined}
+                        iconRight={undefined}
+                        isDisabled={undefined}
+                        isLoading={undefined}
+                        isIconReverse={undefined}
+                      >
+                        Edit
+                      </Button>
+                    </MenuContainer>
+                  }
+                >
+                  <Button
+                    iconLeft='menu'
+                    appearance={undefined}
+                    // eslint-disable-next-line react/no-children-prop
+                    children={undefined}
+                    iconRight={undefined}
+                    isDisabled={undefined}
+                    isLoading={undefined}
+                    isIconReverse={undefined}
+                  />
+                </Dropdown>
+              </ActionContainer>
+            </TD>
+          </TR>
+        ))}
+      </TBody>
+    </Table>
   );
 }

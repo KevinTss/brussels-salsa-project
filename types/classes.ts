@@ -1,20 +1,22 @@
 import { WeekDayEnum } from './dates';
 
-enum ClasseTypeEnum {
-  BACHATA,
-  SALSA,
+export enum ClasseTypeEnum {
+  BACHATA = 'BACHATA',
+  SALSA = 'SALSA',
 }
-enum ClasseLevelEnum {
-  BEGINNER,
-  IMPROVER,
+
+export enum ClasseLevelEnum {
+  BEGINNER = 'BEGINNER',
+  IMPROVER = 'IMPROVER',
 }
-enum ClasseFrequencyEnum {
-  WEEKLY,
+
+export enum ClasseFrequencyEnum {
+  WEEKLY = 'WEEKLY',
 }
 
 export type ClasseType = {
-  day: string;
-  frequency: string;
+  day: WeekDayEnum;
+  frequency: ClasseFrequencyEnum;
   id?: string;
   level: ClasseLevelEnum;
   spots: { base: number; max?: number };
@@ -24,6 +26,7 @@ export type ClasseType = {
 
 export type ClassesContext = {
   add: (data: NewClasseData) => Promise<void>;
+  getById: (id: string) => ClasseType | null;
   list: ClasseType[];
   loading: Boolean;
 };

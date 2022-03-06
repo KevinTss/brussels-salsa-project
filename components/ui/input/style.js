@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 import { Icon } from '../icon/style';
 
-const getSize = (size) =>
+const getSize = (size = 'm') =>
   ({
     m: '11.5px',
     s: '6px',
@@ -28,4 +28,6 @@ export const Input = styled.input`
   background-color: rgba(255, 255, 255, 0);
   width: 100%;
   opacity: ${({ isDisabled }) => (isDisabled ? '0.8' : '1')};
+  font-family: ${({ theme }) => theme.fontFamily.default};
+  font-size: 16px;
 `;
