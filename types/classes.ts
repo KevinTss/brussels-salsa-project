@@ -27,6 +27,7 @@ export type ClasseType = {
 export type ClassesContext = {
   add: (data: NewClasseData) => Promise<void>;
   deleteById: (id: string) => Promise<void>;
+  edit: (id: string, data: NewClasseData) => Promise<void>;
   getById: (id: string) => ClasseType | null;
   list: ClasseType[];
   loading: Boolean;

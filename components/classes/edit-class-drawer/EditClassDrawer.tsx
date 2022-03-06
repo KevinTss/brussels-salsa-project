@@ -16,7 +16,7 @@ export default function EditClassDrawer({
   onClose,
   classeId,
 }: EditClassDrawer) {
-  const { getById } = useClasses();
+  const { getById, edit } = useClasses();
 
   const classeToEdit = useMemo(() => getById(classeId), [classeId, getById]);
 
@@ -35,7 +35,11 @@ export default function EditClassDrawer({
           <b>{classeToEdit?.time}</b>
         </Text>
       </Header>
-      <CreateClassForm onClose={onClose} />
+      <CreateClassForm
+        onEdit={edit}
+        onClose={onClose}
+        defaultValues={classeToEdit}
+      />
     </Dialog>
   );
 }

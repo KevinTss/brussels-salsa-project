@@ -53,9 +53,16 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
     );
   };
 
+  const edit = async (id: string, newData: NewClasseData) => {
+    await fireStore.updateDoc(
+      fireStore.doc(fireStore.getFirestore(), 'classes', id),
+      { newData }
+    );
+  };
+
   return (
     <ClassesContext.Provider
-      value={{ list, add, loading, getById, deleteById }}
+      value={{ list, add, loading, getById, deleteById, edit }}
     >
       {children}
     </ClassesContext.Provider>

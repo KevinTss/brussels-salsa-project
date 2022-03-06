@@ -50,17 +50,17 @@ type FormData = {
 };
 
 export default function ClassForm({ onClose, defaultValues }: ClassForm) {
-  const { add } = useClasses();
+  const { add, edit } = useClasses();
   const { handleSubmit, handleChange, values, setFieldValue } =
     useFormik<FormData>({
       initialValues: {
         frequency: defaultValues
           ? defaultValues.frequency
           : ClasseFrequencyEnum.WEEKLY,
-        baseSpots: defaultValues ? defaultValues.baseSpots : 10,
-        maxSpots: defaultValues ? defaultValues.maxSpots : 99,
-        hour: '19',
-        min: '30',
+        baseSpots: defaultValues ? defaultValues.spots.base : 10,
+        maxSpots: defaultValues ? defaultValues.spots.max : 99,
+        hour: defaultValues ? defaultValues.time.split(':')[0] : '19',
+        min: defaultValues ? defaultValues.time.split(':')[1] : '30',
         level: defaultValues ? defaultValues.level : ClasseLevelEnum.BEGINNER,
         weekDay: defaultValues ? defaultValues.weekDay : WeekDayEnum.MONDAY,
         type: defaultValues ? defaultValues.type : ClasseTypeEnum.SALSA,
@@ -78,13 +78,19 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
           type: ClasseTypeEnum.SALSA,
         };
         console.log('objectToSend', objectToSend);
-        await add(objectToSend);
+        if (!!defaultValues) {
+          await edit(defaultValues.id, objectToSend);
+        } else {
+          await add(objectToSend);
+        }
         resetForm();
         onClose();
       },
+      enableReinitialize: true,
     });
   // console.log('levelOptions', levelOptions);
   // console.log('typeOptions', typeOptions);
+  console.log('values', values);
   return (
     <Form onSubmit={handleSubmit}>
       <Label htmlFor='type'>Type of class</Label>
@@ -203,7 +209,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         onBlur={undefined}
         error={undefined}
         touched={undefined}
-        description={`The class will occur every ${values.weekDay.toLowerCase()}`}
+        description={`The class will occur every ${values?.weekDay?.toLowerCase()}`}
         isRequired={undefined}
       />
       <Button
