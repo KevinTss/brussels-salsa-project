@@ -47,8 +47,16 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
     return list.find((classe) => classe.id === id) || null;
   };
 
+  const deleteById = async (id: string) => {
+    await fireStore.deleteDoc(
+      fireStore.doc(fireStore.getFirestore(), 'classes', id)
+    );
+  };
+
   return (
-    <ClassesContext.Provider value={{ list, add, loading, getById }}>
+    <ClassesContext.Provider
+      value={{ list, add, loading, getById, deleteById }}
+    >
       {children}
     </ClassesContext.Provider>
   );

@@ -33,4 +33,7 @@ export const ActionContainer = styled.div`
 
 export const MenuContainer = styled.div`
   padding: 20px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 15px;
 `;

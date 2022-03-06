@@ -8,6 +8,7 @@ export const useClasses = () => {
 
   const typedData: ClassesContextType = {
     add: data?.add || (() => new Promise(() => {})),
+    deleteById: data?.deleteById || (() => new Promise(() => {})),
     getById: data?.getById || ((id: string) => null),
     list: data?.list || [],
     loading: data?.loading || false,

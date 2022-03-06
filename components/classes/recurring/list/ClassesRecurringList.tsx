@@ -19,16 +19,14 @@ type ClassesRecurringListProps = {
 export default function ClassesRecurringList({
   onEdit,
 }: ClassesRecurringListProps) {
-  const { list } = useClasses();
-
-  console.log('list', list);
+  const { list, deleteById } = useClasses();
 
   return (
     <Table>
       <THead>
         <TR>
           <TH>Recurring classes</TH>
-          <TH right>Action</TH>
+          <TH right />
         </TR>
       </THead>
       <TBody>
@@ -52,6 +50,17 @@ export default function ClassesRecurringList({
                         isIconReverse={undefined}
                       >
                         Edit
+                      </Button>
+                      <Button
+                        onClick={() => deleteById(id as string)}
+                        appearance={undefined}
+                        iconLeft='trash'
+                        iconRight={undefined}
+                        isDisabled={undefined}
+                        isLoading={undefined}
+                        isIconReverse={undefined}
+                      >
+                        Delete
                       </Button>
                     </MenuContainer>
                   }
