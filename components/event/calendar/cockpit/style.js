@@ -24,11 +24,24 @@ export const DayDateContainer = styled.div`
 `;
 
 export const CTAs = styled.div`
-  display: ${({ $onlyMobile }) => ($onlyMobile ? 'none' : 'flex')};
+  display: flex;
   justify-content: flex-start;
 
   ${MEDIA_QUERY.MOBILE_AND_DOWN} {
-    display: ${({ $onlyMobile }) => ($onlyMobile ? 'flex' : 'none')};
+    display: none;
+  }
+
+  > button:not(:last-child) {
+    margin-right: 10px;
+  }
+`;
+
+export const CTAsMobile = styled.div`
+  display: none;
+  justify-content: flex-start;
+
+  ${MEDIA_QUERY.MOBILE_AND_DOWN} {
+    display: flex;
   }
 
   > button:not(:last-child) {

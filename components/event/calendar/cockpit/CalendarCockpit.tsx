@@ -1,5 +1,5 @@
 import { Button } from '../../../ui';
-import { CockpitContainer, DayDateContainer, CTAs } from './style';
+import { CockpitContainer, DayDateContainer, CTAs, CTAsMobile } from './style';
 import { CalendarView } from '../../../../types';
 import { djs } from '../../../../utils';
 
@@ -75,7 +75,7 @@ export default function CalendarCockpit({
           Next
         </Button>
       </CTAs>
-      <CTAs $onlyMobile>
+      <CTAsMobile>
         <Button
           appearance='primary'
           onClick={isPreviousDisabled ? () => {} : goToPreviousWeek}
@@ -112,7 +112,7 @@ export default function CalendarCockpit({
           isLoading={undefined}
           isIconReverse={undefined}
         />
-      </CTAs>
+      </CTAsMobile>
     </CockpitContainer>
   );
 }

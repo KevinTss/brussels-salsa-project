@@ -9,7 +9,14 @@ import type {
   NewClasseData,
 } from '../../types';
 
-export const ClassesContext = createContext<ClassesContextType | null>(null);
+export const ClassesContext = createContext<ClassesContextType>({
+  edit: (id, data) => new Promise(() => {}),
+  add: (data) => new Promise(() => {}),
+  deleteById: (id) => new Promise(() => {}),
+  getById: (id) => null,
+  list: [],
+  loading: false,
+});
 
 export const ClassesProvider = ({ children }: { children: Children }) => {
   const [list, setList] = useState<ClasseType[]>([]);
