@@ -9,7 +9,7 @@ import {
   CallToActions,
 } from './style';
 import { useUsers, useAuth } from '../../../../../hooks';
-import { Button, Avatar } from '../../../../ui';
+import { Button, Avatar, Tag } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
@@ -181,11 +181,11 @@ const Event = ({
     <EventContainer>
       <EventPrimariesInfo>
         <h4>{getEventNameDisplay(classData.type, classData.level)}</h4>
-        {isUserInDancers && <p>Joined</p>}
-        {isUserInWaitingList && <p>On waiting list</p>}
+        {isUserInDancers && <Tag>Joined</Tag>}
+        {isUserInWaitingList && <Tag>On waiting list</Tag>}
         <div>{classData.time}</div>
       </EventPrimariesInfo>
-      <DancersContainer $isHidden={!isAdminMode && false}>
+      <DancersContainer $isHidden={!isAdminMode}>
         <h4>
           Dancers
           {!!waitingListLength && (

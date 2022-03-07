@@ -25,6 +25,7 @@ export const EventContainer = styled.div`
 export const EventPrimariesInfo = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   flex: 1;
 
   ${MEDIA_QUERY.MOBILE_AND_DOWN} {
