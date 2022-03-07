@@ -3,4 +3,5 @@ type Classe = {
 };
 
 export const getDayClasses = (classes: Classe[], weekDay: string): Classe[] =>
-  classes.filter(({ day }) => day === weekDay.toLocaleLowerCase());
+  classes.filter(({ day }) => day === weekDay.toUpperCase());
+
