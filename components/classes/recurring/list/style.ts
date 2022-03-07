@@ -13,10 +13,10 @@ export const TH = styled.th<{ right?: boolean }>`
   font-size: 22px;
 `;
 
-export const TBody = styled.tbody``;
+export const TR = styled.tr``;
 
-export const TR = styled.tr`
-  &:hover {
+export const TBody = styled.tbody`
+  ${TR}:hover {
     background: #00000005;
   }
 `;
