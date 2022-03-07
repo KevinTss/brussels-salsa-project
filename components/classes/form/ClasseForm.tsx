@@ -77,7 +77,6 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
           time: `${values.hour}:${values.min}`,
           type: ClasseTypeEnum.SALSA,
         };
-        console.log('objectToSend', objectToSend);
         if (!!defaultValues) {
           await edit(defaultValues.id, objectToSend);
         } else {
@@ -88,9 +87,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
       },
       enableReinitialize: true,
     });
-  // console.log('levelOptions', levelOptions);
-  // console.log('typeOptions', typeOptions);
-  console.log('values', values);
+
   return (
     <Form onSubmit={handleSubmit}>
       <Label htmlFor='type'>Type of class</Label>
