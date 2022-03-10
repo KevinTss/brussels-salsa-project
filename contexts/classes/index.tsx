@@ -34,6 +34,10 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
           ...doc.data(),
         } as ClasseType);
       });
+      console.group();
+      console.warn('Classes fetched');
+      console.warn('Data', classes);
+      console.groupEnd();
       setList(classes);
       setLoading(false);
     });

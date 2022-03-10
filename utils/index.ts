@@ -5,10 +5,10 @@ export * from './dayjs';
 export * from './event';
 
 export const capitalize = (string: string): string =>
-  `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+  `${string.charAt(0).toUpperCase()}${string.slice(1).toLocaleLowerCase()}`;
 
 export const getEventNameDisplay = (type: string, level: string): string =>
-  `${capitalize(type)} ${level}s`;
+  `${capitalize(type)} (${level.toLocaleLowerCase()})`;
 
 export const getEventDisplayTitle = (classe: ClasseType, date: any) =>
   capitalize(

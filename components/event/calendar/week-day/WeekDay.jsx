@@ -26,6 +26,12 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
       endOfWeekDate.date()
     );
     const data = await fetchEvents(dateFromToFetch, dateToFetch);
+    console.group();
+    console.warn('Event fetched');
+    console.warn('Date from', dateFromToFetch.toISOString());
+    console.warn('Date to', dateToFetch.toISOString());
+    console.warn('Data', data);
+    console.groupEnd();
     setDayEvents(data);
   };
 
