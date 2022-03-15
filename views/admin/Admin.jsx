@@ -8,6 +8,7 @@ import Cockpit from '../../components/admin/cockpit';
 import { AdminView } from '../../types';
 import ClassesRecurringList from '../../components/classes/recurring/list';
 import EditClassDrawer from '../../components/classes/edit-class-drawer';
+import UsersList from '../../components/users/list';
 
 const Home = () => {
   const { currentUser } = useOnlyAuthGuard();
@@ -41,6 +42,7 @@ const Home = () => {
           />
         </>
       )}
+      {view === AdminView.USERS && <UsersList />}
     </Main>
   );
 };

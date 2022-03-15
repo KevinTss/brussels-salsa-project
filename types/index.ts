@@ -2,6 +2,15 @@ import { Dayjs } from 'dayjs';
 
 export * from './dates';
 export * from './classes';
+export * from './routes';
+
+export type User = {
+  access?: string[];
+  email: string;
+  fullName: string;
+  gender: string;
+  id?: string;
+};
 
 export type EventType = {
   id?: string;
@@ -23,6 +32,7 @@ export enum CalendarView {
 export enum AdminView {
   CALENDAR,
   CLASSES,
+  USERS,
 }
 
 export type Children = JSX.Element | JSX.Element[] | string;

@@ -30,9 +30,35 @@ export const UsersProvider = ({ children }) => {
       fireStore.doc(fireStoreInstance, 'users', newData.email),
       newData
     );
+  
+  const getAll = async () => {
+    const query = fireStore.query(
+      fireStore.collection(fireStoreInstance, 'users')
+    );
+    const querySnapshot = await fireStore.getDocs(query);
+    const results = [];
+    querySnapshot.forEach((doc) => {
+      results.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    setList(() => results);
+  };
+
+  const editById = (id, newData) => {
+    const userIndex = list.findIndex((user) => user.id === id);
+
+    if (userIndex === -1) throw new Error('User not in list');
+
+    const data = { ...list[userIndex], ...newData };
+    console.log('data', data);
+  };
 
   return (
-    <UsersContext.Provider value={{ list, add, getById, create }}>
+    <UsersContext.Provider
+      value={{ list, add, getById, create, getAll, editById }}
+    >
       {children}
     </UsersContext.Provider>
   );

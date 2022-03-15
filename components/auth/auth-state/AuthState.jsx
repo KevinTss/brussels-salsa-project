@@ -3,6 +3,7 @@ import Router from 'next/router';
 import { useAuth } from '../../../hooks';
 import { AuthStateContainer, InnerDropdown, MailContainer } from './style';
 import { Avatar, Dropdown, Button } from '../../ui';
+import { RoutePaths } from '../../../types';
 
 const AuthState = () => {
   const { currentUser, isLoading, logout } = useAuth();
@@ -20,6 +21,9 @@ const AuthState = () => {
             {currentUser.isAdmin && (
               <Button onClick={() => Router.push('/admin')}>Admin</Button>
             )}
+            <Button onClick={() => Router.push(RoutePaths.SETTINGS)}>
+              Settings
+            </Button>
             <Button onClick={logout}>Logout</Button>
           </InnerDropdown>
         }
