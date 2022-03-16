@@ -9,7 +9,7 @@ import {
   CallToActions,
 } from './style';
 import { useUsers, useAuth } from '../../../../../hooks';
-import { Button, Avatar, Tag } from '../../../../ui';
+import { Button, Avatar, Tag, triggerToast } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
@@ -36,6 +36,7 @@ const Event = ({
   const { getById } = useUsers();
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const eventDate = djs()
     .year(dayDate.year())
@@ -51,6 +52,8 @@ const Event = ({
   const joinHandle = async () => {
     if (isAdminMode || isEventPast || isUserInDancers || isUserInWaitingList)
       return;
+
+    setIsLoading(true);
 
     let newlyFetchedEvent;
     if (event) {
@@ -70,13 +73,24 @@ const Event = ({
       });
     }
 
+    /**
+     * Check if user has the level required
+     */
+    const userLevel = currentUser?.levels?.[classData.type.toLowerCase()] || 0;
+    if (userLevel < classData.level) {
+      triggerToast.error(
+        "Sorry, you don't have yet the level to join this class"
+      );
+      setIsLoading(false);
+
+      return;
+    }
+
     try {
       if (!newlyFetchedEvent) {
         const newEvent = getNewEvent(currentUser, classData, dayDate);
         await addEvent(newEvent);
         await fetchEvents();
-
-        return;
       } else {
         /**
          * Refetch the event just before update it so we make sure data are
@@ -125,7 +139,10 @@ const Event = ({
         await updateEvent(updatedEvent.id, updatedEvent);
         await fetchEvents();
       }
+
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.warn('error on join', error);
     }
   };
@@ -230,7 +247,11 @@ const Event = ({
           !isUserInDancers &&
           !isUserInWaitingList &&
           !isEventPast && (
-            <Button appearance='primary' onClick={joinHandle}>
+            <Button
+              appearance='primary'
+              onClick={joinHandle}
+              isLoading={isLoading}
+            >
               Join
             </Button>
           )}
