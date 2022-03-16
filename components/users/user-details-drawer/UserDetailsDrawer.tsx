@@ -17,7 +17,7 @@ export default function UserDetailsDrawer({
   onClose,
 }: UserDetailsDrawer) {
   const [user, setUser] = useState<User | null>(null);
-  const { getById, edit } = useUsers();
+  const { getById, edit, getAll } = useUsers();
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -46,6 +46,7 @@ export default function UserDetailsDrawer({
                 },
               });
               onClose();
+              getAll();
             }
           }}
         />

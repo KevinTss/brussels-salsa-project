@@ -1,8 +1,8 @@
 import type { ClasseLevelEnum } from './classes';
 
 type UserLevel = {
-  salsa: ClasseLevelEnum;
   bachata: ClasseLevelEnum;
+  salsa: ClasseLevelEnum;
 };
 
 export type User = {
@@ -23,9 +23,9 @@ export type NewUserData = {
 
 export type UsersContext = {
   add: (data: User) => void;
-  edit: (id: string, data: NewUserData) => void;
-  getById: (id: string) => User | null;
-  getAll: () => void;
   create: (data: NewUserData) => void;
+  edit: (id: string, data: NewUserData) => void;
+  getAll: () => void;
+  getById: (id: string) => User | null;
   list: User[];
 };

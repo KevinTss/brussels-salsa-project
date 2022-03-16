@@ -11,11 +11,11 @@ import type {
 const fireStoreInstance = fireStore.getFirestore();
 
 export const UsersContext = createContext<UsersContextType>({
-  edit: () => {},
   add: () => {},
-  getById: () => null,
-  getAll: () => {},
   create: () => {},
+  edit: () => {},
+  getAll: () => {},
+  getById: () => null,
   list: [],
 });
 
@@ -64,9 +64,6 @@ export const UsersProvider = ({ children }: { children: Children }) => {
 
     if (userIndex === -1) throw new Error('User not in list');
 
-    console.log('newdata', newData);
-    const data = { ...list[userIndex], ...newData };
-    console.log('data', data);
     await fireStore.updateDoc(
       fireStore.doc(fireStore.getFirestore(), 'users', id),
       newData
