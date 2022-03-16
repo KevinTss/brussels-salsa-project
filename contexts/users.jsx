@@ -46,13 +46,18 @@ export const UsersProvider = ({ children }) => {
     setList(() => results);
   };
 
-  const editById = (id, newData) => {
+  const editById = async (id, newData) => {
     const userIndex = list.findIndex((user) => user.id === id);
 
     if (userIndex === -1) throw new Error('User not in list');
 
+    console.log('newdata', newData);
     const data = { ...list[userIndex], ...newData };
     console.log('data', data);
+    return await fireStore.updateDoc(
+      fireStore.doc(fireStore.getFirestore(), 'users', id),
+      newData
+    );
   };
 
   return (

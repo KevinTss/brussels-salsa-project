@@ -5,7 +5,7 @@ import { Header } from './style';
 import { Title } from '../../../styles/GlobalStyle';
 import { useUsers } from '../../../hooks';
 import UserForm from '../user-form';
-import { ClasseTypeEnum, User } from '../../../types';
+import { ClasseLevelEnum, ClasseTypeEnum, User } from '../../../types';
 
 type UserDetailsDrawer = {
   userId: string;
@@ -32,12 +32,13 @@ export default function UserDetailsDrawer({
         <Title>{user?.fullName}</Title>
         <UserForm
           onSubmit={(values) => {
-            const access = user?.access || [];
-            const newSalsAccess = `${ClasseTypeEnum.SALSA}-${values.salsaLevel}`;
-            const newBachatAccess = `${ClasseTypeEnum.BACHATA}-${values.bachataLevel}`;
-            if (!access.includes(newSalsAccess)) access.push(newSalsAccess);
-            if (!access.includes(newBachatAccess)) access.push(newBachatAccess);
-            editById(user?.id, { classeAccess: access });
+            editById(user?.id, {
+              levels: {
+                salsa: values.salsaLevel,
+                bachata: values.bachataLevel,
+              },
+            });
+            onClose();
           }}
         />
       </Header>

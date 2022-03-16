@@ -6,8 +6,8 @@ export enum ClasseTypeEnum {
 }
 
 export enum ClasseLevelEnum {
-  BEGINNER = 'BEGINNER',
-  IMPROVER = 'IMPROVER',
+  BEGINNER,
+  IMPROVER,
 }
 
 export enum ClasseFrequencyEnum {

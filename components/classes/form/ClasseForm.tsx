@@ -11,11 +11,8 @@ import {
   NewClasseData,
   WeekDayEnum,
 } from '../../../types';
+import { levelOptions } from '../../../utils';
 
-const levelOptions = Object.values(ClasseLevelEnum).map((key) => ({
-  value: key,
-  label: key.toLowerCase(),
-}));
 const hourOptions = [...Array(24).keys()].map((i) => ({
   value: i.toString().padStart(2, '0'),
   label: i.toString().padStart(2, '0') + 'h',
@@ -75,7 +72,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
             max: values.maxSpots,
           },
           time: `${values.hour}:${values.min}`,
-          type: ClasseTypeEnum.SALSA,
+          type: values.type,
         };
         if (!!defaultValues) {
           await edit(defaultValues.id, objectToSend);
