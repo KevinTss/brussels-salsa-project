@@ -1,39 +1,31 @@
-import { WeekDayEnum } from './dates';
+import type { ClasseLevelEnum } from './classes';
 
-export enum ClasseTypeEnum {
-  BACHATA = 'BACHATA',
-  SALSA = 'SALSA',
-}
-
-export enum ClasseLevelEnum {
-  BEGINNER = 'BEGINNER',
-  IMPROVER = 'IMPROVER',
-}
-
-export enum ClasseFrequencyEnum {
-  WEEKLY = 'WEEKLY',
-}
+type UserLevel = {
+  salsa: ClasseLevelEnum;
+  bachata: ClasseLevelEnum;
+};
 
 export type User = {
-  access?: string[];
   email: string;
   fullName: string;
   gender: string;
   id?: string;
+  levels?: UserLevel;
 };
 
 export type NewUserData = {
-  access?: string[];
   email?: string;
   fullName?: string;
   gender?: string;
+  id?: string;
+  levels?: UserLevel;
 };
 
 export type UsersContext = {
-  add: (data: User) => Promise<void>;
-  edit: (id: string, data: NewUserData) => Promise<void>;
+  add: (data: User) => void;
+  edit: (id: string, data: NewUserData) => void;
   getById: (id: string) => User | null;
-  getAll: () => User[] | [];
-  create: (data: NewUserData) => Promise<void>;
+  getAll: () => void;
+  create: (data: NewUserData) => void;
   list: User[];
 };

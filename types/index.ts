@@ -1,16 +1,9 @@
 import { Dayjs } from 'dayjs';
 
-export * from './dates';
 export * from './classes';
+export * from './dates';
 export * from './routes';
-
-export type User = {
-  access?: string[];
-  email: string;
-  fullName: string;
-  gender: string;
-  id?: string;
-};
+export * from './users';
 
 export type EventType = {
   id?: string;

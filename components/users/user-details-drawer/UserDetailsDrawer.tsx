@@ -5,7 +5,7 @@ import { Header } from './style';
 import { Title } from '../../../styles/GlobalStyle';
 import { useUsers } from '../../../hooks';
 import UserForm from '../user-form';
-import { ClasseLevelEnum, ClasseTypeEnum, User } from '../../../types';
+import { User, ClasseLevelEnum } from '../../../types';
 
 type UserDetailsDrawer = {
   userId: string;
@@ -17,7 +17,7 @@ export default function UserDetailsDrawer({
   onClose,
 }: UserDetailsDrawer) {
   const [user, setUser] = useState<User | null>(null);
-  const { getById, editById } = useUsers();
+  const { getById, edit } = useUsers();
 
   useEffect(() => {
     if (userId !== user?.id) {
@@ -31,14 +31,22 @@ export default function UserDetailsDrawer({
       <Header>
         <Title>{user?.fullName}</Title>
         <UserForm
+          defaultValues={{
+            salsaLevel: (user?.levels?.salsa ||
+              ClasseLevelEnum.BEGINNER) as ClasseLevelEnum,
+            bachataLevel: (user?.levels?.bachata ||
+              ClasseLevelEnum.BEGINNER) as ClasseLevelEnum,
+          }}
           onSubmit={(values) => {
-            editById(user?.id, {
-              levels: {
-                salsa: values.salsaLevel,
-                bachata: values.bachataLevel,
-              },
-            });
-            onClose();
+            if (user?.id) {
+              edit(user.id, {
+                levels: {
+                  salsa: values.salsaLevel,
+                  bachata: values.bachataLevel,
+                },
+              });
+              onClose();
+            }
           }}
         />
       </Header>
