@@ -9,7 +9,7 @@ import {
   CallToActions,
 } from './style';
 import { useUsers, useAuth } from '../../../../../hooks';
-import { Button, Avatar, Tag, triggerToast } from '../../../../ui';
+import { Button, Avatar, Tag, triggerToast, ButtonGroup } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
@@ -20,6 +20,7 @@ import {
   getIsUserInDancers,
   getIsUserInWaitingList,
   getNewEvent,
+  getDateAndDayAfter,
 } from '../../../../../utils';
 import DetailsDrawer from './details-drawer';
 import AddDancerDrawer from './add-dancer-drawer';
@@ -61,13 +62,7 @@ const Event = ({
     if (event) {
       newlyFetchedEvent = await fetchEvent({ eventId: event.id });
     } else {
-      const dateFrom = new Date(
-        dayDate.year(),
-        dayDate.month(),
-        dayDate.date()
-      );
-      const nextDay = dayDate.add(1, 'day');
-      const dateTo = new Date(nextDay.year(), nextDay.month(), nextDay.date());
+      const [dateFrom, dateTo] = getDateAndDayAfter(dayDate);
       newlyFetchedEvent = await fetchEvent({
         classId: classData.id,
         dateFrom,
@@ -271,7 +266,7 @@ const Event = ({
           </Button>
         )}
         {isAdminMode && (
-          <>
+          <ButtonGroup isVertical>
             <Button
               appearance='default'
               onClick={() => setIsDetailsModalOpen(true)}
@@ -284,7 +279,7 @@ const Event = ({
             >
               Add dancer
             </Button>
-          </>
+          </ButtonGroup>
         )}
       </CallToActions>
       {isAdminMode && (
@@ -301,6 +296,8 @@ const Event = ({
             onClose={() => setIsAddDancerModalOpen(false)}
             event={event}
             classe={classData}
+            dayDate={dayDate}
+            refetchEvents={fetchEvents}
           />
         </>
       )}

@@ -1,19 +1,19 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { Container } from './style'
+import { Container } from './style';
 
-const ButtonGroupEl = ({ children, spaced }) => {
-  return <Container spaced={spaced}>{children}</Container>
-}
+const ButtonGroupEl = ({ children, isVertical }) => {
+  return <Container isVertical={isVertical}>{children}</Container>;
+};
 
 ButtonGroupEl.propTypes = {
   children: PropTypes.node.isRequired,
-  spaced: PropTypes.bool,
-}
+  isVertical: PropTypes.bool,
+};
 
 ButtonGroupEl.defaultPros = {
-  spaced: false,
-}
+  isVertical: false,
+};
 
-export default ButtonGroupEl
+export default ButtonGroupEl;

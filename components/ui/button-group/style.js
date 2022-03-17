@@ -1,11 +1,9 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  display: flex;
+  display: grid;
+  ${({ isVertical }) =>
+    isVertical ? `grid-template-rows: auto;` : `grid-template-columns: auto;`}
+  gap: 10px;
   width: 100%;
-  justify-content: ${({ spaced }) => (spaced ? 'space-between' : 'flex-start')};
-
-  > *:not(:last-child) {
-    margin-right: 10px;
-  }
 `;

@@ -27,24 +27,24 @@ export const getIsUserInWaitingList = (event, currentUser) =>
         ({ userId }) => userId === currentUser.id
       );
 
-export const getNewEvent = (currentUser, classData, dayDate) => ({
+export const getNewEvent = (user, classData, dayDate) => ({
   classId: classData.id,
   dancers: {
     males:
-      currentUser.gender === 'male'
+      user.gender === 'male'
         ? [
             {
               joinOn: new Date(),
-              userId: currentUser.id,
+              userId: user.id,
             },
           ]
         : [],
     females:
-      currentUser.gender === 'female'
+      user.gender === 'female'
         ? [
             {
               joinOn: new Date(),
-              userId: currentUser.id,
+              userId: user.id,
             },
           ]
         : [],

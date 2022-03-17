@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs';
 import { ClasseType, ClasseLevelEnum } from '../types';
 
 export * from './constants';
@@ -39,3 +40,21 @@ export const levelOptions = Object.entries(ClasseLevelEnum)
     value: value,
     label: label,
   }));
+
+/**
+ * Will return the current date (in JS Date object) and the next day
+ *
+ * @param {Dayjs} dayDate Day JS desired date
+ * @returns {Array} [Date, DateTomorrow]
+ */
+export const getDateAndDayAfter = (dayDate: Dayjs): [Date, Date] => {
+  const date = new Date(dayDate.year(), dayDate.month(), dayDate.date());
+  const nextDay = dayDate.add(1, 'day');
+  const dateTomorrow = new Date(
+    nextDay.year(),
+    nextDay.month(),
+    nextDay.date()
+  );
+
+  return [date, dateTomorrow];
+};

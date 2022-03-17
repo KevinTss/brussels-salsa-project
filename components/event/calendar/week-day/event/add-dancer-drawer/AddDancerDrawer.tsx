@@ -1,15 +1,27 @@
-import { Dialog, Button } from '../../../../../ui';
+import { Dayjs } from 'dayjs';
+
+import { Dialog, Button, triggerToast } from '../../../../../ui';
 import { SubTitle, Text } from '../../../../../../styles/GlobalStyle';
-import { getLevelDisplay } from '../../../../../../utils';
-import { useUsers } from '../../../../../../hooks';
+import {
+  getLevelDisplay,
+  getNewEvent,
+  getDateAndDayAfter,
+} from '../../../../../../utils';
+import { useEvents, useUsers } from '../../../../../../hooks';
 import { DancersContainer, FullNameContainer } from './style';
-import { EventType, ClasseType } from '../../../../../../types';
+import {
+  EventType,
+  ClasseType,
+  DancersListType,
+} from '../../../../../../types';
 
 type AddDancerDrawer = {
   isOpen: boolean;
   onClose: () => void;
   event: EventType;
   classe: ClasseType;
+  dayDate: Dayjs;
+  refetchEvents: () => void;
 };
 
 const AddDancerDrawer = ({
@@ -17,8 +29,15 @@ const AddDancerDrawer = ({
   onClose,
   event,
   classe,
+  dayDate,
+  refetchEvents,
 }: AddDancerDrawer) => {
   const { list } = useUsers();
+  const {
+    add: addEvent,
+    update: updateEvent,
+    fetchOne: fetchEvent,
+  } = useEvents();
 
   const eventUserList = {
     dancers: {
@@ -44,9 +63,9 @@ const AddDancerDrawer = ({
         classe.level
       )} on ${classe.day}`}</SubTitle>
       <DancersContainer>
-        {userList.map((m, i) => (
+        {userList.map((user, i) => (
           <FullNameContainer key={`m-${i}`}>
-            <Text>{m?.id}</Text>
+            <Text>{user?.id}</Text>
             <Button
               iconLeft={undefined}
               appearance={undefined}
@@ -54,6 +73,40 @@ const AddDancerDrawer = ({
               isDisabled={undefined}
               isLoading={undefined}
               isIconReverse={undefined}
+              onClick={async () => {
+                if (!event) {
+                  const newEvent = getNewEvent(user, classe, dayDate);
+                  await addEvent(newEvent);
+                  refetchEvents();
+                } else {
+                  const [dateFrom, dateTo] = getDateAndDayAfter(dayDate);
+                  const newlyFetchedEvent = await fetchEvent({
+                    classId: classe.id as string,
+                    dateFrom,
+                    dateTo,
+                  });
+                  if (!newlyFetchedEvent) {
+                    triggerToast.error(
+                      'Something went wrong on adding the user, the event was not found'
+                    );
+                    return;
+                  } else {
+                    console.log('newlyFetchedEvent', newlyFetchedEvent);
+                    // @ts-ignore: Unreachable code error
+                    newlyFetchedEvent.dancers[`${user.gender}s`].push({
+                      joinOn: new Date(),
+                      userId: user.id,
+                      by: 'admin',
+                    });
+                  }
+
+                  await updateEvent(
+                    newlyFetchedEvent.id as string,
+                    newlyFetchedEvent
+                  );
+                  await refetchEvents();
+                }
+              }}
             >
               {'Add'}
             </Button>

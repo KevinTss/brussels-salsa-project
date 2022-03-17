@@ -4,15 +4,15 @@ export type DancerJoinType = {
   joinOn: Date;
   userId: string;
 };
-type DancersListType = {
+export type DancersListType = {
   males?: DancerJoinType[];
   females?: DancerJoinType[];
 };
 
 export type NewEventData = {
   classId: string;
-  date?: string;
-  dancers?: DancersListType;
+  date: string;
+  dancers: DancersListType;
   waitingList?: DancersListType;
 };
 
@@ -28,7 +28,7 @@ export type EventFetchOneParams = {
   classId: string;
   dateFrom: Date;
   dateTo: Date;
-  eventId: string;
+  eventId?: string;
 };
 
 export type EventsContext = {
