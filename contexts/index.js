@@ -1,4 +1,4 @@
 export * from './auth';
-export * from './classes';
+export * from './classes/index';
 export * from './events';
-export * from './users';
+export * from './users/index';

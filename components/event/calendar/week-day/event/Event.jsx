@@ -22,6 +22,7 @@ import {
   getNewEvent,
 } from '../../../../../utils';
 import DetailsDrawer from './details-drawer';
+import AddDancerDrawer from './add-dancer-drawer';
 
 const Event = ({
   classData,
@@ -36,6 +37,7 @@ const Event = ({
   const { getById } = useUsers();
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isAddDancerModalOpen, setIsAddDancerModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const eventDate = djs()
@@ -269,22 +271,38 @@ const Event = ({
           </Button>
         )}
         {isAdminMode && (
-          <Button
-            appearance='default'
-            onClick={() => setIsDetailsModalOpen(true)}
-          >
-            See details
-          </Button>
+          <>
+            <Button
+              appearance='default'
+              onClick={() => setIsDetailsModalOpen(true)}
+            >
+              See details
+            </Button>
+            <Button
+              appearance='default'
+              onClick={() => setIsAddDancerModalOpen(true)}
+            >
+              Add dancer
+            </Button>
+          </>
         )}
       </CallToActions>
       {isAdminMode && (
-        <DetailsDrawer
-          dayDate={dayDate}
-          isOpen={isDetailsModalOpen}
-          onClose={() => setIsDetailsModalOpen(false)}
-          event={event}
-          classe={classData}
-        />
+        <>
+          <DetailsDrawer
+            dayDate={dayDate}
+            isOpen={isDetailsModalOpen}
+            onClose={() => setIsDetailsModalOpen(false)}
+            event={event}
+            classe={classData}
+          />
+          <AddDancerDrawer
+            isOpen={isAddDancerModalOpen}
+            onClose={() => setIsAddDancerModalOpen(false)}
+            event={event}
+            classe={classData}
+          />
+        </>
       )}
     </EventContainer>
   );

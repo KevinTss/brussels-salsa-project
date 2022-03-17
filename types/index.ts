@@ -5,14 +5,21 @@ export * from './dates';
 export * from './routes';
 export * from './users';
 
+type DancerJoinType = {
+  joinOn: Date;
+  userId: string;
+};
+type DancersListType = {
+  males?: DancerJoinType[];
+  females?: DancerJoinType[];
+};
+
 export type EventType = {
   id?: string;
   classId: string;
   date: string;
-  dancers: {
-    female: string[];
-    male: string[];
-  };
+  dancers?: DancersListType;
+  waitingList?: DancersListType;
 };
 
 export const DayjsType = Dayjs;
