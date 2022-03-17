@@ -1,29 +1,42 @@
 import { createContext } from 'react';
 
-import { fireStore } from '../utils/firebase/clientApp';
-import { useUsers } from '../hooks';
+import { fireStore } from '../../utils/firebase/clientApp';
+import { useUsers } from '../../hooks';
+import {
+  Children,
+  EventsContext as EventsContextType,
+  EventType,
+  NewEventData,
+  DancerJoinType,
+  EventFetchOneParams,
+  User,
+} from '../../types';
 
 const fireStoreInstance = fireStore.getFirestore();
 
-export const EventsContext = createContext(null);
+export const EventsContext = createContext<EventsContextType>({
+  update: (id, data) => new Promise(() => {}),
+  add: (data) => new Promise(() => {}),
+  fetchOne: (data) => new Promise(() => {}),
+  fetch: (dateFrom, dateTo) => new Promise(() => {}),
+});
 
-export const EventsProvider = ({ children }) => {
+export const EventsProvider = ({ children }: { children: Children }) => {
   const { list: usersList, getById: getUserById, add: addUser } = useUsers();
 
-  const add = async (data) => {
+  const add = async (data: NewEventData) =>
     await fireStore.addDoc(
       fireStore.collection(fireStoreInstance, 'events'),
       data
     );
-  };
 
-  const update = (id, newData) => {
+  const update = (id: string, newData: NewEventData) => {
     const documentRef = fireStore.doc(fireStoreInstance, 'events', id);
 
     return fireStore.updateDoc(documentRef, newData);
   };
 
-  const fetch = (dateFrom, dateTo) => {
+  const fetch = (dateFrom: Date, dateTo: Date): Promise<EventType[]> => {
     const eventQuery = fireStore.query(
       fireStore.collection(fireStoreInstance, 'events'),
       fireStore.where('date', '>=', dateFrom),
@@ -33,27 +46,27 @@ export const EventsProvider = ({ children }) => {
     // TODO handle error with reject
     return new Promise((resolve, _reject) => {
       fireStore.onSnapshot(eventQuery, (querySnapshot) => {
-        const results = [];
+        const results: EventType[] = [];
         querySnapshot.forEach((doc) => {
           results.push({
             id: doc.id,
             ...doc.data(),
-          });
+          } as EventType);
         });
 
         const userListIds = usersList.map((u) => u.id);
-        const dancers = results.reduce((acc, event) => {
-          let newUsers = [];
-          const extractUserIds = ({ userId }) => {
+        const dancers = results.reduce<string[]>((acc, event) => {
+          let newUsers: string[] = [];
+          const extractUserIds = ({ userId }: DancerJoinType) => {
             if (!userListIds.includes(userId) && !newUsers.includes(userId)) {
               newUsers.push(userId);
             }
           };
-          event.dancers.males.forEach(extractUserIds);
-          event.dancers.females.forEach(extractUserIds);
-          if (event.waitingList) {
-            event.waitingList.males.forEach(extractUserIds);
-            event.waitingList.females.forEach(extractUserIds);
+          event.dancers?.males?.forEach(extractUserIds);
+          event.dancers?.females?.forEach(extractUserIds);
+          if (event?.waitingList) {
+            event.waitingList.males?.forEach(extractUserIds);
+            event.waitingList.females?.forEach(extractUserIds);
           }
 
           return [...acc, ...newUsers];
@@ -70,7 +83,7 @@ export const EventsProvider = ({ children }) => {
               addUser({
                 id: doc.id,
                 ...doc.data(),
-              });
+              } as User);
             });
 
             resolve(results);
@@ -82,12 +95,19 @@ export const EventsProvider = ({ children }) => {
     });
   };
 
-  const fetchOne = async ({ classId, dateFrom, dateTo, eventId }) => {
+  const fetchOne = async ({
+    classId,
+    dateFrom,
+    dateTo,
+    eventId,
+  }: EventFetchOneParams): Promise<EventType | null> => {
     if (eventId) {
       const docRef = fireStore.doc(fireStoreInstance, 'events', eventId);
       const docSnap = await fireStore.getDoc(docRef);
 
-      return docSnap.exists() ? { id: eventId, ...docSnap.data() } : null;
+      return docSnap.exists()
+        ? ({ id: eventId, ...docSnap.data() } as EventType)
+        : null;
     } else if (classId && dateFrom && dateTo) {
       const eventQuery = fireStore.query(
         fireStore.collection(fireStoreInstance, 'events'),
@@ -96,18 +116,20 @@ export const EventsProvider = ({ children }) => {
         fireStore.where('date', '<', dateTo)
       );
       const querySnapshot = await fireStore.getDocs(eventQuery);
-      let event = null;
+      let event: EventType | null = null;
       querySnapshot.forEach((doc) => {
         if (!event) {
           event = {
             id: doc.id,
             ...doc.data(),
-          };
+          } as EventType;
         }
       });
 
       return event;
     }
+
+    return null;
   };
 
   return (
