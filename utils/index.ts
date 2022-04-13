@@ -6,12 +6,7 @@ export * from './dayjs';
 export * from './event';
 
 export const getLevelDisplay = (level: number) =>
-  Object.keys(ClasseLevel)
-    .slice(
-      Object.keys(ClasseLevel).length / 2,
-      Object.keys(ClasseLevel).length / 2 + 2
-    )
-    [level].toLowerCase();
+  ['Beginner', 'Improver'][level];
 
 export const capitalize = (string: string): string =>
   `${string.charAt(0).toUpperCase()}${string.slice(1).toLocaleLowerCase()}`;

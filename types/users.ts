@@ -1,7 +1,7 @@
 import type { ClasseLevel } from './classes';
 import type { DancerRole, Gender } from './common';
 
-type UserLevel = {
+export type UserLevel = {
   bachata: ClasseLevel;
   salsa: ClasseLevel;
 };

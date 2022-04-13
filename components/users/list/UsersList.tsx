@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import { useUsers } from '../../../hooks';
-import { Text } from '../../../styles/GlobalStyle';
-import { Button } from '../../ui';
 import UserDetailsDrawer from '../user-details-drawer';
+import UserCard from '../card/UserCard';
+import { UsersContainer } from './style';
 
 export default function UsersList() {
   const [selectedUser, setSelectedUser] = useState('');
@@ -15,17 +15,22 @@ export default function UsersList() {
   }, []);
 
   return (
-    <div>
+    <UsersContainer>
       {list.map((user) => (
-        <div key={user.id}>
-          <Text>{user.id}</Text>
-          <Button onClick={() => setSelectedUser(user.id)}>Details</Button>
-        </div>
+        <UserCard
+          key={user.id}
+          email={user.email}
+          fullName={user.fullName}
+          onClick={() => {
+            setSelectedUser(user.id);
+          }}
+          levels={user.levels}
+        />
       ))}
       <UserDetailsDrawer
         userId={selectedUser}
         onClose={() => setSelectedUser('')}
       />
-    </div>
+    </UsersContainer>
   );
 }
