@@ -1,15 +1,15 @@
 import { Dayjs } from 'dayjs';
-import { ClasseType, ClasseLevelEnum } from '../types';
+import { Classe, ClasseLevel, User } from '../types';
 
 export * from './constants';
 export * from './dayjs';
 export * from './event';
 
 export const getLevelDisplay = (level: number) =>
-  Object.keys(ClasseLevelEnum)
+  Object.keys(ClasseLevel)
     .slice(
-      Object.keys(ClasseLevelEnum).length / 2,
-      Object.keys(ClasseLevelEnum).length / 2 + 2
+      Object.keys(ClasseLevel).length / 2,
+      Object.keys(ClasseLevel).length / 2 + 2
     )
     [level].toLowerCase();
 
@@ -19,7 +19,7 @@ export const capitalize = (string: string): string =>
 export const getEventNameDisplay = (type: string, level: number): string =>
   `${capitalize(type)} (${getLevelDisplay(level)})`;
 
-export const getEventDisplayTitle = (classe: ClasseType, date: any) =>
+export const getEventDisplayTitle = (classe: Classe, date: Dayjs) =>
   capitalize(
     `${classe.level} ${classe.type} class on ${date.format('dddd D')}`
   );
@@ -31,10 +31,10 @@ export const getEventDisplayTitle = (classe: ClasseType, date: any) =>
  * BEGINNER: 0
  * IMPROVER: 1
  */
-export const levelOptions = Object.entries(ClasseLevelEnum)
+export const levelOptions = Object.entries(ClasseLevel)
   .slice(
-    Object.keys(ClasseLevelEnum).length / 2,
-    Object.keys(ClasseLevelEnum).length / 2 + 2
+    Object.keys(ClasseLevel).length / 2,
+    Object.keys(ClasseLevel).length / 2 + 2
   )
   .map(([label, value]) => ({
     value: value,
@@ -57,4 +57,17 @@ export const getDateAndDayAfter = (dayDate: Dayjs): [Date, Date] => {
   );
 
   return [date, dateTomorrow];
+};
+
+/**
+ * Check if user has the level required for the specified class
+ */
+export const hasUserClassLevelRequired = (
+  user: User,
+  classe: Classe
+): boolean => {
+  const classType = classe.type;
+  const userLevel = user.levels[classType] || 0;
+
+  return userLevel >= classe.level;
 };

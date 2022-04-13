@@ -10,7 +10,7 @@ import {
 import { useEvents, useUsers } from '../../../../../../hooks';
 import { DancersContainer, FullNameContainer } from './style';
 import {
-  EventType,
+  ClasseEvent,
   ClasseType,
   DancersListType,
 } from '../../../../../../types';
@@ -18,7 +18,7 @@ import {
 type AddDancerDrawer = {
   isOpen: boolean;
   onClose: () => void;
-  event: EventType;
+  event: ClasseEvent;
   classe: ClasseType;
   dayDate: Dayjs;
   refetchEvents: () => void;

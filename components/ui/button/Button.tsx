@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState, MouseEventHandler } from 'react';
 
 import { ButtonDefault, ButtonMinimal, ButtonPrimary } from './style';
 import Icon from '../icon';
+import { Children } from '../../../types';
+
+type ButtonAppearance = 'default' | 'minimal' | 'primary';
 
 const Buttons = {
   default: ButtonDefault,
@@ -10,18 +12,31 @@ const Buttons = {
   primary: ButtonPrimary,
 };
 
-const getButtonComponent = (appearance) => Buttons[appearance];
+const getButtonComponent = (appearance: ButtonAppearance) =>
+  Buttons[appearance];
+
+type Props = {
+  appearance?: ButtonAppearance;
+  children: Children;
+  iconLeft?: string;
+  iconRight?: string;
+  isDisabled?: boolean;
+  isLoading?: boolean;
+  isIconReverse?: boolean;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  type?: string;
+};
 
 const ButtonEl = ({
-  appearance,
+  appearance = 'default',
   children,
   iconLeft,
   iconRight,
-  isDisabled,
-  isLoading,
-  isIconReverse,
+  isDisabled = false,
+  isLoading = false,
+  isIconReverse = false,
   ...props
-}) => {
+}: Props) => {
   const [isHovering, setIsHovering] = useState(false);
   const Button = getButtonComponent(appearance);
   const iconColor = appearance === 'primary' ? 'white' : undefined;
@@ -51,18 +66,6 @@ const ButtonEl = ({
       )}
     </Button>
   );
-};
-
-ButtonEl.propTypes = {
-  appearance: PropTypes.oneOf(Object.keys(Buttons)),
-  isDisabled: PropTypes.bool,
-  isLoading: PropTypes.bool,
-};
-
-ButtonEl.defaultProps = {
-  appearance: 'default',
-  isDisabled: false,
-  isLoading: false,
 };
 
 export default ButtonEl;

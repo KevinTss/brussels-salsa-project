@@ -7,11 +7,9 @@ import { Main, AuthBox, LoginButton, OrSeparation, Form, Text } from './style';
 import { firebaseAuth, fireStore } from '../../utils/firebase/clientApp';
 import { useAuth, useUsers } from '../../hooks';
 import { Button, Field, triggerToast } from '../../components/ui';
+import { User } from '../../types';
 
 const googleProvider = new firebaseAuth.GoogleAuthProvider();
-googleProvider.setCustomParameters({
-  login_hint: 'keke@example.com',
-});
 const auth = firebaseAuth.getAuth();
 auth.languageCode = 'en';
 
@@ -30,7 +28,7 @@ const Auth = () => {
           const response = await loginWithEmail(values.email, values.password);
           console.log('response', response);
           Router.push('/');
-        } catch (error) {
+        } catch (error: any) {
           if (error.code === 'auth/wrong-password') {
             triggerToast.error('Password is not correct');
           } else if (error.code === 'auth/user-not-found') {
@@ -55,12 +53,11 @@ const Auth = () => {
             accessToken: response.user.accessToken,
             accounts: [{ type: 'local', id: response.user.uid }],
             avatarUrl: response.user.photoURL,
-            email: response.user.email,
             fullName: `${values.first} ${values.last}`,
             phone: response.user.phoneNumber,
           });
           Router.push('/');
-        } catch (error) {
+        } catch (error: any) {
           if (error.code === 'auth/email-already-in-use') {
             triggerToast.error('This email is already used, try to login');
           } else {
@@ -73,7 +70,7 @@ const Auth = () => {
 
   const onContinueWithGoogle = () => {
     setIsLoading(true);
-    let u;
+    let u: any;
 
     firebaseAuth
       .signInWithPopup(auth, googleProvider)
@@ -93,7 +90,7 @@ const Auth = () => {
           setCurrentUser({
             id: u.email,
             ...docSnap.data(),
-          });
+          } as User);
           setIsLoading(false);
           Router.push('/');
         } else {

@@ -15,6 +15,7 @@ type InputProps = {
   value?: any;
   options?: any;
   onChange?: (any: any) => void;
+  onBlur?: (any: any) => void;
 };
 
 export default forwardRef<JSX.Element, InputProps>(

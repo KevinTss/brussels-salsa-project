@@ -1,3 +1,5 @@
+import { AuthUser, ClasseType, NewEventData } from "../../types";
+
 export const getMalesDancerIds = (event) => event?.dancers?.males || [];
 
 export const getFemalesDancerIds = (event) => event?.dancers?.females || [];
@@ -27,7 +29,7 @@ export const getIsUserInWaitingList = (event, currentUser) =>
         ({ userId }) => userId === currentUser.id
       );
 
-export const getNewEvent = (user, classData, dayDate) => ({
+export const getNewEvent = (user:AuthUser, classData:ClasseType, dayDate:Date):NewEventData => ({
   classId: classData.id,
   dancers: {
     males:

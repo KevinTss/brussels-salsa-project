@@ -21,9 +21,28 @@ import {
   getIsUserInWaitingList,
   getNewEvent,
   getDateAndDayAfter,
+  hasUserClassLevelRequired,
 } from '../../../../../utils';
 import DetailsDrawer from './details-drawer';
 import AddDancerDrawer from './add-dancer-drawer';
+import {
+  User,
+  EventFetchOneParams,
+  ClasseEvent,
+  ClasseType,
+  NewEventData,
+} from '../../../../../types';
+
+type Props = {
+  classData: ClasseType;
+  event: ClasseEvent;
+  fetchEvents: () => void;
+  fetchEvent: (data: EventFetchOneParams) => ClasseEvent | null;
+  dayDate: any;
+  addEvent: (data: NewEventData) => void;
+  updateEvent: () => void;
+  isAdminMode: boolean;
+};
 
 const Event = ({
   classData,
@@ -34,7 +53,7 @@ const Event = ({
   addEvent,
   updateEvent,
   isAdminMode,
-}) => {
+}: Props) => {
   const { getById } = useUsers();
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -53,13 +72,19 @@ const Event = ({
   const waitingListLength = getTotalWaitingList(event);
 
   const joinHandle = async () => {
-    if (isAdminMode || isEventPast || isUserInDancers || isUserInWaitingList)
+    if (
+      isAdminMode ||
+      isEventPast ||
+      isUserInDancers ||
+      isUserInWaitingList ||
+      !currentUser
+    )
       return;
 
     setIsLoading(true);
 
     let newlyFetchedEvent;
-    if (event) {
+    if (event?.id) {
       newlyFetchedEvent = await fetchEvent({ eventId: event.id });
     } else {
       const [dateFrom, dateTo] = getDateAndDayAfter(dayDate);
@@ -70,11 +95,7 @@ const Event = ({
       });
     }
 
-    /**
-     * Check if user has the level required
-     */
-    const userLevel = currentUser?.levels?.[classData.type.toLowerCase()] || 0;
-    if (userLevel < classData.level) {
+    if (hasUserClassLevelRequired(currentUser, classData)) {
       triggerToast.error(
         "Sorry, you don't have yet the level to join this class"
       );
@@ -99,9 +120,9 @@ const Event = ({
           totalDancers < classData.spots.base &&
           totalDancers < (classData?.spots?.max || 999)
         ) {
-          updatedEvent.dancers[`${currentUser.gender}s`].push({
+          updatedEvent?.dancers?.[`${currentUser.gender}s`].push({
             joinOn: new Date(),
-            userId: currentUser.id,
+            userId: currentUser?.id || '',
           });
         } else if (
           totalDancers >= classData.spots.base &&
@@ -110,9 +131,9 @@ const Event = ({
         ) {
           // We need to check the balance
           const sameGenderAmount =
-            currentUser.gender === 'male' ? males.length : females.length;
+            currentUser?.gender === 'male' ? males.length : females.length;
           const oppositeGenderAmount =
-            currentUser.gender === 'male' ? females.length : males.length;
+            currentUser?.gender === 'male' ? females.length : males.length;
           let listToAddTheNewDancer;
           if (sameGenderAmount > oppositeGenderAmount) {
             listToAddTheNewDancer = `waitingList`;
@@ -217,6 +238,7 @@ const Event = ({
                   key={`m-${i}`}
                   firstName={user?.fullName?.split(' ')[0]}
                   lastName={user?.fullName?.split(' ')[1]}
+                  image={undefined}
                 />
               );
             })}
@@ -233,6 +255,7 @@ const Event = ({
                   key={`f-${i}`}
                   firstName={user?.fullName?.split(' ')[0]}
                   lastName={user?.fullName?.split(' ')[1]}
+                  image={undefined}
                 />
               );
             })}
@@ -248,6 +271,10 @@ const Event = ({
               appearance='primary'
               onClick={joinHandle}
               isLoading={isLoading}
+              iconLeft={undefined}
+              iconRight={undefined}
+              isDisabled={undefined}
+              isIconReverse={undefined}
             >
               Join
             </Button>
@@ -256,12 +283,27 @@ const Event = ({
           !isUserInDancers &&
           !isUserInWaitingList &&
           isEventPast && (
-            <Button appearance='minimal' isDisabled>
+            <Button
+              appearance='minimal'
+              isDisabled
+              iconLeft={undefined}
+              iconRight={undefined}
+              isLoading={undefined}
+              isIconReverse={undefined}
+            >
               Past
             </Button>
           )}
         {!isAdminMode && (isUserInDancers || isUserInWaitingList) && (
-          <Button appearance='minimal' onClick={cancelHandle}>
+          <Button
+            appearance='minimal'
+            onClick={cancelHandle}
+            iconLeft={undefined}
+            iconRight={undefined}
+            isDisabled={undefined}
+            isLoading={undefined}
+            isIconReverse={undefined}
+          >
             Cancel
           </Button>
         )}
@@ -270,12 +312,22 @@ const Event = ({
             <Button
               appearance='default'
               onClick={() => setIsDetailsModalOpen(true)}
+              iconLeft={undefined}
+              iconRight={undefined}
+              isDisabled={undefined}
+              isLoading={undefined}
+              isIconReverse={undefined}
             >
               See details
             </Button>
             <Button
               appearance='default'
               onClick={() => setIsAddDancerModalOpen(true)}
+              iconLeft={undefined}
+              iconRight={undefined}
+              isDisabled={undefined}
+              isLoading={undefined}
+              isIconReverse={undefined}
             >
               Add dancer
             </Button>
@@ -303,6 +355,6 @@ const Event = ({
       )}
     </EventContainer>
   );
-};;
+};
 
 export default Event;

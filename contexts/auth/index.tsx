@@ -1,13 +1,27 @@
 import Router from 'next/router';
 import { createContext, useState, useEffect } from 'react';
-import { firebaseAuth, fireStore } from '../utils/firebase/clientApp';
+import { firebaseAuth, fireStore } from '../../utils/firebase/clientApp';
+import {
+  AuthContext as AuthContextType,
+  Children,
+  AuthUser,
+  UpdateAuthUserData,
+} from '../../types';
 
 const fireStoreInstance = fireStore.getFirestore();
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext<AuthContextType>({
+  currentUser: null,
+  isLoading: false,
+  logout: () => undefined,
+  setCurrentUser: () => undefined,
+  signUpWithEmail: () => undefined,
+  update: () => undefined,
+  loginWithEmail: () => undefined,
+});
 
-export const AuthProvider = ({ user, children }) => {
-  const [currentUser, setCurrentUser] = useState(user);
+export const AuthProvider = ({ children }: { children: Children }) => {
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -19,14 +33,14 @@ export const AuthProvider = ({ user, children }) => {
           return;
         }
 
-        fetch(firebaseUser?.email).then(() => setIsLoading(false));
+        fetch(firebaseUser.email as string).then(() => setIsLoading(false));
 
         return unsubscribe;
       }
     );
   }, []);
 
-  const fetch = (id) => {
+  const fetch = (id: string) => {
     const docRef = fireStore.doc(fireStoreInstance, 'users', id);
 
     return fireStore.getDoc(docRef).then((docSnap) => {
@@ -34,7 +48,7 @@ export const AuthProvider = ({ user, children }) => {
         const user = {
           id,
           ...docSnap.data(),
-        };
+        } as AuthUser;
         setCurrentUser(user);
       }
     });
@@ -48,26 +62,30 @@ export const AuthProvider = ({ user, children }) => {
     });
   };
 
-  const update = async (newData) => {
-    const documentRef = fireStore.doc(
-      fireStoreInstance,
-      'users',
-      currentUser.id
-    );
+  const update = async (newData: UpdateAuthUserData) => {
+    if (currentUser) {
+      const documentRef = fireStore.doc(
+        fireStoreInstance,
+        'users',
+        currentUser.id as string
+      );
 
-    delete newData.id;
+      delete newData.id;
 
-    return fireStore.updateDoc(documentRef, newData);
+      return fireStore.updateDoc(documentRef, newData);
+    }
+
+    return;
   };
 
-  const signUpWithEmail = async (email, password) =>
+  const signUpWithEmail = async (email: string, password: string) =>
     await firebaseAuth.createUserWithEmailAndPassword(
       firebaseAuth.getAuth(),
       email,
       password
     );
 
-  const loginWithEmail = async (email, password) =>
+  const loginWithEmail = async (email: string, password: string) =>
     await firebaseAuth.signInWithEmailAndPassword(
       firebaseAuth.getAuth(),
       email,

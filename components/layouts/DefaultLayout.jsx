@@ -11,7 +11,7 @@ import GlobalStyle from '../../styles/GlobalStyle';
 const DefaultLayout = ({ children }) => (
   <ThemeProvider>
     <GlobalStyle />
-    <AuthProvider user={null}>
+    <AuthProvider>
       <UsersProvider>
         <EventsProvider>
           <ClassesProvider>

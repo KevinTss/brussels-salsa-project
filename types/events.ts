@@ -1,39 +1,41 @@
 import { DocumentReference } from 'firebase/firestore';
 
-export type DancerJoinType = {
+export type DancerJoin = {
   joinOn: Date;
   userId: string;
 };
-export type DancersListType = {
-  males?: DancerJoinType[];
-  females?: DancerJoinType[];
+export type DancersList = {
+  leaders?: DancerJoin[];
+  followers?: DancerJoin[];
 };
 
-export type NewEventData = {
+export type NewEvent = {
   classId: string;
   date: string;
-  dancers: DancersListType;
-  waitingList?: DancersListType;
+  dancers: DancersList;
 };
 
-export type EventType = {
-  id?: string;
+export type ClasseEvent = {
+  id: string;
   classId: string;
   date: string;
-  dancers: DancersListType;
-  waitingList?: DancersListType;
+  dancers: DancersList;
+  waitingList?: DancersList;
 };
 
-export type EventFetchOneParams = {
-  classId: string;
-  dateFrom: Date;
-  dateTo: Date;
-  eventId?: string;
-};
+export type ClasseEventFetchOneParams =
+  | {
+      eventId: string;
+    }
+  | {
+      classId: string;
+      dateFrom: Date;
+      dateTo: Date;
+    };
 
 export type EventsContext = {
-  fetch: (dateFrom: Date, dateTo: Date) => Promise<EventType[]>;
-  fetchOne: (data: EventFetchOneParams) => Promise<EventType | null>;
-  update: (id: string, data: NewEventData) => Promise<void>;
-  add: (data: NewEventData) => Promise<DocumentReference>;
+  fetch: (dateFrom: Date, dateTo: Date) => Promise<ClasseEvent[]>;
+  fetchOne: (data: ClasseEventFetchOneParams) => Promise<ClasseEvent | null>;
+  update: (id: string, data: ClasseEvent) => Promise<void>;
+  add: (data: ClasseEvent) => Promise<DocumentReference>;
 };

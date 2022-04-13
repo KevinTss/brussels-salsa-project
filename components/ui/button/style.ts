@@ -6,7 +6,12 @@ const spin = keyframes`
   100% { transform: rotate(360deg) }
 `;
 
-export const ButtonBase = styled.button`
+export const ButtonBase = styled.button<{
+  $hasMarginRight: boolean;
+  $isDisabled?: boolean;
+  $isLoading?: boolean;
+  $isIconReverse?: boolean;
+}>`
   font-size: 16px;
   font-family: ${({ theme }) => theme.fontFamily.default};
   line-height: 125%;
@@ -54,9 +59,8 @@ export const ButtonPrimary = styled(ButtonBase)`
       ${({ theme, $isDisabled }) =>
         $isDisabled ? theme.color.primary : `${theme.color.primary}aa`};
 
-    ${({ $isDisabled }) => {
-      if (!$isDisabled)
-        return `color: ${({ theme }) => theme.color.primary}55;`;
+    ${({ $isDisabled, theme }) => {
+      if (!$isDisabled) return `color: ${theme.color.primary}55;`;
     }}
   }
 `;

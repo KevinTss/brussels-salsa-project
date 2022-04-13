@@ -12,7 +12,11 @@ import WeekDay from './week-day';
 import CalendarCockpit from './cockpit';
 import { getDayClasses } from './utils';
 
-const EventsCalendar = ({ isAdminMode }) => {
+type Props = {
+  isAdminMode?: boolean;
+};
+
+const EventsCalendar = ({ isAdminMode = false }: Props) => {
   const [view] = useState(isAdminMode ? CALENDAR_VIEW.WEEK : CALENDAR_VIEW.DAY);
   const [currentDate, setCurrentDate] = useState(djs());
   const { list: classes } = useClasses();

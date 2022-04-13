@@ -5,7 +5,7 @@ import { Header } from './style';
 import { Title } from '../../../styles/GlobalStyle';
 import { useUsers } from '../../../hooks';
 import UserForm from '../user-form';
-import { User, ClasseLevelEnum } from '../../../types';
+import { User, ClasseLevel } from '../../../types';
 
 type UserDetailsDrawer = {
   userId: string;
@@ -33,9 +33,9 @@ export default function UserDetailsDrawer({
         <UserForm
           defaultValues={{
             salsaLevel: (user?.levels?.salsa ||
-              ClasseLevelEnum.BEGINNER) as ClasseLevelEnum,
+              ClasseLevel.BEGINNER) as ClasseLevel,
             bachataLevel: (user?.levels?.bachata ||
-              ClasseLevelEnum.BEGINNER) as ClasseLevelEnum,
+              ClasseLevel.BEGINNER) as ClasseLevel,
           }}
           onSubmit={(values) => {
             if (user?.id) {

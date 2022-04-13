@@ -1,30 +1,60 @@
-import type { ClasseLevelEnum } from './classes';
+import type { ClasseLevel } from './classes';
+import type { DancerRole, Gender } from './common';
 
 type UserLevel = {
-  bachata: ClasseLevelEnum;
-  salsa: ClasseLevelEnum;
+  bachata: ClasseLevel;
+  salsa: ClasseLevel;
+};
+
+type Account = {
+  id: string;
+  type: 'google' | 'local';
 };
 
 export type User = {
+  accessToken: string;
+  accounts: Account[];
+  avatarUrl: string | null;
+  danceRole: DancerRole;
   email: string;
   fullName: string;
-  gender: string;
-  id?: string;
-  levels?: UserLevel;
+  gender: Gender;
+  id: string;
+  isAdmin: boolean;
+  levels: UserLevel;
+  phone: string | null;
 };
 
-export type NewUserData = {
+export type NewUser = {
+  accessToken: string;
+  accounts: Account[];
+  avatarUrl: string | null;
+  dancerRole?: DancerRole;
+  email: string;
+  fullName: string;
+  gender?: string;
+  levels?: UserLevel;
+  phone: string | null;
+};
+
+export type UpdateUser = {
+  accessToken?: string;
+  accounts?: Account[];
+  avatarUrl?: string;
+  dancerRole?: DancerRole;
   email?: string;
   fullName?: string;
-  gender?: string;
+  gender?: Gender;
   id?: string;
+  isAdmin?: boolean;
   levels?: UserLevel;
+  phone?: string;
 };
 
 export type UsersContext = {
   add: (data: User) => void;
-  create: (data: NewUserData) => void;
-  edit: (id: string, data: NewUserData) => void;
+  create: (data: NewUser) => void;
+  edit: (id: string, data: UpdateUser) => void;
   getAll: () => void;
   getById: (id: string) => User | null;
   list: User[];

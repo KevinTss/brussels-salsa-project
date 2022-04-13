@@ -1,10 +1,10 @@
 import { Card } from './style';
-import { ClasseTypeEnum, WeekDayEnum } from '../../../../types';
+import { ClasseType, WeekDay } from '../../../../types';
 
 type ClassesRecurringCardProps = {
-  day: WeekDayEnum;
+  day: WeekDay;
   time: string;
-  type: ClasseTypeEnum;
+  type: ClasseType;
 };
 
 export default function ClassesRecurringCard({

@@ -2,12 +2,12 @@ import { useFormik } from 'formik';
 
 import { Input, Label, Button } from '../../ui';
 import { Form } from './style';
-import { ClasseLevelEnum } from '../../../types';
+import { ClasseLevel } from '../../../types';
 import { levelOptions } from '../../../utils';
 
 type FormData = {
-  salsaLevel: ClasseLevelEnum;
-  bachataLevel: ClasseLevelEnum;
+  salsaLevel: ClasseLevel;
+  bachataLevel: ClasseLevel;
 };
 
 type UserFormProps = {
@@ -18,8 +18,8 @@ type UserFormProps = {
 export default function UserForm({ defaultValues, onSubmit }: UserFormProps) {
   const { handleSubmit, values, setFieldValue } = useFormik<FormData>({
     initialValues: {
-      salsaLevel: defaultValues?.salsaLevel || ClasseLevelEnum.BEGINNER,
-      bachataLevel: defaultValues?.bachataLevel || ClasseLevelEnum.BEGINNER,
+      salsaLevel: defaultValues?.salsaLevel || ClasseLevel.BEGINNER,
+      bachataLevel: defaultValues?.bachataLevel || ClasseLevel.BEGINNER,
     },
     onSubmit(values, { resetForm }) {
       onSubmit(values);

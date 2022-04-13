@@ -1,43 +1,48 @@
-import { WeekDayEnum } from './dates';
+import { WeekDay } from './dates';
 
-export enum ClasseTypeEnum {
-  BACHATA = 'BACHATA',
-  SALSA = 'SALSA',
+export enum ClasseType {
+  BACHATA = 'bachata',
+  SALSA = 'salsa',
 }
 
-export enum ClasseLevelEnum {
+export enum ClasseLevel {
   BEGINNER,
   IMPROVER,
 }
 
-export enum ClasseFrequencyEnum {
-  WEEKLY = 'WEEKLY',
+export enum ClasseFrequency {
+  WEEKLY = 'weekly',
 }
 
-export type ClasseType = {
-  day: WeekDayEnum;
-  frequency: ClasseFrequencyEnum;
-  id?: string;
-  level: ClasseLevelEnum;
-  spots: { base: number; max?: number };
+type ClasseSpot = {
+  base: number;
+  max?: number;
+};
+
+export type Classe = {
+  day: WeekDay;
+  frequency: ClasseFrequency;
+  id: string;
+  level: ClasseLevel;
+  spots: ClasseSpot;
   time: string;
-  type: ClasseTypeEnum;
+  type: ClasseType;
 };
 
 export type ClassesContext = {
-  add: (data: NewClasseData) => Promise<void>;
+  add: (data: NewClasse) => Promise<void>;
   deleteById: (id: string) => Promise<void>;
-  edit: (id: string, data: NewClasseData) => Promise<void>;
-  getById: (id: string) => ClasseType | null;
-  list: ClasseType[];
+  edit: (id: string, data: NewClasse) => Promise<void>;
+  getById: (id: string) => Classe | null;
+  list: Classe[];
   loading: Boolean;
 };
 
-export type NewClasseData = {
-  day: WeekDayEnum;
-  frequency: ClasseFrequencyEnum;
-  level: ClasseLevelEnum;
+export type NewClasse = {
+  day: WeekDay;
+  frequency: ClasseFrequency;
+  level: ClasseLevel;
   spots: { base: number; max: number };
   time: string;
-  type: ClasseTypeEnum;
+  type: ClasseType;
 };

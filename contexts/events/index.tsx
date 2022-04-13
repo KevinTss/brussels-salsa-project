@@ -5,7 +5,7 @@ import { useUsers } from '../../hooks';
 import {
   Children,
   EventsContext as EventsContextType,
-  EventType,
+  ClasseEvent,
   NewEventData,
   DancerJoinType,
   EventFetchOneParams,
@@ -36,7 +36,7 @@ export const EventsProvider = ({ children }: { children: Children }) => {
     return fireStore.updateDoc(documentRef, newData);
   };
 
-  const fetch = (dateFrom: Date, dateTo: Date): Promise<EventType[]> => {
+  const fetch = (dateFrom: Date, dateTo: Date): Promise<ClasseEvent[]> => {
     const eventQuery = fireStore.query(
       fireStore.collection(fireStoreInstance, 'events'),
       fireStore.where('date', '>=', dateFrom),
@@ -46,12 +46,12 @@ export const EventsProvider = ({ children }: { children: Children }) => {
     // TODO handle error with reject
     return new Promise((resolve, _reject) => {
       fireStore.onSnapshot(eventQuery, (querySnapshot) => {
-        const results: EventType[] = [];
+        const results: ClasseEvent[] = [];
         querySnapshot.forEach((doc) => {
           results.push({
             id: doc.id,
             ...doc.data(),
-          } as EventType);
+          } as ClasseEvent);
         });
 
         const userListIds = usersList.map((u) => u.id);
@@ -100,13 +100,13 @@ export const EventsProvider = ({ children }: { children: Children }) => {
     dateFrom,
     dateTo,
     eventId,
-  }: EventFetchOneParams): Promise<EventType | null> => {
+  }: EventFetchOneParams): Promise<ClasseEvent | null> => {
     if (eventId) {
       const docRef = fireStore.doc(fireStoreInstance, 'events', eventId);
       const docSnap = await fireStore.getDoc(docRef);
 
       return docSnap.exists()
-        ? ({ id: eventId, ...docSnap.data() } as EventType)
+        ? ({ id: eventId, ...docSnap.data() } as ClasseEvent)
         : null;
     } else if (classId && dateFrom && dateTo) {
       const eventQuery = fireStore.query(
@@ -116,13 +116,13 @@ export const EventsProvider = ({ children }: { children: Children }) => {
         fireStore.where('date', '<', dateTo)
       );
       const querySnapshot = await fireStore.getDocs(eventQuery);
-      let event: EventType | null = null;
+      let event: ClasseEvent | null = null;
       querySnapshot.forEach((doc) => {
         if (!event) {
           event = {
             id: doc.id,
             ...doc.data(),
-          } as EventType;
+          } as ClasseEvent;
         }
       });
 

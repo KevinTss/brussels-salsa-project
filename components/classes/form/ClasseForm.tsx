@@ -5,11 +5,11 @@ import { Input, Label, Button, Field, FieldGroup } from '../../ui';
 import { Form } from './style';
 import { Text } from '../../../styles/GlobalStyle';
 import {
-  ClasseTypeEnum,
-  ClasseFrequencyEnum,
-  ClasseLevelEnum,
-  NewClasseData,
-  WeekDayEnum,
+  ClasseType,
+  ClasseFrequency,
+  ClasseLevel,
+  NewClasse,
+  WeekDay,
 } from '../../../types';
 import { levelOptions } from '../../../utils';
 
@@ -21,11 +21,11 @@ const minuteOptions = [
   { value: '30', label: '30' },
   { value: '00', label: '00' },
 ];
-const weekDayOptions = Object.values(WeekDayEnum).map((key) => ({
+const weekDayOptions = Object.values(WeekDay).map((key) => ({
   value: key,
   label: key.toLowerCase(),
 }));
-const typeOptions = Object.values(ClasseTypeEnum).map((key) => ({
+const typeOptions = Object.values(ClasseType).map((key) => ({
   value: key,
   label: key.toLowerCase(),
 }));
@@ -37,13 +37,13 @@ type ClassForm = {
 
 type FormData = {
   baseSpots: number;
-  frequency: ClasseFrequencyEnum;
+  frequency: ClasseFrequency;
   hour: string;
-  level: ClasseLevelEnum;
+  level: ClasseLevel;
   maxSpots: number;
   min: string;
-  type: ClasseTypeEnum;
-  weekDay: WeekDayEnum;
+  type: ClasseType;
+  weekDay: WeekDay;
 };
 
 export default function ClassForm({ onClose, defaultValues }: ClassForm) {
@@ -53,17 +53,17 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
       initialValues: {
         frequency: defaultValues
           ? defaultValues.frequency
-          : ClasseFrequencyEnum.WEEKLY,
+          : ClasseFrequency.WEEKLY,
         baseSpots: defaultValues ? defaultValues.spots.base : 10,
         maxSpots: defaultValues ? defaultValues.spots.max : 99,
         hour: defaultValues ? defaultValues.time.split(':')[0] : '19',
         min: defaultValues ? defaultValues.time.split(':')[1] : '30',
-        level: defaultValues ? defaultValues.level : ClasseLevelEnum.BEGINNER,
-        weekDay: defaultValues ? defaultValues.weekDay : WeekDayEnum.MONDAY,
-        type: defaultValues ? defaultValues.type : ClasseTypeEnum.SALSA,
+        level: defaultValues ? defaultValues.level : ClasseLevel.BEGINNER,
+        weekDay: defaultValues ? defaultValues.weekDay : WeekDay.MONDAY,
+        type: defaultValues ? defaultValues.type : ClasseType.SALSA,
       },
       onSubmit: async (values, { resetForm }) => {
-        const objectToSend: NewClasseData = {
+        const objectToSend: NewClasse = {
           day: values.weekDay,
           frequency: values.frequency,
           level: values.level,
@@ -92,7 +92,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         type='select'
         name='type'
         id='type'
-        onChange={(option: { value: ClasseTypeEnum }) => {
+        onChange={(option: { value: ClasseType }) => {
           setFieldValue('type', option.value);
         }}
         defaultValue={values.type}
@@ -105,13 +105,13 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         type='select'
         name='frequency'
         id='frequency'
-        onChange={(option: { value: ClasseFrequencyEnum }) => {
+        onChange={(option: { value: ClasseFrequency }) => {
           setFieldValue('frequency', option.value);
         }}
         defaultValue={values.frequency}
         value={{ value: 'weekly', label: 'Every week' }}
         isDisabled
-        options={[{ value: ClasseFrequencyEnum.WEEKLY, label: 'Every week' }]}
+        options={[{ value: ClasseFrequency.WEEKLY, label: 'Every week' }]}
       />
       <Label htmlFor='baseSpots'>Base spots</Label>
       <Text>
@@ -142,7 +142,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         type='select'
         name='level'
         id='level'
-        onChange={(option: { value: ClasseLevelEnum }) =>
+        onChange={(option: { value: ClasseLevel }) =>
           setFieldValue('level', option.value)
         }
         value={levelOptions.find(({ value }) => value === values.level)}
@@ -153,9 +153,9 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
           type='select'
           name='hour'
           id='hour'
-          onChange={(option: { value: string }) =>
-            setFieldValue('hour', option.value)
-          }
+          onChange={(option: { value: string }) => {
+            setFieldValue('hour', option.value);
+          }}
           options={hourOptions}
           value={
             hourOptions[
@@ -195,7 +195,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         type='select'
         name='weekDay'
         id='weekDay'
-        onChange={(option: { value: WeekDayEnum }) =>
+        onChange={(option: { value: WeekDay }) =>
           setFieldValue('weekDay', option.value)
         }
         options={weekDayOptions}

@@ -8,7 +8,7 @@ import Gender from '../../components/onboarding/gender';
 const Onboarding = () => {
   const { currentUser, isLoading } = useOnlyAuthGuard();
 
-  if (!isLoading && currentUser.gender) Router.push('/');
+  if (!isLoading && currentUser?.danceRole) Router.push('/');
 
   return (
     <Main>
