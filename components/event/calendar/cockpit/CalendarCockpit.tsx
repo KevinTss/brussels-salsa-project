@@ -5,9 +5,9 @@ import { djs } from '../../../../utils';
 
 type CalendarCockpitProps = {
   currentDate: any;
-  goToNextWeek: () => {};
-  goToPreviousWeek: () => {};
-  goToThisWeek: () => {};
+  goToNextWeek: () => void;
+  goToPreviousWeek: () => void;
+  goToThisWeek: () => void;
   isNextDisabled: boolean;
   isPreviousDisabled: boolean;
   monday: any;

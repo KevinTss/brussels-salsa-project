@@ -1,6 +1,7 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "react/display-name": 0
+    "react/display-name": 0,
+    "react/jsx-first-prop-new-line": "multiline-multiprop"
 }
 }

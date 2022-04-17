@@ -3,7 +3,6 @@ import { useState } from 'react';
 import {
   capitalize,
   djs,
-  CALENDAR_VIEW,
   getDisplayDayOfWeek,
 } from '../../../utils';
 import { useClasses } from '../../../hooks';
@@ -11,13 +10,14 @@ import { CalendarContainer, WeekContainer } from './style';
 import WeekDay from './week-day';
 import CalendarCockpit from './cockpit';
 import { getDayClasses } from './utils';
+import { CalendarView } from '../../../types';
 
 type Props = {
   isAdminMode?: boolean;
 };
 
 const EventsCalendar = ({ isAdminMode = false }: Props) => {
-  const [view] = useState(isAdminMode ? CALENDAR_VIEW.WEEK : CALENDAR_VIEW.DAY);
+  const [view] = useState<CalendarView>(isAdminMode ? CalendarView.WEEK : CalendarView.DAY);
   const [currentDate, setCurrentDate] = useState(djs());
   const { list: classes } = useClasses();
 
@@ -49,7 +49,7 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
 
   return (
     <CalendarContainer>
-      {view === CALENDAR_VIEW.WEEK && (
+      {view === CalendarView.WEEK && (
         <CalendarCockpit
           currentDate={currentDate}
           goToNextWeek={goToNextWeek}
@@ -58,11 +58,10 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
           // isNextDisabled={isMondayIn1Week}
           // isPreviousDisabled={isMondayInPast}
           monday={monday}
-          view={view}
-        />
+          view={view} isNextDisabled={false} isPreviousDisabled={false} />
       )}
 
-      {view === CALENDAR_VIEW.WEEK ? (
+      {view === CalendarView.WEEK ? (
         <WeekContainer>
           {djs.weekdays().map((weekDay, dayIndex) => {
             const dayClasses = getDayClasses(classes, weekDay);
@@ -86,8 +85,7 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
         <WeekDay
           classes={getDayClasses(classes, getDisplayDayOfWeek(currentDate))}
           dayName={capitalize(getDisplayDayOfWeek(currentDate))}
-          dayDate={currentDate}
-        />
+            dayDate={currentDate} isAdminMode={undefined} />
       )}
     </CalendarContainer>
   );

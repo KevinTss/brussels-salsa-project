@@ -17,7 +17,7 @@ const getButtonComponent = (appearance: ButtonAppearance) =>
 
 type Props = {
   appearance?: ButtonAppearance;
-  children: Children;
+  children?: Children;
   iconLeft?: string;
   iconRight?: string;
   isDisabled?: boolean;
