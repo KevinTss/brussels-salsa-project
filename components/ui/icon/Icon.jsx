@@ -1,7 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
 
-import { Icon } from './style'
+import { Icon } from './style';
 import {
   IconAngleRight,
   IconArrowLeft,
@@ -17,7 +16,7 @@ import {
   IconSearch,
   IconShipping,
   IconTrash,
-} from './icons'
+} from './icons';
 
 const icons = {
   'angle-right': <IconAngleRight />,
@@ -34,20 +33,12 @@ const icons = {
   search: <IconSearch />,
   shipping: <IconShipping />,
   trash: <IconTrash />,
-}
+};
 
-const IconEl = ({ name, ...props }) => <Icon {...props}>{icons[name]}</Icon>
-
-IconEl.propTypes = {
-  /**
-   * The icon name
-   */
-  name: PropTypes.oneOf(Object.keys(icons)).isRequired,
-  color: PropTypes.string,
-}
+const IconEl = ({ name, ...props }) => <Icon {...props}>{icons[name]}</Icon>;
 
 IconEl.defaultProps = {
   color: undefined,
-}
+};
 
-export default IconEl
+export default IconEl;

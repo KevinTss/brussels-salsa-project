@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useState } from 'react';
 
-import { Tooltip, LabelContent } from './style'
+import { Tooltip, LabelContent } from './style';
 
 const TooltipEl = ({ children, label, size }) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Tooltip
@@ -16,15 +15,11 @@ const TooltipEl = ({ children, label, size }) => {
       </LabelContent>
       {children}
     </Tooltip>
-  )
-}
-
-TooltipEl.propsTypes = {
-  size: PropTypes.oneOf(['default', 'l']),
-}
+  );
+};
 
 TooltipEl.defaultProps = {
   size: 'default',
-}
+};
 
-export default TooltipEl
+export default TooltipEl;

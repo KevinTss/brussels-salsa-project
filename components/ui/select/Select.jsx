@@ -1,7 +1,6 @@
-import Select from 'react-select'
-import PropTypes from 'prop-types'
+import Select from 'react-select';
 
-import { reactSelectStyles } from './style'
+import { reactSelectStyles } from './style';
 
 const SelectEl = ({
   options,
@@ -21,19 +20,12 @@ const SelectEl = ({
       value={value}
       {...props}
     />
-  )
-}
-
-SelectEl.propTypes = {
-  isLoading: PropTypes.bool,
-  isSearchable: PropTypes.bool,
-  options: PropTypes.array,
-  value: PropTypes.any,
-}
+  );
+};
 
 SelectEl.defaultProps = {
   isLoading: false,
   isSearchable: false,
-}
+};
 
-export default SelectEl
+export default SelectEl;

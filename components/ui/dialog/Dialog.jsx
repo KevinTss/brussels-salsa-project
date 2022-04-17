@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 
 import {
   Container,
@@ -59,11 +58,6 @@ const DialogEl = ({ type, children, isOpen, onClose }) => {
 
 DialogEl.defaultProps = {
   type: 'default',
-};
-
-DialogEl.propTypes = {
-  type: PropTypes.oneOf(Object.keys(dialogComponents)),
-  onClose: PropTypes.func,
 };
 
 export default DialogEl;
