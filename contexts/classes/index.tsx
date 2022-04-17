@@ -2,11 +2,12 @@ import { createContext, useState, useEffect } from 'react';
 
 import { fireStore } from '../../utils/firebase/clientApp';
 
-import type {
-  ClasseType,
+import {
+  Classe,
   Children,
   ClassesContext as ClassesContextType,
-  NewClasseData,
+  NewClasse,
+  WeekDay
 } from '../../types';
 
 export const ClassesContext = createContext<ClassesContextType>({
@@ -19,7 +20,7 @@ export const ClassesContext = createContext<ClassesContextType>({
 });
 
 export const ClassesProvider = ({ children }: { children: Children }) => {
-  const [list, setList] = useState<ClasseType[]>([]);
+  const [list, setList] = useState<Classe[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,12 +28,12 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
       fireStore.collection(fireStore.getFirestore(), 'classes')
     );
     const unsubscribe = fireStore.onSnapshot(query, (querySnapshot) => {
-      const classes: ClasseType[] = [];
+      const classes: Classe[] = [];
       querySnapshot.forEach((doc) => {
         classes.push({
           id: doc.id,
           ...doc.data(),
-        } as ClasseType);
+        } as Classe);
       });
       console.group();
       console.warn('Classes fetched');
@@ -45,7 +46,7 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
     return unsubscribe;
   }, []);
 
-  const add = async (data: NewClasseData) => {
+  const add = async (data: NewClasse) => {
     await fireStore.addDoc(
       fireStore.collection(fireStore.getFirestore(), 'classes'),
       data
@@ -64,16 +65,41 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
     );
   };
 
-  const edit = async (id: string, newData: NewClasseData) => {
+  const edit = async (id: string, newData: NewClasse) => {
     await fireStore.updateDoc(
       fireStore.doc(fireStore.getFirestore(), 'classes', id),
       { newData }
     );
   };
 
+
+  function getNumberDay(day: WeekDay) {
+    const index = Object.values(WeekDay).findIndex((val) => val === day)
+
+    return index >= 0 ? index : 0
+  }
+
+  const sortedListByDay = [...list].sort((a, b) => {
+    const dayA = getNumberDay(a.day)
+    const dayB = getNumberDay(b.day)
+
+    return dayA - dayB
+  })
+  // const sortedListByHour = [...sortedListByDay].sort((a, b) => {
+  //   if (a.time < b.time) {
+  //     return -1;
+  //   }
+  //   if (a.time > b.time) {
+  //     return 1;
+  //   }
+
+  //   // names must be equal
+  //   return 0;
+  // })
+
   return (
     <ClassesContext.Provider
-      value={{ list, add, loading, getById, deleteById, edit }}
+      value={{ list: sortedListByDay, add, loading, getById, deleteById, edit }}
     >
       {children}
     </ClassesContext.Provider>
