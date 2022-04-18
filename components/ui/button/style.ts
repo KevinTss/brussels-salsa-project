@@ -59,8 +59,8 @@ export const ButtonPrimary = styled(ButtonBase)`
       ${({ theme, $isDisabled }) =>
         $isDisabled ? theme.color.primary : `${theme.color.primary}aa`};
 
-    ${({ $isDisabled, theme }) => {
-      if (!$isDisabled) return `color: ${theme.color.primary}55;`;
+    ${({ $isDisabled }) => {
+      if (!$isDisabled) return `color: 00000055;`;
     }}
   }
 `;
