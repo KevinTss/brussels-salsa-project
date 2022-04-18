@@ -20,8 +20,8 @@ export const getTotalDancers = (event: ClasseEvent): number => {
 };
 
 export const getTotalWaitingList = (event: ClasseEvent): number =>
-  (event.waitingList?.leaders?.length || 0) +
-  (event.waitingList?.followers?.length || 0);
+  (event?.waitingList?.leaders?.length || 0) +
+  (event?.waitingList?.followers?.length || 0);
 
 export const isUserInDancers = (
   event: ClasseEvent,
