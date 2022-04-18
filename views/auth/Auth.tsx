@@ -23,10 +23,8 @@ const Auth = () => {
     useFormik({
       initialValues: { email: '', password: '' },
       onSubmit: async (values) => {
-        console.log(values);
         try {
           const response = await loginWithEmail(values.email, values.password);
-          console.log('response', response);
           Router.push('/');
         } catch (error: any) {
           if (error.code === 'auth/wrong-password') {
@@ -44,10 +42,8 @@ const Auth = () => {
     useFormik({
       initialValues: { first: '', last: '', email: '', password: '' },
       onSubmit: async (values) => {
-        console.log(values);
         try {
           const response = await signUpWithEmail(values.email, values.password);
-          console.log('res', response);
           createUser({
             email: response.user.email,
             accessToken: response.user.accessToken,

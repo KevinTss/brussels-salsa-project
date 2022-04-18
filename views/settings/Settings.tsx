@@ -9,7 +9,7 @@ import { Button } from '../../components/ui';
 export default function Settings() {
   const { currentUser, isLoading } = useOnlyAuthGuard();
 
-  if (!isLoading && currentUser && !currentUser.danceRole)
+  if (!isLoading && currentUser && !currentUser.dancerRole)
     Router.push(RoutePaths.ONBOARDING);
 
   return (

@@ -23,21 +23,15 @@ export const getTotalWaitingList = (event: ClasseEvent): number =>
   (event?.waitingList?.leaders?.length || 0) +
   (event?.waitingList?.followers?.length || 0);
 
-export const isUserInDancers = (
-  event: ClasseEvent,
-  currentUser: User
-): boolean =>
-  currentUser.danceRole === 'leader'
+export const isUserInDancers = (event: ClasseEvent, currentUser: User): boolean =>
+  currentUser.dancerRole === 'leader'
     ? !!event?.dancers?.leaders?.find(({ userId }) => userId === currentUser.id)
     : !!event?.dancers?.followers?.find(
         ({ userId }) => userId === currentUser.id
       );
 
-export const isUserInWaitingList = (
-  event: ClasseEvent,
-  currentUser: User
-): boolean =>
-  currentUser?.danceRole === 'leader'
+export const isUserInWaitingList = (event: ClasseEvent, currentUser: User): boolean =>
+  currentUser?.dancerRole === 'leader'
     ? !!event?.waitingList?.leaders?.find(
         ({ userId }) => userId === currentUser.id
       )
@@ -53,7 +47,7 @@ export const getNewEvent = (
   classId: classData.id,
   dancers: {
     leaders:
-      user.danceRole === 'leader'
+      user.dancerRole === 'leader'
         ? [
             {
               joinOn: new Date(),
@@ -62,7 +56,7 @@ export const getNewEvent = (
           ]
         : [],
     followers:
-      user.danceRole === 'follower'
+      user.dancerRole === 'follower'
         ? [
             {
               joinOn: new Date(),

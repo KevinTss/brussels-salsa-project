@@ -4,8 +4,8 @@ import { firebaseAuth, fireStore } from '../../utils/firebase/clientApp';
 import {
   AuthContext as AuthContextType,
   Children,
-  AuthUser,
-  UpdateAuthUserData,
+  User,
+  UpdateUser,
 } from '../../types';
 
 const fireStoreInstance = fireStore.getFirestore();
@@ -16,12 +16,12 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => undefined,
   setCurrentUser: () => undefined,
   signUpWithEmail: () => undefined,
-  update: () => undefined,
+  update: () => new Promise(() => { }),
   loginWithEmail: () => undefined,
 });
 
 export const AuthProvider = ({ children }: { children: Children }) => {
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: Children }) => {
         const user = {
           id,
           ...docSnap.data(),
-        } as AuthUser;
+        } as User;
         setCurrentUser(user);
       }
     });
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: Children }) => {
     });
   };
 
-  const update = async (newData: UpdateAuthUserData) => {
+  const update = async (newData: UpdateUser): Promise<void> => {
     if (currentUser) {
       const documentRef = fireStore.doc(
         fireStoreInstance,

@@ -91,7 +91,6 @@ const AddDancerDrawer = ({
                     );
                     return;
                   } else {
-                    console.log('newlyFetchedEvent', newlyFetchedEvent);
                     // @ts-ignore: Unreachable code error
                     newlyFetchedEvent.dancers[`${user.gender}s`].push({
                       joinOn: new Date(),

@@ -122,7 +122,7 @@ const Event = ({
           totalDancers < classData.spots.base &&
           totalDancers < (classData?.spots?.max || 999)
         ) {
-          updatedEvent?.dancers?.[currentUser?.danceRole === 'leader' ? 'leaders' : 'followers']?.push({
+          updatedEvent?.dancers?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
             joinOn: new Date(),
             userId: currentUser?.id || '',
           });
@@ -133,16 +133,16 @@ const Event = ({
         ) {
           // We need to check the balance
           const sameRoleAmount =
-            currentUser?.danceRole === 'leader' ? updatedEvent?.dancers?.leaders?.length || 0 : updatedEvent?.dancers?.followers?.length || 0;
+            currentUser?.dancerRole === 'leader' ? updatedEvent?.dancers?.leaders?.length || 0 : updatedEvent?.dancers?.followers?.length || 0;
           const oppositeRoleAmount =
-            currentUser?.danceRole === 'leader' ? updatedEvent?.dancers?.followers?.length || 0 : updatedEvent?.dancers?.leaders?.length || 0;
+            currentUser?.dancerRole === 'leader' ? updatedEvent?.dancers?.followers?.length || 0 : updatedEvent?.dancers?.leaders?.length || 0;
           let listToAddTheNewDancer: 'waitingList' | 'dancers';
           if (sameRoleAmount > oppositeRoleAmount) {
             listToAddTheNewDancer = `waitingList`;
           } else {
             listToAddTheNewDancer = `dancers`;
           }
-          updatedEvent?.[listToAddTheNewDancer]?.[currentUser?.danceRole === 'leader' ? 'leaders' : 'followers']?.push({
+          updatedEvent?.[listToAddTheNewDancer]?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
             joinOn: new Date(),
             userId: currentUser.id,
           });
@@ -151,7 +151,7 @@ const Event = ({
           totalDancers >= classData.spots.max
         ) {
           // Add the user to the waiting list
-          updatedEvent?.waitingList?.[currentUser?.danceRole === 'leader' ? 'leaders' : 'followers']?.push({
+          updatedEvent?.waitingList?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
             joinOn: new Date(),
             userId: currentUser.id,
           });
@@ -185,7 +185,7 @@ const Event = ({
       newlyFetchedEvent as ClasseEvent,
       currentUser as User
     );
-    const currentUserRoleKey = currentUser?.danceRole === 'leader' ? 'leaders' : 'followers';
+    const currentUserRoleKey = currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers';
     const updatedEvent = newlyFetchedEvent;
     const listKey = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
     const userIdIndex = updatedEvent?.[listKey]?.[currentUserRoleKey]?.findIndex(
@@ -225,7 +225,7 @@ const Event = ({
         {isUserInWaitingList && <Tag>On waiting list</Tag>}
         <div>{classData.time}</div>
       </EventPrimariesInfo>
-      {!isAdminMode && <DancersContainer>
+      {isAdminMode && <DancersContainer>
         <h4>
           Dancers
           {!!waitingListLength && (
