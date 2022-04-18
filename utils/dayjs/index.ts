@@ -1,8 +1,10 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import localeData from 'dayjs/plugin/localeData';
 import isToday from 'dayjs/plugin/isToday';
+
+import { WeekDay } from '../../types';
 
 dayjs.extend(localeData);
 dayjs.extend(updateLocale);
@@ -14,5 +16,5 @@ dayjs.extend(isToday);
 
 export const djs = dayjs;
 
-export const getDisplayDayOfWeek = (date: any): string =>
-  djs.weekdays()[(date || djs()).day()];
+export const getDisplayDayOfWeek = (date: Dayjs): WeekDay =>
+  djs.weekdays()[(date || djs()).day()] as WeekDay;

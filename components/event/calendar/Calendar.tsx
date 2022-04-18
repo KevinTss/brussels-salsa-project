@@ -10,7 +10,7 @@ import { CalendarContainer, WeekContainer } from './style';
 import WeekDay from './week-day';
 import CalendarCockpit from './cockpit';
 import { getDayClasses } from './utils';
-import { CalendarView } from '../../../types';
+import { CalendarView, WeekDay as WeekDayType } from '../../../types';
 
 type Props = {
   isAdminMode?: boolean;
@@ -63,7 +63,7 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
 
       {view === CalendarView.WEEK ? (
         <WeekContainer>
-          {djs.weekdays().map((weekDay, dayIndex) => {
+          {Object.values(WeekDayType).map((weekDay, dayIndex) => {
             const dayClasses = getDayClasses(classes, weekDay);
 
             if (!dayClasses.length) return null;

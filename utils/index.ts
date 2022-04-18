@@ -66,3 +66,10 @@ export const hasUserClassLevelRequired = (
 
   return userLevel >= classe.level;
 };
+
+export const normalize = (str: string): string =>
+  str
+    .trim()
+    .toLowerCase()
+    .normalize()
+    .replace(/[\u0300-\u036f]/g, '');
