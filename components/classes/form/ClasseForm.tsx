@@ -48,6 +48,7 @@ type FormData = {
 
 export default function ClassForm({ onClose, defaultValues }: ClassForm) {
   const { add, edit } = useClasses();
+  console.log('defaultValues', defaultValues)
   const { handleSubmit, handleChange, values, setFieldValue } =
     useFormik<FormData>({
       initialValues: {
@@ -59,7 +60,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         hour: defaultValues ? defaultValues.time.split(':')[0] : '19',
         min: defaultValues ? defaultValues.time.split(':')[1] : '30',
         level: defaultValues ? defaultValues.level : ClasseLevel.BEGINNER,
-        weekDay: defaultValues ? defaultValues.weekDay : WeekDay.MONDAY,
+        weekDay: defaultValues ? defaultValues.day : WeekDay.MONDAY,
         type: defaultValues ? defaultValues.type : ClasseType.SALSA,
       },
       onSubmit: async (values, { resetForm }) => {
@@ -74,6 +75,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
           time: `${values.hour}:${values.min}`,
           type: values.type,
         };
+        // console.log('objectToSend', objectToSend, values)
         if (!!defaultValues) {
           await edit(defaultValues.id, objectToSend);
         } else {
@@ -162,12 +164,6 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
               hourOptions.findIndex(({ value }) => value === values.hour)
             ]
           }
-          label={undefined}
-          onBlur={undefined}
-          error={undefined}
-          touched={undefined}
-          isRequired={undefined}
-          description={undefined}
         />
         <Field
           type='select'
@@ -182,12 +178,6 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
               minuteOptions.findIndex(({ value }) => value === values.min)
             ]
           }
-          label={undefined}
-          description={undefined}
-          onBlur={undefined}
-          error={undefined}
-          touched={undefined}
-          isRequired={undefined}
         />
       </FieldGroup>
       <Field
@@ -200,20 +190,11 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
         }
         options={weekDayOptions}
         value={weekDayOptions.find(({ value }) => value === values.weekDay)}
-        onBlur={undefined}
-        error={undefined}
-        touched={undefined}
         description={`The class will occur every ${values?.weekDay?.toLowerCase()}`}
-        isRequired={undefined}
       />
       <Button
         type='submit'
         appearance='primary'
-        iconLeft={undefined}
-        iconRight={undefined}
-        isDisabled={undefined}
-        isLoading={undefined}
-        isIconReverse={undefined}
       >
         Submit
       </Button>

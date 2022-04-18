@@ -65,12 +65,10 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
     );
   };
 
-  const edit = async (id: string, newData: NewClasse) => {
-    await fireStore.updateDoc(
+  const edit = async (id: string, newData: NewClasse) => fireStore.updateDoc(
       fireStore.doc(fireStore.getFirestore(), 'classes', id),
-      { newData }
-    );
-  };
+    newData
+  );
 
 
   function getNumberDay(day: WeekDay) {

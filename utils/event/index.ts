@@ -1,5 +1,11 @@
 import { Dayjs } from 'dayjs';
-import { User, Classe, NewClasseEvent, ClasseEvent } from '../../types';
+import {
+  User,
+  Classe,
+  NewClasseEvent,
+  ClasseEvent,
+  ClasseLevel,
+} from '../../types';
 
 export const getLeaderDancerIds = (event: ClasseEvent): string[] =>
   event?.dancers?.leaders?.map(({ userId }) => userId) || [];
@@ -23,14 +29,20 @@ export const getTotalWaitingList = (event: ClasseEvent): number =>
   (event?.waitingList?.leaders?.length || 0) +
   (event?.waitingList?.followers?.length || 0);
 
-export const isUserInDancers = (event: ClasseEvent, currentUser: User): boolean =>
+export const isUserInDancers = (
+  event: ClasseEvent,
+  currentUser: User
+): boolean =>
   currentUser.dancerRole === 'leader'
     ? !!event?.dancers?.leaders?.find(({ userId }) => userId === currentUser.id)
     : !!event?.dancers?.followers?.find(
         ({ userId }) => userId === currentUser.id
       );
 
-export const isUserInWaitingList = (event: ClasseEvent, currentUser: User): boolean =>
+export const isUserInWaitingList = (
+  event: ClasseEvent,
+  currentUser: User
+): boolean =>
   currentUser?.dancerRole === 'leader'
     ? !!event?.waitingList?.leaders?.find(
         ({ userId }) => userId === currentUser.id
@@ -71,3 +83,6 @@ export const getNewEvent = (
   },
   date: dayDate.hour(0).minute(0).second(0).toDate(),
 });
+
+export const getDisplayClasseLevel = (level: ClasseLevel): string =>
+  ['Beginner', 'Improver'][level];

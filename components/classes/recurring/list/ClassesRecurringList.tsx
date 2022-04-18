@@ -30,10 +30,10 @@ export default function ClassesRecurringList({
         </TR>
       </THead>
       <TBody>
-        {list.map(({ id, day, time, type }) => (
+        {list.map(({ id, day, time, type, level }) => (
           <TR key={id}>
             <TD>
-              <ClassesRecurringCard day={day} type={type} time={time} />
+              <ClassesRecurringCard day={day} type={type} time={time} level={level} />
             </TD>
             <TD>
               <ActionContainer>
@@ -42,23 +42,12 @@ export default function ClassesRecurringList({
                     <MenuContainer>
                       <Button
                         onClick={() => onEdit(id as string)}
-                        appearance={undefined}
-                        iconLeft={undefined}
-                        iconRight={undefined}
-                        isDisabled={undefined}
-                        isLoading={undefined}
-                        isIconReverse={undefined}
                       >
                         Edit
                       </Button>
                       <Button
                         onClick={() => deleteById(id as string)}
-                        appearance={undefined}
                         iconLeft='trash'
-                        iconRight={undefined}
-                        isDisabled={undefined}
-                        isLoading={undefined}
-                        isIconReverse={undefined}
                       >
                         Delete
                       </Button>
@@ -67,13 +56,6 @@ export default function ClassesRecurringList({
                 >
                   <Button
                     iconLeft='menu'
-                    appearance={undefined}
-                    // eslint-disable-next-line react/no-children-prop
-                    children={undefined}
-                    iconRight={undefined}
-                    isDisabled={undefined}
-                    isLoading={undefined}
-                    isIconReverse={undefined}
                   />
                 </Dropdown>
               </ActionContainer>
