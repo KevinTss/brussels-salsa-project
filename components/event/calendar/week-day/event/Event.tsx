@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Dayjs } from 'dayjs';
 
 import {
   EventContainer,
@@ -13,12 +14,12 @@ import { Button, Avatar, Tag, triggerToast, ButtonGroup } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
-  getMalesDancerIds,
-  getFemalesDancerIds,
+  getLeaderDancerIds,
+  getFollowerDancerIds,
   getTotalDancers,
   getTotalWaitingList,
-  getIsUserInDancers,
-  getIsUserInWaitingList,
+  isUserInDancers as isUserInDancersFunc,
+  isUserInWaitingList as isUserInWaitingListFunc,
   getNewEvent,
   getDateAndDayAfter,
   hasUserClassLevelRequired,
@@ -27,20 +28,21 @@ import DetailsDrawer from './details-drawer';
 import AddDancerDrawer from './add-dancer-drawer';
 import {
   User,
-  EventFetchOneParams,
+  ClasseEventFetchOneParams,
   ClasseEvent,
-  ClasseType,
-  NewEventData,
+  Classe,
+  UpdateClasseEvent,
+  NewClasseEvent,
 } from '../../../../../types';
 
 type Props = {
-  classData: ClasseType;
+  classData: Classe;
   event: ClasseEvent;
-  fetchEvents: () => void;
-  fetchEvent: (data: EventFetchOneParams) => ClasseEvent | null;
-  dayDate: any;
-  addEvent: (data: NewEventData) => void;
-  updateEvent: () => void;
+  fetchEvents: () => ClasseEvent[];
+  fetchEvent: (data: ClasseEventFetchOneParams) => ClasseEvent | null;
+  dayDate: Dayjs;
+  addEvent: (data: NewClasseEvent) => void;
+  updateEvent: (id: string, data: UpdateClasseEvent) => void;
   isAdminMode: boolean;
 };
 
@@ -67,8 +69,8 @@ const Event = ({
     .hour(Number(classData.time.split(':')[0]))
     .minute(Number(classData.time.split(':')[1]));
   const isEventPast = eventDate.isBefore(djs());
-  const isUserInDancers = getIsUserInDancers(event, currentUser);
-  const isUserInWaitingList = getIsUserInWaitingList(event, currentUser);
+  const isUserInDancers = isUserInDancersFunc(event, currentUser as User);
+  const isUserInWaitingList = isUserInWaitingListFunc(event, currentUser as User);
   const waitingListLength = getTotalWaitingList(event);
 
   const joinHandle = async () => {
@@ -120,7 +122,7 @@ const Event = ({
           totalDancers < classData.spots.base &&
           totalDancers < (classData?.spots?.max || 999)
         ) {
-          updatedEvent?.dancers?.[`${currentUser.gender}s`].push({
+          updatedEvent?.dancers?.[currentUser?.danceRole === 'leader' ? 'leaders' : 'followers']?.push({
             joinOn: new Date(),
             userId: currentUser?.id || '',
           });
@@ -130,17 +132,17 @@ const Event = ({
           totalDancers < classData.spots.max
         ) {
           // We need to check the balance
-          const sameGenderAmount =
-            currentUser?.gender === 'male' ? males.length : females.length;
-          const oppositeGenderAmount =
-            currentUser?.gender === 'male' ? females.length : males.length;
-          let listToAddTheNewDancer;
-          if (sameGenderAmount > oppositeGenderAmount) {
+          const sameRoleAmount =
+            currentUser?.danceRole === 'leader' ? updatedEvent?.dancers?.leaders?.length || 0 : updatedEvent?.dancers?.followers?.length || 0;
+          const oppositeRoleAmount =
+            currentUser?.danceRole === 'leader' ? updatedEvent?.dancers?.followers?.length || 0 : updatedEvent?.dancers?.leaders?.length || 0;
+          let listToAddTheNewDancer: 'waitingList' | 'dancers';
+          if (sameRoleAmount > oppositeRoleAmount) {
             listToAddTheNewDancer = `waitingList`;
           } else {
             listToAddTheNewDancer = `dancers`;
           }
-          updatedEvent[listToAddTheNewDancer][`${currentUser.gender}s`].push({
+          updatedEvent?.[listToAddTheNewDancer]?.[currentUser?.danceRole === 'leader' ? 'leaders' : 'followers']?.push({
             joinOn: new Date(),
             userId: currentUser.id,
           });
@@ -149,7 +151,7 @@ const Event = ({
           totalDancers >= classData.spots.max
         ) {
           // Add the user to the waiting list
-          updatedEvent.waitingList[`${currentUser.gender}s`].push({
+          updatedEvent?.waitingList?.[currentUser?.danceRole === 'leader' ? 'leaders' : 'followers']?.push({
             joinOn: new Date(),
             userId: currentUser.id,
           });
@@ -175,40 +177,43 @@ const Event = ({
       return;
 
     const newlyFetchedEvent = await fetchEvent({ eventId: event.id });
-    const isUserInDancersNewly = getIsUserInDancers(
-      newlyFetchedEvent,
-      currentUser
+    const isUserInDancersNewly = isUserInDancersFunc(
+      newlyFetchedEvent as ClasseEvent,
+      currentUser as User
     );
-    const isUserInWaitingListNewly = getIsUserInWaitingList(
-      newlyFetchedEvent,
-      currentUser
+    const isUserInWaitingListNewly = isUserInWaitingListFunc(
+      newlyFetchedEvent as ClasseEvent,
+      currentUser as User
     );
-    const currentUserGender = `${currentUser.gender}s`;
+    const currentUserRoleKey = currentUser?.danceRole === 'leader' ? 'leaders' : 'followers';
     const updatedEvent = newlyFetchedEvent;
-    const list = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
-    const userIdIndex = updatedEvent[list][currentUserGender].findIndex(
-      (userId) => userId === currentUser.id
+    const listKey = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
+    const userIdIndex = updatedEvent?.[listKey]?.[currentUserRoleKey]?.findIndex(
+      ({ userId }) => userId === currentUser?.id
     );
-    updatedEvent[list][currentUserGender].splice(userIdIndex, 1);
+    updatedEvent?.[listKey]?.[currentUserRoleKey]?.splice(userIdIndex as number, 1);
 
     if (isUserInDancersNewly) {
       // Check in waiting list to replace dancer
       // Get waiting list from the same gender
-      const sameGenderWaitingList = updatedEvent.waitingList[currentUserGender];
-      if (sameGenderWaitingList.length) {
+      const sameRoleWaitingList = updatedEvent?.waitingList?.[currentUserRoleKey];
+      if (sameRoleWaitingList?.length) {
         // Remove the user where the date joinOn is the first
-        const sortedList = sameGenderWaitingList.sort(
-          (a, b) => a.joinOn.toDate() - b.joinOn.toDate()
+        const sortedList = sameRoleWaitingList?.sort(
+          (a, b) => a.joinOn.getTime() - b.joinOn.getTime()
         );
         const userToAddInDancers = sortedList.shift();
-        updatedEvent.dancers[currentUserGender].push({
-          userId: userToAddInDancers.useId,
+        updatedEvent?.dancers?.[currentUserRoleKey]?.push({
+          userId: userToAddInDancers?.userId as string,
           joinOn: new Date(),
         });
       }
     }
-    delete updatedEvent.id;
-    await updateEvent(event.id, updatedEvent);
+    if (updatedEvent?.id) {
+      // @ts-ignore: See: https://stackoverflow.com/questions/63702057/what-is-the-logic-behind-the-typescript-error-the-operand-of-a-delete-operato
+      delete updatedEvent.id;
+    }
+    await updateEvent(event.id, updatedEvent as UpdateClasseEvent);
     await fetchEvents();
   };
 
@@ -220,7 +225,7 @@ const Event = ({
         {isUserInWaitingList && <Tag>On waiting list</Tag>}
         <div>{classData.time}</div>
       </EventPrimariesInfo>
-      <DancersContainer $isHidden={!isAdminMode}>
+      {!isAdminMode && <DancersContainer>
         <h4>
           Dancers
           {!!waitingListLength && (
@@ -228,14 +233,14 @@ const Event = ({
           )}
         </h4>
         <MalesContainer>
-          <p>Mens</p>
+          <p>Leaders</p>
           <div>
-            {getMalesDancerIds(event).map(({ userId }, i) => {
+            {getLeaderDancerIds(event).map((userId, i) => {
               const user = getById(userId);
 
               return (
                 <Avatar
-                  key={`m-${i}`}
+                  key={`l-${i}`}
                   firstName={user?.fullName?.split(' ')[0]}
                   lastName={user?.fullName?.split(' ')[1]}
                   image={undefined}
@@ -245,9 +250,9 @@ const Event = ({
           </div>
         </MalesContainer>
         <FemalesContainer>
-          <p>Girls</p>
+          <p>Followers</p>
           <div>
-            {getFemalesDancerIds(event).map(({ userId }, i) => {
+            {getFollowerDancerIds(event).map((userId, i) => {
               const user = getById(userId);
 
               return (
@@ -261,7 +266,7 @@ const Event = ({
             })}
           </div>
         </FemalesContainer>
-      </DancersContainer>
+      </DancersContainer>}
       <CallToActions>
         {!isAdminMode &&
           !isUserInDancers &&
@@ -270,11 +275,7 @@ const Event = ({
             <Button
               appearance='primary'
               onClick={joinHandle}
-              isLoading={isLoading}
-              iconLeft={undefined}
-              iconRight={undefined}
-              isDisabled={undefined}
-              isIconReverse={undefined}
+            isLoading={isLoading}
             >
               Join
             </Button>
@@ -285,11 +286,7 @@ const Event = ({
           isEventPast && (
             <Button
               appearance='minimal'
-              isDisabled
-              iconLeft={undefined}
-              iconRight={undefined}
-              isLoading={undefined}
-              isIconReverse={undefined}
+            isDisabled
             >
               Past
             </Button>
@@ -298,11 +295,6 @@ const Event = ({
           <Button
             appearance='minimal'
             onClick={cancelHandle}
-            iconLeft={undefined}
-            iconRight={undefined}
-            isDisabled={undefined}
-            isLoading={undefined}
-            isIconReverse={undefined}
           >
             Cancel
           </Button>
@@ -312,22 +304,12 @@ const Event = ({
             <Button
               appearance='default'
               onClick={() => setIsDetailsModalOpen(true)}
-              iconLeft={undefined}
-              iconRight={undefined}
-              isDisabled={undefined}
-              isLoading={undefined}
-              isIconReverse={undefined}
             >
               See details
             </Button>
             <Button
               appearance='default'
               onClick={() => setIsAddDancerModalOpen(true)}
-              iconLeft={undefined}
-              iconRight={undefined}
-              isDisabled={undefined}
-              isLoading={undefined}
-              isIconReverse={undefined}
             >
               Add dancer
             </Button>

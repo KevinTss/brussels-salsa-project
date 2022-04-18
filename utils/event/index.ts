@@ -1,39 +1,59 @@
-import { AuthUser, ClasseType, NewEventData } from "../../types";
+import { Dayjs } from 'dayjs';
+import { User, Classe, NewClasseEvent, ClasseEvent } from '../../types';
 
-export const getMalesDancerIds = (event) => event?.dancers?.males || [];
+export const getLeaderDancerIds = (event: ClasseEvent): string[] =>
+  event?.dancers?.leaders?.map(({ userId }) => userId) || [];
 
-export const getFemalesDancerIds = (event) => event?.dancers?.females || [];
+export const getFollowerDancerIds = (event: ClasseEvent): string[] =>
+  event?.dancers?.followers?.map(({ userId }) => userId) || [];
 
-export const getTotalDancers = (event) =>
-  event?.dancers?.males && event?.dancers?.females
-    ? event.dancers.males.length + event.dancers.females.length
-    : 0;
+export const getTotalDancers = (event: ClasseEvent): number => {
+  let total: number = 0;
+  if (event.dancers.leaders?.length) {
+    total += event.dancers.leaders?.length;
+  }
+  if (event.dancers.followers?.length) {
+    total += event.dancers.followers?.length;
+  }
 
-export const getTotalWaitingList = (event) =>
-  (event?.waitingList?.males?.length || 0) +
-  (event?.waitingList?.females?.length || 0);
+  return total;
+};
 
-export const getIsUserInDancers = (event, currentUser) =>
-  currentUser.gender === 'male'
-    ? !!event?.dancers?.males?.find(({ userId }) => userId === currentUser.id)
-    : !!event?.dancers?.females?.find(
+export const getTotalWaitingList = (event: ClasseEvent): number =>
+  (event.waitingList?.leaders?.length || 0) +
+  (event.waitingList?.followers?.length || 0);
+
+export const isUserInDancers = (
+  event: ClasseEvent,
+  currentUser: User
+): boolean =>
+  currentUser.danceRole === 'leader'
+    ? !!event?.dancers?.leaders?.find(({ userId }) => userId === currentUser.id)
+    : !!event?.dancers?.followers?.find(
         ({ userId }) => userId === currentUser.id
       );
 
-export const getIsUserInWaitingList = (event, currentUser) =>
-  currentUser?.gender === 'male'
-    ? !!event?.waitingList?.males?.find(
+export const isUserInWaitingList = (
+  event: ClasseEvent,
+  currentUser: User
+): boolean =>
+  currentUser?.danceRole === 'leader'
+    ? !!event?.waitingList?.leaders?.find(
         ({ userId }) => userId === currentUser.id
       )
-    : !!event?.waitingList?.females?.find(
+    : !!event?.waitingList?.followers?.find(
         ({ userId }) => userId === currentUser.id
       );
 
-export const getNewEvent = (user:AuthUser, classData:ClasseType, dayDate:Date):NewEventData => ({
+export const getNewEvent = (
+  user: User,
+  classData: Classe,
+  dayDate: Dayjs
+): NewClasseEvent => ({
   classId: classData.id,
   dancers: {
-    males:
-      user.gender === 'male'
+    leaders:
+      user.danceRole === 'leader'
         ? [
             {
               joinOn: new Date(),
@@ -41,8 +61,8 @@ export const getNewEvent = (user:AuthUser, classData:ClasseType, dayDate:Date):N
             },
           ]
         : [],
-    females:
-      user.gender === 'female'
+    followers:
+      user.danceRole === 'follower'
         ? [
             {
               joinOn: new Date(),
@@ -52,8 +72,8 @@ export const getNewEvent = (user:AuthUser, classData:ClasseType, dayDate:Date):N
         : [],
   },
   waitingList: {
-    males: [],
-    females: [],
+    leaders: [],
+    followers: [],
   },
   date: dayDate.hour(0).minute(0).second(0).toDate(),
 });

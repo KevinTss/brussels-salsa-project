@@ -34,7 +34,7 @@ export const EventPrimariesInfo = styled.div`
 `;
 
 export const DancersContainer = styled.div`
-  display: ${({ $isHidden }) => ($isHidden ? 'none' : 'flex')};
+  display: flex;
   flex-direction: column;
   flex: 2;
 

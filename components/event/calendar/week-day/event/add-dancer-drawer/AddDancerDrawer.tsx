@@ -11,15 +11,15 @@ import { useEvents, useUsers } from '../../../../../../hooks';
 import { DancersContainer, FullNameContainer } from './style';
 import {
   ClasseEvent,
-  ClasseType,
-  DancersListType,
+  Classe,
+  Dancers,
 } from '../../../../../../types';
 
 type AddDancerDrawer = {
   isOpen: boolean;
   onClose: () => void;
   event: ClasseEvent;
-  classe: ClasseType;
+  classe: Classe;
   dayDate: Dayjs;
   refetchEvents: () => void;
 };
@@ -41,20 +41,20 @@ const AddDancerDrawer = ({
 
   const eventUserList = {
     dancers: {
-      males: event?.dancers?.males?.map((dancer) => dancer.userId) || [],
-      females: event?.dancers?.females?.map((dancer) => dancer.userId) || [],
+      leaders: event?.dancers?.leaders?.map((l) => l.userId) || [],
+      followers: event?.dancers?.followers?.map((f) => f.userId) || [],
     },
     waitingList: {
-      males: event?.waitingList?.males?.map((dancer) => dancer.userId) || [],
+      males: event?.waitingList?.leaders?.map((l) => l.userId) || [],
       females:
-        event?.waitingList?.females?.map((dancer) => dancer.userId) || [],
+        event?.waitingList?.followers?.map((f) => f.userId) || [],
     },
   };
 
   const userList = list.filter(
     (user) =>
-      !eventUserList.dancers.males.includes(user?.id || '') &&
-      !eventUserList.dancers.females.includes(user?.id || '')
+      !eventUserList.dancers.leaders.includes(user?.id || '') &&
+      !eventUserList.dancers.followers.includes(user?.id || '')
   );
 
   return (
