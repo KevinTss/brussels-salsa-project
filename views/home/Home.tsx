@@ -9,7 +9,7 @@ import { RoutePaths } from '../../types';
 const Home = () => {
   const { currentUser, isLoading } = useOnlyAuthGuard();
 
-  if (!isLoading && currentUser && !currentUser.gender)
+  if (!isLoading && currentUser && !currentUser.danceRole)
     Router.push(RoutePaths.ONBOARDING);
 
   return (
