@@ -27,6 +27,7 @@ export type Classe = {
   spots: ClasseSpot;
   time: string;
   type: ClasseType;
+  balanceOffset: number;
 };
 
 export type ClassesContext = {
@@ -45,4 +46,5 @@ export type NewClasse = {
   spots: { base: number; max: number };
   time: string;
   type: ClasseType;
+  balanceOffset: number;
 };

@@ -74,6 +74,7 @@ export default function ClassForm({ onClose, defaultValues }: ClassForm) {
           },
           time: `${values.hour}:${values.min}`,
           type: values.type,
+          balanceOffset: 1
         };
         // console.log('objectToSend', objectToSend, values)
         if (!!defaultValues) {

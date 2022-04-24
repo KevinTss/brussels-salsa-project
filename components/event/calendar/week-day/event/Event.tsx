@@ -34,6 +34,7 @@ import {
   UpdateClasseEvent,
   NewClasseEvent,
 } from '../../../../../types';
+import { addUserToDancers, addUserToEvent, addUserToWaitingList, checkWaitingList, removeUserFromEvent } from './utils'
 
 type Props = {
   classData: Classe;
@@ -107,58 +108,68 @@ const Event = ({
     }
 
     try {
+      // In case the user is the first to join, no event exist in DB
       if (!newlyFetchedEvent) {
         const newEvent = getNewEvent(currentUser, classData, dayDate);
         await addEvent(newEvent);
         await fetchEvents();
-      } else {
-        /**
-         * Refetch the event just before update it so we make sure data are
-         * up to date at the moment of the action
-         */
-        const updatedEvent = newlyFetchedEvent;
-        const totalDancers = getTotalDancers(updatedEvent);
-        if (
-          totalDancers < classData.spots.base &&
-          totalDancers < (classData?.spots?.max || 999)
-        ) {
-          updatedEvent?.dancers?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
-            joinOn: new Date(),
-            userId: currentUser?.id || '',
-          });
-        } else if (
-          totalDancers >= classData.spots.base &&
-          classData?.spots?.max &&
-          totalDancers < classData.spots.max
-        ) {
-          // We need to check the balance
-          const sameRoleAmount =
-            currentUser?.dancerRole === 'leader' ? updatedEvent?.dancers?.leaders?.length || 0 : updatedEvent?.dancers?.followers?.length || 0;
-          const oppositeRoleAmount =
-            currentUser?.dancerRole === 'leader' ? updatedEvent?.dancers?.followers?.length || 0 : updatedEvent?.dancers?.leaders?.length || 0;
-          let listToAddTheNewDancer: 'waitingList' | 'dancers';
-          if (sameRoleAmount > oppositeRoleAmount) {
-            listToAddTheNewDancer = `waitingList`;
-          } else {
-            listToAddTheNewDancer = `dancers`;
-          }
-          updatedEvent?.[listToAddTheNewDancer]?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
-            joinOn: new Date(),
-            userId: currentUser.id,
-          });
-        } else if (
-          classData?.spots?.max &&
-          totalDancers >= classData.spots.max
-        ) {
-          // Add the user to the waiting list
-          updatedEvent?.waitingList?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
-            joinOn: new Date(),
-            userId: currentUser.id,
-          });
-        }
-        await updateEvent(updatedEvent.id, updatedEvent);
-        await fetchEvents();
+        setIsLoading(false);
+
+        return
       }
+      /**
+       * Refetch the event just before update it so we make sure data are
+       * up to date at the moment of the action
+       */
+      let updatedEvent: ClasseEvent = newlyFetchedEvent;
+      const totalDancers = getTotalDancers(updatedEvent);
+
+      if (
+        totalDancers < classData.spots.base &&
+        totalDancers < (classData?.spots?.max || 999)
+      ) {
+        updatedEvent = addUserToDancers(updatedEvent, currentUser)
+        // updatedEvent?.dancers?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
+        //   joinOn: new Date(),
+        //   userId: currentUser?.id || '',
+        // });
+      } else if (
+        totalDancers >= classData.spots.base &&
+        classData?.spots?.max &&
+        totalDancers < classData.spots.max
+      ) {
+        // We need to check the balance
+        // const sameRoleAmount = currentUser.dancerRole === 'leader'
+        //   ? updatedEvent.dancers.leaders?.length || 0
+        //   : updatedEvent.dancers.followers?.length || 0;
+        // const oppositeRoleAmount = currentUser.dancerRole === 'leader'
+        //   ? updatedEvent.dancers.followers?.length || 0
+        //   : updatedEvent.dancers.leaders?.length || 0;
+        // let listToAddTheNewDancer: 'waitingList' | 'dancers';
+        // if (sameRoleAmount > oppositeRoleAmount) {
+        //   listToAddTheNewDancer = `waitingList`;
+        // } else {
+        //   listToAddTheNewDancer = `dancers`;
+        // }
+        // updatedEvent[listToAddTheNewDancer][currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
+        //   joinOn: new Date(),
+        //   userId: currentUser.id,
+        // });
+        updatedEvent = addUserToEvent(updatedEvent, currentUser)
+      } else if (
+        classData?.spots?.max &&
+        totalDancers >= classData.spots.max
+      ) {
+        // Add the user to the waiting list
+        // updatedEvent?.waitingList?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
+        //   joinOn: new Date(),
+        //   userId: currentUser.id,
+        // });
+        updatedEvent = addUserToWaitingList(updatedEvent, currentUser)
+      }
+      updatedEvent = checkWaitingList(updatedEvent, classData)
+      await updateEvent(updatedEvent.id, updatedEvent);
+      await fetchEvents();
 
       setIsLoading(false);
     } catch (error) {
@@ -168,6 +179,7 @@ const Event = ({
   };
 
   const cancelHandle = async () => {
+    if (!currentUser) return
     if (
       !event?.id ||
       isAdminMode ||
@@ -177,21 +189,22 @@ const Event = ({
       return;
 
     const newlyFetchedEvent = await fetchEvent({ eventId: event.id });
+    const updatedEvent = removeUserFromEvent(newlyFetchedEvent as ClasseEvent, currentUser)
     const isUserInDancersNewly = isUserInDancersFunc(
       newlyFetchedEvent as ClasseEvent,
       currentUser as User
     );
-    const isUserInWaitingListNewly = isUserInWaitingListFunc(
-      newlyFetchedEvent as ClasseEvent,
-      currentUser as User
-    );
-    const currentUserRoleKey = currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers';
-    const updatedEvent = newlyFetchedEvent;
-    const listKey = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
-    const userIdIndex = updatedEvent?.[listKey]?.[currentUserRoleKey]?.findIndex(
-      ({ userId }) => userId === currentUser?.id
-    );
-    updatedEvent?.[listKey]?.[currentUserRoleKey]?.splice(userIdIndex as number, 1);
+    // const isUserInWaitingListNewly = isUserInWaitingListFunc(
+    //   newlyFetchedEvent as ClasseEvent,
+    //   currentUser as User
+    // );
+    // const currentUserRoleKey = currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers';
+    // const updatedEvent = newlyFetchedEvent;
+    // const listKey = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
+    // const userIdIndex = updatedEvent?.[listKey]?.[currentUserRoleKey]?.findIndex(
+    //   ({ userId }) => userId === currentUser?.id
+    // );
+    // updatedEvent?.[listKey]?.[currentUserRoleKey]?.splice(userIdIndex as number, 1);
 
     if (isUserInDancersNewly) {
       // Check in waiting list to replace dancer

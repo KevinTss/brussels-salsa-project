@@ -39,17 +39,10 @@ export const isUserInDancers = (
         ({ userId }) => userId === currentUser.id
       );
 
-export const isUserInWaitingList = (
-  event: ClasseEvent,
-  currentUser: User
-): boolean =>
-  currentUser?.dancerRole === 'leader'
-    ? !!event?.waitingList?.leaders?.find(
-        ({ userId }) => userId === currentUser.id
-      )
-    : !!event?.waitingList?.followers?.find(
-        ({ userId }) => userId === currentUser.id
-      );
+export const isUserInWaitingList = (event: ClasseEvent, user: User): boolean =>
+  user.dancerRole === 'leader'
+    ? !!event.waitingList.leaders?.find(({ userId }) => userId === user.id)
+    : !!event.waitingList.followers?.find(({ userId }) => userId === user.id);
 
 export const getNewEvent = (
   user: User,

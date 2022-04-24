@@ -6,8 +6,8 @@ export type DancerJoin = {
   wasPresent?: boolean;
 };
 export type Dancers = {
-  leaders?: DancerJoin[];
-  followers?: DancerJoin[];
+  leaders: DancerJoin[];
+  followers: DancerJoin[];
 };
 
 export type NewClasseEvent = {
@@ -22,7 +22,7 @@ export type ClasseEvent = {
   classId: string;
   date: string;
   dancers: Dancers;
-  waitingList?: Dancers;
+  waitingList: Dancers;
 };
 
 export type UpdateClasseEvent = {
