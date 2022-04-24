@@ -34,7 +34,7 @@ import {
   UpdateClasseEvent,
   NewClasseEvent,
 } from '../../../../../types';
-import { addUserToDancers, addUserToEvent, addUserToWaitingList, checkWaitingList, removeUserFromEvent } from './utils'
+import { addUserToDancers, addUserToEvent, addUserToWaitingList, handleWaitingList, removeUserFromEvent } from './utils'
 
 type Props = {
   classData: Classe;
@@ -167,7 +167,7 @@ const Event = ({
         // });
         updatedEvent = addUserToWaitingList(updatedEvent, currentUser)
       }
-      updatedEvent = checkWaitingList(updatedEvent, classData)
+      updatedEvent = handleWaitingList(updatedEvent, classData)
       await updateEvent(updatedEvent.id, updatedEvent);
       await fetchEvents();
 

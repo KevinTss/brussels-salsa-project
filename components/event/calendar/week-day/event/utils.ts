@@ -56,7 +56,7 @@ export const addUserToWaitingList = (
   return updatedEvent;
 };
 
-export const checkWaitingList = (
+export const handleWaitingList = (
   event: ClasseEvent,
   classe: Classe
 ): ClasseEvent => {

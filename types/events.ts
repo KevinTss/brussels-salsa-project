@@ -1,7 +1,7 @@
 import { DocumentReference } from 'firebase/firestore';
 
 export type DancerJoin = {
-  joinOn: Date;
+  joinOn: string;
   userId: string;
   wasPresent?: boolean;
 };
