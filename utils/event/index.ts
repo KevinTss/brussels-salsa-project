@@ -186,7 +186,6 @@ export const handleWaitingList = (
 
   while (shouldLoop) {
     counter++;
-    console.log('event:', counter);
 
     if (counter > 100) {
       shouldLoop = false;
@@ -221,38 +220,48 @@ export const handleWaitingList = (
 
     if (
       !majority ||
-      !shouldCheckBalance(leaders.length, followers.length, classe) ||
-      !isLimitOffsetReached(leaders.length, followers.length, classe)
+      (majority &&
+        !shouldCheckBalance(leaders.length, followers.length, classe)) ||
+      (majority &&
+        !isLimitOffsetReached(leaders.length, followers.length, classe))
     ) {
       const { event, movedDancerId } = moveDancerFromWaitingList(clonedEvent);
 
-      if (movedDancerId) addedDancerIds.push(movedDancerId);
+      if (!movedDancerId) break;
 
+      addedDancerIds.push(movedDancerId);
+      clonedEvent = event;
+      continue;
+    } else if (majority === 'follower') {
+      const { event, addedDancerId } = addDancerFromWaitingList(
+        clonedEvent,
+        'leader'
+      );
+
+      if (!addedDancerId) break;
+
+      addedDancerIds.push(addedDancerId);
+      clonedEvent = event;
+      continue;
+    } else if (majority === 'leader') {
+      const { event, addedDancerId } = addDancerFromWaitingList(
+        clonedEvent,
+        'follower'
+      );
+
+      if (!addedDancerId) break;
+
+      addedDancerIds.push(addedDancerId);
       clonedEvent = event;
       continue;
     }
 
-    console.log('majority', majority);
-    console.log(
-      'shouldCheckBalance',
-      shouldCheckBalance(leaders.length, followers.length, classe)
-    );
-    console.log(
-      'isLimitOffsetReached',
-      isLimitOffsetReached(leaders.length, followers.length, classe)
-    );
-
-    console.log('break at loop', counter);
-    console.log('total leaders', clonedEvent.dancers.leaders.length);
-    console.log('total followers', clonedEvent.dancers.followers.length);
-    console.log('class balance offset', classe.balanceOffset);
+    console.warn('Loop interrupted by end break (Should not happen)');
     break;
   } // End of while
 
-  // console.log('LAST COUNTER', counter)
   return {
     addedDancerIds,
     updatedEvent: clonedEvent,
-    counter,
   };
-};
+};;

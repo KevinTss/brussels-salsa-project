@@ -226,7 +226,7 @@ describe('Test function: handleWaitingList', () => {
     expect(addedDancerIds.length).toBe(3);
   });
 
-  it('should add dancers by respecting the balance offset', () => {
+  it('should add dancers by respecting the balance offset - scenario 1', () => {
     const MOCK_EVENT = {
       ...commonEventAttributes,
       dancers: {
@@ -253,5 +253,63 @@ describe('Test function: handleWaitingList', () => {
     expect(updatedEvent.waitingList.followers.length).toBe(0);
     expect(updatedEvent.waitingList.leaders.length).toBe(2);
     expect(addedDancerIds.length).toBe(23);
+  });
+
+  it('should add dancers by respecting the balance offset - scenario 2', () => {
+    const MOCK_EVENT = {
+      ...commonEventAttributes,
+      dancers: {
+        followers: getMockedDancers(),
+        leaders: [],
+      },
+      waitingList: {
+        followers: getMockedDancers(2),
+        leaders: getMockedDancers(5),
+      },
+    };
+    const CLASSE = {
+      ...commonClasseAttributes,
+      balanceOffset: 2,
+      spots: { base: 2 },
+    };
+    const { updatedEvent, addedDancerIds } = handleWaitingList(
+      MOCK_EVENT,
+      CLASSE
+    );
+
+    expect(updatedEvent.dancers.leaders.length).toBe(5);
+    expect(updatedEvent.dancers.followers.length).toBe(3);
+    expect(updatedEvent.waitingList.followers.length).toBe(0);
+    expect(updatedEvent.waitingList.leaders.length).toBe(0);
+    expect(addedDancerIds.length).toBe(7);
+  });
+
+  it('should add dancers by respecting the balance offset - scenario 3', () => {
+    const MOCK_EVENT = {
+      ...commonEventAttributes,
+      dancers: {
+        followers: getMockedDancers(),
+        leaders: [],
+      },
+      waitingList: {
+        followers: getMockedDancers(2),
+        leaders: getMockedDancers(5),
+      },
+    };
+    const CLASSE = {
+      ...commonClasseAttributes,
+      balanceOffset: 1,
+      spots: { base: 2 },
+    };
+    const { updatedEvent, addedDancerIds } = handleWaitingList(
+      MOCK_EVENT,
+      CLASSE
+    );
+
+    expect(updatedEvent.dancers.leaders.length).toBe(4);
+    expect(updatedEvent.dancers.followers.length).toBe(3);
+    expect(updatedEvent.waitingList.followers.length).toBe(0);
+    expect(updatedEvent.waitingList.leaders.length).toBe(1);
+    expect(addedDancerIds.length).toBe(6);
   });
 });
