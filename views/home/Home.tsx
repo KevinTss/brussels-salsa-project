@@ -14,7 +14,7 @@ const Home = () => {
   return (
     <Main>
       {(isLoading || !currentUser) && <Spinner />}
-      {!isLoading && currentUser?.gender && <EventsCalendar />}
+      {!isLoading && currentUser?.dancerRole && <EventsCalendar />}
     </Main>
   );
 };
