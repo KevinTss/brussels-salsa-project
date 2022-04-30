@@ -5,5 +5,4 @@ export const UsersContainer = styled.div`
   flex-direction: column;
   margin-bottom: 50px;
   gap: 16px;
-  background: pink;
 `;
