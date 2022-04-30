@@ -3,9 +3,20 @@ import { useEffect, useState } from 'react';
 import { useEvents } from '../../../../hooks';
 import Event from './event';
 import { WeekDayContainer } from './style';
+import { Classe, WeekDay as WeekDayType, ClasseEvent } from '../../../../types'
+import { Dayjs } from 'dayjs';
 
-const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
-  const [dayEvents, setDayEvents] = useState([]);
+const byClasseTime = (a: Classe, b: Classe) => (a.time).localeCompare(b.time)
+
+type Props = {
+  dayName: WeekDayType
+  classes: Classe[],
+  dayDate: Dayjs,
+  isAdminMode?: boolean
+}
+
+const WeekDay = ({ dayName, classes, dayDate, isAdminMode = false }: Props) => {
+  const [dayEvents, setDayEvents] = useState<ClasseEvent[]>([]);
   const {
     fetch: fetchEvents,
     fetchOne: fetchEvent,
@@ -13,7 +24,7 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
     update: updateEvent,
   } = useEvents();
 
-  const fetchEventsHandler = async () => {
+  const fetchEventsHandler: () => Promise<ClasseEvent[]> = async () => {
     const dateFromToFetch = new Date(
       dayDate.year(),
       dayDate.month(),
@@ -33,6 +44,8 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
     console.warn('Data', data);
     console.groupEnd();
     setDayEvents(data);
+
+    return data
   };
 
   useEffect(() => {
@@ -47,7 +60,7 @@ const WeekDay = ({ dayName, classes, dayDate, isAdminMode }) => {
       </h2>
       <div>
         {!!classes.length ? (
-          classes.map((c) => (
+          classes.sort(byClasseTime).map((c) => (
             <Event
               key={c.id}
               classData={c}

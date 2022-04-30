@@ -15,7 +15,7 @@ export type User = {
   accessToken: string;
   accounts: Account[];
   avatarUrl: string | null;
-  dancerRole: DancerRole;
+  dancerRole?: DancerRole;
   email: string;
   fullName: string;
   gender: Gender;

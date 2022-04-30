@@ -1,7 +1,7 @@
 import { DocumentReference } from 'firebase/firestore';
 
 export type DancerJoin = {
-  joinOn: string;
+  joinOn: Date;
   userId: string;
   wasPresent?: boolean;
 };
@@ -45,6 +45,6 @@ export type ClasseEventFetchOneParams =
 export type EventsContext = {
   fetch: (dateFrom: Date, dateTo: Date) => Promise<ClasseEvent[]>;
   fetchOne: (data: ClasseEventFetchOneParams) => Promise<ClasseEvent | null>;
-  update: (id: string, data: ClasseEvent) => Promise<void>;
+  update: (id: string, data: UpdateClasseEvent) => Promise<void>;
   add: (data: NewClasseEvent) => Promise<DocumentReference>;
 };
