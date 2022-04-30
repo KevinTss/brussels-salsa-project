@@ -62,7 +62,7 @@ export const hasUserClassLevelRequired = (
   classe: Classe
 ): boolean => {
   const classType = classe.type;
-  const userLevel = user.levels[classType] || 0;
+  const userLevel = user?.levels?.[classType] || 0;
 
   return userLevel >= classe.level;
 };
