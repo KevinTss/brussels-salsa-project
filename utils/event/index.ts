@@ -8,15 +8,48 @@ import {
   ClasseEvent,
   ClasseLevel,
   DancerRole,
+  ClasseEventWithOptionalId,
 } from '../../types';
 
-export const getLeaderDancerIds = (event: ClasseEvent): string[] =>
-  event?.dancers?.leaders?.map(({ userId }) => userId) || [];
+export const addUserToWaitingList = (
+  event: ClasseEvent,
+  user: User
+): ClasseEvent => {
+  if (!user.dancerRole) {
+    throw new Error('dancerRole is missing in user object');
+  }
 
-export const getFollowerDancerIds = (event: ClasseEvent): string[] =>
-  event?.dancers?.followers?.map(({ userId }) => userId) || [];
+  const updatedEvent = cloneDeep(event);
+  updatedEvent.waitingList[
+    user.dancerRole === 'leader' ? 'leaders' : 'followers'
+  ].push({
+    joinOn: new Date(),
+    userId: user.id,
+  });
 
-export const getTotalDancers = (event: ClasseEvent): number => {
+  return updatedEvent;
+};
+
+export const addUserToDancers = (
+  event: ClasseEvent,
+  user: User
+): ClasseEvent => {
+  if (!user.dancerRole) {
+    throw new Error('dancerRole is missing in user object');
+  }
+
+  const updatedEvent = cloneDeep(event);
+  updatedEvent.dancers[
+    user.dancerRole === 'leader' ? 'leaders' : 'followers'
+  ].push({
+    joinOn: new Date(),
+    userId: user.id,
+  });
+
+  return updatedEvent;
+};
+
+const getTotalDancers = (event: ClasseEvent): number => {
   let total: number = 0;
   if (event.dancers.leaders?.length) {
     total += event.dancers.leaders?.length;
@@ -28,11 +61,52 @@ export const getTotalDancers = (event: ClasseEvent): number => {
   return total;
 };
 
+export const getLeaderDancerIds = (event?: ClasseEvent): string[] =>
+  event?.dancers?.leaders?.map(({ userId }) => userId) || [];
+
+export const getFollowerDancerIds = (event?: ClasseEvent): string[] =>
+  event?.dancers?.followers?.map(({ userId }) => userId) || [];
+
+export const shouldCheckBalance_v2 = (
+  event: ClasseEvent,
+  classe: Classe
+): boolean => getTotalDancers(event) >= classe.spots.base;
+
+export const isLimitOffsetReached_v2 = (
+  event: ClasseEvent,
+  classe: Classe
+): boolean => {
+  const leadersAmount = getLeaderDancerIds(event).length;
+  const followersAmount = getFollowerDancerIds(event).length;
+  const offset = Math.abs(leadersAmount - followersAmount);
+
+  return offset >= classe.balanceOffset;
+};
+
+export const isOppositeRoleInMajority = (event: ClasseEvent, user: User) => {
+  const sameRoleAmount =
+    user.dancerRole === 'leader'
+      ? event.dancers.leaders?.length || 0
+      : event.dancers.followers?.length || 0;
+  const oppositeRoleAmount =
+    user.dancerRole === 'leader'
+      ? event.dancers.followers?.length || 0
+      : event.dancers.leaders?.length || 0;
+
+  return sameRoleAmount < oppositeRoleAmount;
+};
+
+export const isEventFull = (event: ClasseEvent, classe: Classe): boolean => {
+  const totalDancers = getTotalDancers(event);
+
+  return totalDancers >= (classe.spots?.max || 999);
+};
+
 export const getTotalWaitingList = (event: ClasseEvent): number =>
   (event?.waitingList?.leaders?.length || 0) +
   (event?.waitingList?.followers?.length || 0);
 
-export const isUserInDancers = (
+export const getIsUserInDancers = (
   event: ClasseEvent,
   currentUser: User
 ): boolean =>
@@ -42,7 +116,10 @@ export const isUserInDancers = (
         ({ userId }) => userId === currentUser.id
       );
 
-export const isUserInWaitingList = (event: ClasseEvent, user: User): boolean =>
+export const getIsUserInWaitingList = (
+  event: ClasseEvent,
+  user: User
+): boolean =>
   user.dancerRole === 'leader'
     ? !!event.waitingList.leaders?.find(({ userId }) => userId === user.id)
     : !!event.waitingList.followers?.find(({ userId }) => userId === user.id);
@@ -58,7 +135,7 @@ export const getNewEvent = (
       user.dancerRole === 'leader'
         ? [
             {
-              joinOn: new Date().toISOString(),
+              joinOn: new Date(), //.toISOString(),
               userId: user.id,
             },
           ]
@@ -67,7 +144,7 @@ export const getNewEvent = (
       user.dancerRole === 'follower'
         ? [
             {
-              joinOn: new Date().toISOString(),
+              joinOn: new Date(), //.toISOString(),
               userId: user.id,
             },
           ]
@@ -96,10 +173,10 @@ const getMajority = (
   return null;
 };
 
-const addDancerFromWaitingList = (
-  eventToUpdate: ClasseEvent,
+const moveDancerFromWaitingList = (
+  eventToUpdate: ClasseEventWithOptionalId,
   role: DancerRole = 'leader'
-): { event: ClasseEvent; addedDancerId: string | null } => {
+): { event: ClasseEventWithOptionalId; addedDancerId: string | null } => {
   const updatedEvent = cloneDeep(eventToUpdate);
   let addedDancerId: string | null = null;
   if (role === 'leader') {
@@ -125,15 +202,15 @@ const shouldCheckBalance = (
   classe: Classe
 ): boolean => leadersAmount + followersAmount >= classe.spots.base;
 
-const moveDancerFromWaitingList = (
-  event: ClasseEvent
-): { event: ClasseEvent; movedDancerId: string | null } => {
+const moveDancersFromWaitingList = (
+  event: ClasseEventWithOptionalId
+): { event: ClasseEventWithOptionalId; movedDancerId: string | null } => {
   const {
     waitingList: { leaders: waitingLeaders, followers: waitingFollowers },
   } = event;
   if (waitingLeaders.length) {
     const { event: updatedEvent, addedDancerId: newAddedDancerId } =
-      addDancerFromWaitingList(event);
+      moveDancerFromWaitingList(event);
 
     return {
       event: updatedEvent,
@@ -142,7 +219,7 @@ const moveDancerFromWaitingList = (
   }
   if (waitingFollowers.length) {
     const { event: updatedEvent, addedDancerId: newAddedDancerId } =
-      addDancerFromWaitingList(event, 'follower');
+      moveDancerFromWaitingList(event, 'follower');
     if (newAddedDancerId) {
       return {
         event: updatedEvent,
@@ -172,11 +249,11 @@ const isLimitOffsetReached = (
 };
 
 export const handleWaitingList = (
-  event: ClasseEvent,
+  event: ClasseEventWithOptionalId,
   classe: Classe
 ): {
   addedDancerIds: string[];
-  updatedEvent: ClasseEvent;
+  updatedEvent: ClasseEventWithOptionalId;
 } => {
   let clonedEvent = cloneDeep(event);
 
@@ -225,7 +302,7 @@ export const handleWaitingList = (
       (majority &&
         !isLimitOffsetReached(leaders.length, followers.length, classe))
     ) {
-      const { event, movedDancerId } = moveDancerFromWaitingList(clonedEvent);
+      const { event, movedDancerId } = moveDancersFromWaitingList(clonedEvent);
 
       if (!movedDancerId) break;
 
@@ -233,7 +310,7 @@ export const handleWaitingList = (
       clonedEvent = event;
       continue;
     } else if (majority === 'follower') {
-      const { event, addedDancerId } = addDancerFromWaitingList(
+      const { event, addedDancerId } = moveDancerFromWaitingList(
         clonedEvent,
         'leader'
       );
@@ -244,7 +321,7 @@ export const handleWaitingList = (
       clonedEvent = event;
       continue;
     } else if (majority === 'leader') {
-      const { event, addedDancerId } = addDancerFromWaitingList(
+      const { event, addedDancerId } = moveDancerFromWaitingList(
         clonedEvent,
         'follower'
       );
@@ -264,4 +341,23 @@ export const handleWaitingList = (
     addedDancerIds,
     updatedEvent: clonedEvent,
   };
-};;
+};
+
+export const removeUserFromEvent = (
+  event: ClasseEvent,
+  user: User
+): ClasseEvent => {
+  const clonedEvent = cloneDeep(event);
+
+  const isUserInWaitingListNewly = getIsUserInWaitingList(clonedEvent, user);
+  const currentUserRoleKey =
+    user.dancerRole === 'leader' ? 'leaders' : 'followers';
+  const listKey = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
+
+  const userIdIndex = clonedEvent[listKey][currentUserRoleKey].findIndex(
+    ({ userId }) => userId === user.id
+  );
+  clonedEvent[listKey][currentUserRoleKey].splice(userIdIndex as number, 1);
+
+  return clonedEvent;
+};

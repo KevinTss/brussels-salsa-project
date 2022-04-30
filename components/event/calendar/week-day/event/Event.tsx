@@ -12,35 +12,40 @@ import {
 import { useUsers, useAuth } from '../../../../../hooks';
 import { Button, Avatar, Tag, triggerToast, ButtonGroup } from '../../../../ui';
 import {
+  addUserToDancers,
+  addUserToWaitingList,
   djs,
-  getEventNameDisplay,
-  getLeaderDancerIds,
-  getFollowerDancerIds,
-  getTotalDancers,
-  getTotalWaitingList,
-  isUserInDancers as isUserInDancersFunc,
-  isUserInWaitingList as isUserInWaitingListFunc,
-  getNewEvent,
   getDateAndDayAfter,
+  getEventNameDisplay,
+  getFollowerDancerIds,
+  getIsUserInDancers,
+  getIsUserInWaitingList,
+  getLeaderDancerIds,
+  getNewEvent,
+  getTotalWaitingList,
+  handleWaitingList,
   hasUserClassLevelRequired,
+  isEventFull,
+  isLimitOffsetReached_v2,
+  isOppositeRoleInMajority,
+  removeUserFromEvent,
+  shouldCheckBalance_v2,
 } from '../../../../../utils';
 import DetailsDrawer from './details-drawer';
 import AddDancerDrawer from './add-dancer-drawer';
 import {
-  User,
   ClasseEventFetchOneParams,
   ClasseEvent,
   Classe,
   UpdateClasseEvent,
-  NewClasseEvent,
+  NewClasseEvent, ClasseEventWithOptionalId
 } from '../../../../../types';
-import { addUserToDancers, addUserToEvent, addUserToWaitingList, handleWaitingList, removeUserFromEvent } from './utils'
 
 type Props = {
   classData: Classe;
-  event: ClasseEvent;
-  fetchEvents: () => ClasseEvent[];
-  fetchEvent: (data: ClasseEventFetchOneParams) => ClasseEvent | null;
+  event?: ClasseEvent;
+  fetchEvents: () => Promise<ClasseEvent[]>;
+  fetchEvent: (data: ClasseEventFetchOneParams) => Promise<ClasseEvent | null>;
   dayDate: Dayjs;
   addEvent: (data: NewClasseEvent) => void;
   updateEvent: (id: string, data: UpdateClasseEvent) => void;
@@ -69,10 +74,10 @@ const Event = ({
     .date(dayDate.date())
     .hour(Number(classData.time.split(':')[0]))
     .minute(Number(classData.time.split(':')[1]));
-  const isEventPast = eventDate.isBefore(djs());
-  const isUserInDancers = isUserInDancersFunc(event, currentUser as User);
-  const isUserInWaitingList = isUserInWaitingListFunc(event, currentUser as User);
-  const waitingListLength = getTotalWaitingList(event);
+  const isEventPast = eventDate.isBefore(djs())
+  const isUserInDancers = currentUser && event ? getIsUserInDancers(event, currentUser) : false
+  const isUserInWaitingList = currentUser && event ? getIsUserInWaitingList(event, currentUser) : false;
+  const waitingListLength = event ? getTotalWaitingList(event) : 0
 
   const joinHandle = async () => {
     if (
@@ -80,9 +85,27 @@ const Event = ({
       isEventPast ||
       isUserInDancers ||
       isUserInWaitingList ||
-      !currentUser
-    )
+      !currentUser?.dancerRole
+    ) {
+      console.group()
+      console.log('isAdminMode', isAdminMode)
+      console.log('isEventPast', isEventPast)
+      console.log('isUserInDancers', isUserInDancers)
+      console.log('isUserInWaitingList', isUserInWaitingList)
+      console.log('currentUser', currentUser)
+      console.groupEnd()
+
+      return
+    }
+
+
+    if (!hasUserClassLevelRequired(currentUser, classData)) {
+      triggerToast.error(
+        "Sorry, you don't have yet the level to join this class"
+      );
+
       return;
+    }
 
     setIsLoading(true);
 
@@ -98,15 +121,6 @@ const Event = ({
       });
     }
 
-    if (hasUserClassLevelRequired(currentUser, classData)) {
-      triggerToast.error(
-        "Sorry, you don't have yet the level to join this class"
-      );
-      setIsLoading(false);
-
-      return;
-    }
-
     try {
       // In case the user is the first to join, no event exist in DB
       if (!newlyFetchedEvent) {
@@ -117,64 +131,51 @@ const Event = ({
 
         return
       }
-      /**
-       * Refetch the event just before update it so we make sure data are
-       * up to date at the moment of the action
-       */
-      let updatedEvent: ClasseEvent = newlyFetchedEvent;
-      const totalDancers = getTotalDancers(updatedEvent);
 
-      if (
-        totalDancers < classData.spots.base &&
-        totalDancers < (classData?.spots?.max || 999)
-      ) {
-        updatedEvent = addUserToDancers(updatedEvent, currentUser)
-        // updatedEvent?.dancers?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
-        //   joinOn: new Date(),
-        //   userId: currentUser?.id || '',
-        // });
-      } else if (
-        totalDancers >= classData.spots.base &&
-        classData?.spots?.max &&
-        totalDancers < classData.spots.max
-      ) {
-        // We need to check the balance
-        // const sameRoleAmount = currentUser.dancerRole === 'leader'
-        //   ? updatedEvent.dancers.leaders?.length || 0
-        //   : updatedEvent.dancers.followers?.length || 0;
-        // const oppositeRoleAmount = currentUser.dancerRole === 'leader'
-        //   ? updatedEvent.dancers.followers?.length || 0
-        //   : updatedEvent.dancers.leaders?.length || 0;
-        // let listToAddTheNewDancer: 'waitingList' | 'dancers';
-        // if (sameRoleAmount > oppositeRoleAmount) {
-        //   listToAddTheNewDancer = `waitingList`;
-        // } else {
-        //   listToAddTheNewDancer = `dancers`;
-        // }
-        // updatedEvent[listToAddTheNewDancer][currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
-        //   joinOn: new Date(),
-        //   userId: currentUser.id,
-        // });
-        updatedEvent = addUserToEvent(updatedEvent, currentUser)
-      } else if (
-        classData?.spots?.max &&
-        totalDancers >= classData.spots.max
-      ) {
-        // Add the user to the waiting list
-        // updatedEvent?.waitingList?.[currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers']?.push({
-        //   joinOn: new Date(),
-        //   userId: currentUser.id,
-        // });
-        updatedEvent = addUserToWaitingList(updatedEvent, currentUser)
+      let updatedEvent: ClasseEventWithOptionalId
+      let whereTheUserWhereAdded: 'waitingList' | 'dancers'
+      /**
+       * The order of checks is IMPORTANT
+       */
+      if (isEventFull(newlyFetchedEvent, classData)) {
+        updatedEvent = addUserToWaitingList(newlyFetchedEvent, currentUser)
+        whereTheUserWhereAdded = 'waitingList'
+      } else if (!shouldCheckBalance_v2(newlyFetchedEvent, classData)) {
+        updatedEvent = addUserToDancers(newlyFetchedEvent, currentUser)
+        whereTheUserWhereAdded = 'dancers'
+      } else if (isOppositeRoleInMajority(newlyFetchedEvent, currentUser)) {
+        updatedEvent = addUserToDancers(newlyFetchedEvent, currentUser)
+        whereTheUserWhereAdded = 'dancers'
+      } else if (isLimitOffsetReached_v2(newlyFetchedEvent, classData)) {
+        updatedEvent = addUserToWaitingList(newlyFetchedEvent, currentUser)
+        whereTheUserWhereAdded = 'waitingList'
+      } else {
+        updatedEvent = addUserToDancers(newlyFetchedEvent, currentUser)
+        whereTheUserWhereAdded = 'dancers'
       }
-      updatedEvent = handleWaitingList(updatedEvent, classData)
-      await updateEvent(updatedEvent.id, updatedEvent);
-      await fetchEvents();
+
+      const { updatedEvent: finalUpdatedEvent, addedDancerIds } = handleWaitingList(updatedEvent, classData)
+
+      const eventId = finalUpdatedEvent.id
+      // TODO: send email to added users
+      console.log('addedDancerIds', addedDancerIds)
+      delete updatedEvent.id
+
+      await updateEvent(eventId as string, updatedEvent);
+      await fetchEvents()
+
+      if (whereTheUserWhereAdded === 'waitingList') {
+        triggerToast.success("The classe is full, you have been successfully added in the waiting list");
+      } else {
+        triggerToast.success("You've been successfully added");
+      }
 
       setIsLoading(false);
-    } catch (error) {
+
+    } catch (error: any) {
       setIsLoading(false);
       console.warn('error on join', error);
+      console.warn('message', error.message);
     }
   };
 
@@ -188,46 +189,29 @@ const Event = ({
     )
       return;
 
-    const newlyFetchedEvent = await fetchEvent({ eventId: event.id });
-    const updatedEvent = removeUserFromEvent(newlyFetchedEvent as ClasseEvent, currentUser)
-    const isUserInDancersNewly = isUserInDancersFunc(
-      newlyFetchedEvent as ClasseEvent,
-      currentUser as User
-    );
-    // const isUserInWaitingListNewly = isUserInWaitingListFunc(
-    //   newlyFetchedEvent as ClasseEvent,
-    //   currentUser as User
-    // );
-    // const currentUserRoleKey = currentUser?.dancerRole === 'leader' ? 'leaders' : 'followers';
-    // const updatedEvent = newlyFetchedEvent;
-    // const listKey = isUserInWaitingListNewly ? 'waitingList' : 'dancers';
-    // const userIdIndex = updatedEvent?.[listKey]?.[currentUserRoleKey]?.findIndex(
-    //   ({ userId }) => userId === currentUser?.id
-    // );
-    // updatedEvent?.[listKey]?.[currentUserRoleKey]?.splice(userIdIndex as number, 1);
+    setIsLoading(true)
 
-    if (isUserInDancersNewly) {
-      // Check in waiting list to replace dancer
-      // Get waiting list from the same gender
-      const sameRoleWaitingList = updatedEvent?.waitingList?.[currentUserRoleKey];
-      if (sameRoleWaitingList?.length) {
-        // Remove the user where the date joinOn is the first
-        const sortedList = sameRoleWaitingList?.sort(
-          (a, b) => a.joinOn.getTime() - b.joinOn.getTime()
-        );
-        const userToAddInDancers = sortedList.shift();
-        updatedEvent?.dancers?.[currentUserRoleKey]?.push({
-          userId: userToAddInDancers?.userId as string,
-          joinOn: new Date(),
-        });
-      }
+    const newlyFetchedEvent = await fetchEvent({ eventId: event.id });
+
+    if (!newlyFetchedEvent) {
+      triggerToast.error("Sorry, something went wrong");
+      setIsLoading(false)
+
+      return
     }
-    if (updatedEvent?.id) {
-      // @ts-ignore: See: https://stackoverflow.com/questions/63702057/what-is-the-logic-behind-the-typescript-error-the-operand-of-a-delete-operato
-      delete updatedEvent.id;
-    }
-    await updateEvent(event.id, updatedEvent as UpdateClasseEvent);
-    await fetchEvents();
+
+    const updatedEvent = removeUserFromEvent(newlyFetchedEvent, currentUser)
+    const { updatedEvent: finalUpdatedEvent, addedDancerIds } = handleWaitingList(updatedEvent, classData)
+
+    const eventId = finalUpdatedEvent.id
+    // TODO: send email to added users
+    console.log('addedDancerIds', addedDancerIds)
+    delete finalUpdatedEvent.id
+
+    await updateEvent(eventId as string, finalUpdatedEvent);
+    await fetchEvents()
+
+    setIsLoading(false)
   };
 
   return (
@@ -283,25 +267,14 @@ const Event = ({
       <CallToActions>
         {!isAdminMode &&
           !isUserInDancers &&
-          !isUserInWaitingList &&
-          !isEventPast && (
+          !isUserInWaitingList && (
             <Button
               appearance='primary'
               onClick={joinHandle}
             isLoading={isLoading}
+            isDisabled={isEventPast}
             >
               Join
-            </Button>
-          )}
-        {!isAdminMode &&
-          !isUserInDancers &&
-          !isUserInWaitingList &&
-          isEventPast && (
-            <Button
-              appearance='minimal'
-            isDisabled
-            >
-              Past
             </Button>
           )}
         {!isAdminMode && (isUserInDancers || isUserInWaitingList) && (
@@ -338,14 +311,14 @@ const Event = ({
             event={event}
             classe={classData}
           />
-          <AddDancerDrawer
+          {event && <AddDancerDrawer
             isOpen={isAddDancerModalOpen}
             onClose={() => setIsAddDancerModalOpen(false)}
             event={event}
             classe={classData}
             dayDate={dayDate}
             refetchEvents={fetchEvents}
-          />
+          />}
         </>
       )}
     </EventContainer>

@@ -25,7 +25,16 @@ export type ClasseEvent = {
   waitingList: Dancers;
 };
 
+export type ClasseEventWithOptionalId = {
+  id?: string;
+  classId: string;
+  date: string;
+  dancers: Dancers;
+  waitingList: Dancers;
+};
+
 export type UpdateClasseEvent = {
+  id?: string;
   classId?: string;
   date?: string;
   dancers?: Dancers;
