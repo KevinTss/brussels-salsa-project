@@ -1,14 +1,15 @@
-import { Container } from './styles'
+import { FC } from 'react'
 
+import { Container, Content } from './styles'
 import AdminHeader from '../header'
 
-const AdminMain = () => {
+const AdminMain: FC = ({ children }) => {
   return (
     <Container>
       <AdminHeader />
-      <div>
-        content
-      </div>
+      <Content>
+        {children}
+      </Content>
     </Container>
   )
 }

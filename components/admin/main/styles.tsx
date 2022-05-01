@@ -1,18 +1,26 @@
-import { Container as ContainerCkakra } from '@chakra-ui/react';
+import { Container as ContainerCkakra, Flex } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
-type ContainerProps = {
-  children: ReactNode;
-};
-export const Container = ({ children, ...props }: ContainerProps) => (
-  <ContainerCkakra
+export const Container = ({ ...props }) => (
+  <Flex
     margin="0"
     padding="0"
     background='white'
     flex='1'
     maxWidth='100%'
+    flexDirection='column'
     {...props}
-  >
-    {children}
-  </ContainerCkakra>
+  />
+);
+
+export const Content = ({ ...props }) => (
+  <Flex
+    margin="0"
+    background='white'
+    flex='1'
+    maxWidth='100%'
+    padding="16px"
+    overflowY="auto"
+    {...props}
+  />
 );
