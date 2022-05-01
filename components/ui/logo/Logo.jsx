@@ -10,7 +10,7 @@ export default function Logo() {
     <LogoContainer>
       <Link href='/'>
         <a>
-          <Image width='60px' height='60px' src='/img/logo.jpg' alt='logo' />
+          <Image width='40px' height='40px' src='/img/logo.jpg' alt='logo' />
         </a>
       </Link>
     </LogoContainer>

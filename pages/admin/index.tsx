@@ -1,14 +1,15 @@
 import type { NextPage } from 'next';
 
-import DefaultLayout from '../../components/layouts/DefaultLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 import Head from '../../components/head';
 import Admin from '../../views/admin';
 
 const AdminPage: NextPage = () => (
-  <DefaultLayout>
+  <AdminLayout>
     <Head />
-    <Admin />
-  </DefaultLayout>
+
+    {/* <Admin /> */}
+  </AdminLayout>
 );
 
 export default AdminPage;
