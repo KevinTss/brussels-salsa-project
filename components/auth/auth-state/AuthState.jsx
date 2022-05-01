@@ -25,7 +25,7 @@ const AuthState = () => {
         <MenuButton as={Button} variant='ghost'>
           <Avatar
             size='sm'
-            fullName={currentUser.fullName}
+            name={currentUser.fullName}
             src={currentUser.avatarUrl || undefined}
           />
         </MenuButton>
