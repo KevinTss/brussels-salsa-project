@@ -7,7 +7,7 @@ const ClassCard = ({ data }) => {
       <br />
       Level: {data.level}
       <br />
-      Initial spots: {data.spots}
+      Initial spots: {data.spots.base}
       <br />
       Time: {data.time}
       <br />

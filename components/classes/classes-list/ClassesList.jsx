@@ -7,7 +7,9 @@ const ClassesList = () => {
   return (
     <div>
       <ul>
-        {list?.length && list.map((c) => <ClassCard key={c.id} data={c} />)}
+        {list?.map((c) => (
+          <ClassCard key={c.id} data={c} />
+        ))}
       </ul>
     </div>
   );

@@ -1,5 +1,4 @@
-import { Container as ContainerCkakra, Flex } from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import { Flex } from '@chakra-ui/react';
 
 export const Container = ({ ...props }) => (
   <Flex
