@@ -10,11 +10,10 @@ import ClassesRecurringList from '../../components/classes/recurring/list';
 import EditClassDrawer from '../../components/classes/edit-class-drawer';
 import UsersList from '../../components/users/list';
 
-const Home = () => {
+const Home = ({ viewProps }) => {
   const { currentUser } = useOnlyAuthGuard();
   const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
   const [editClassId, setEditClassId] = useState('');
-  const [view, setView] = useState(AdminView.CALENDAR);
   const { getAll } = useUsers();
 
   useEffect(() => {
@@ -26,12 +25,11 @@ const Home = () => {
   return (
     <Main>
       <Cockpit
-        currentView={view}
+        currentView={viewProps}
         onAddClass={() => setIsCreateClassDrawerOpen(true)}
-        changeView={setView}
       />
-      {view === AdminView.CALENDAR && <Calendar isAdminMode />}
-      {view === AdminView.CLASSES && (
+      {viewProps === AdminView.CALENDAR && <Calendar isAdminMode />}
+      {viewProps === AdminView.CLASSES && (
         <>
           <ClassesRecurringList
             onEdit={(classeId) => setEditClassId(classeId)}
@@ -47,7 +45,7 @@ const Home = () => {
           />
         </>
       )}
-      {view === AdminView.USERS && <UsersList />}
+      {viewProps === AdminView.USERS && <UsersList />}
     </Main>
   );
 };

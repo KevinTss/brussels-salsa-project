@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
 
 import AdminLayout from '../../../components/layouts/AdminLayout';
-import ClassesList from '../../../components/classes/classes-list'
+import { AdminView } from '../../../types';
+import Admin from '../../../views/admin'
 
 const AdminClassesPage: NextPage = () => (
   <AdminLayout>
-    <ClassesList />
+    <Admin viewProps={AdminView.CLASSES} />
   </AdminLayout>
 );
 
