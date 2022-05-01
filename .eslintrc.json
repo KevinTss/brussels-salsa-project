@@ -3,5 +3,5 @@
   "rules": {
     "react/display-name": 0,
     "react/jsx-first-prop-new-line": [1, "multiline-multiprop"]
-}
+  }
 }
