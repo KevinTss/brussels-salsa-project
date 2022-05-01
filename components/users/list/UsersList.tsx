@@ -1,36 +1,112 @@
 import { useEffect, useState } from 'react';
+import {
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuButton,
+  Button,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  Text
+} from '@chakra-ui/react';
+import { FaEllipsisV } from 'react-icons/fa'
 
 import { useUsers } from '../../../hooks';
-import UserDetailsDrawer from '../user-details-drawer';
-import UserCard from '../card/UserCard';
-import { UsersContainer } from './style';
+import {
+  UsersContainer,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+} from './style';
+import { User, ClasseLevel } from '../../../types';
+import UserForm from '../user-form'
 
 export default function UsersList() {
-  const [selectedUser, setSelectedUser] = useState('');
-  const { getAll, list } = useUsers();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const { getAll, list, edit } = useUsers();
 
   useEffect(() => {
     getAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getAll]);
 
   return (
+    <>
     <UsersContainer>
-      {list.map((user) => (
-        <UserCard
-          key={user.id}
-          email={user.email}
-          fullName={user.fullName}
-          onClick={() => {
-            setSelectedUser(user.id);
-          }}
-          levels={user.levels}
-        />
-      ))}
-      <UserDetailsDrawer
-        userId={selectedUser}
-        onClose={() => setSelectedUser('')}
-      />
-    </UsersContainer>
-  );
+        <TableContainer>
+          <Table variant='simple'>
+            <TableCaption>Imperial to metric conversion factors</TableCaption>
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+                <Th>Email</Th>
+                <Th>Level</Th>
+                <Th>Action</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {list.map((user) => (
+                <Tr key={user.id}>
+                  <Td>{user.fullName}</Td>
+                  <Td>{user.email}</Td>
+                  <Td>-</Td>
+                  <Td>
+                    <Menu>
+                      <MenuButton as={Button} variant='ghost'>
+                        <FaEllipsisV />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem onClick={() => setSelectedUser(user)}  >
+                          Manage level
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </UsersContainer>
+      <Drawer onClose={() => setSelectedUser(null)} isOpen={!!selectedUser} size='md'>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader>
+            <Text as='p'>
+              {`Edit `}<Text as='span' fontWeight='bold'>{selectedUser?.fullName}</Text>{`'s classe levels`}
+            </Text>
+          </DrawerHeader>
+          <DrawerBody>
+            <UserForm
+              defaultValues={{
+                salsaLevel: (selectedUser?.levels?.salsa ||
+                  ClasseLevel.BEGINNER) as ClasseLevel,
+                bachataLevel: (selectedUser?.levels?.bachata ||
+                  ClasseLevel.BEGINNER) as ClasseLevel,
+              }}
+              onSubmit={(values) => {
+                if (selectedUser?.id) {
+                  edit(selectedUser.id, {
+                    levels: {
+                      salsa: values.salsaLevel,
+                      bachata: values.bachataLevel,
+                    },
+                  });
+                  setSelectedUser(null);
+                  getAll();
+                }
+              }}
+            />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
+  )
 }
