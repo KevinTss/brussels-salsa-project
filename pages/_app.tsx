@@ -9,6 +9,7 @@ import '../components/ui/toast/style.css';
 const MyApp = ({ Component, pageProps }: AppProps) => (
   <>
     <ToastContainerEl />
+    {/* @ts-ignore: TODO: find why this is not working */}
     <Component {...pageProps} />
   </>
 );

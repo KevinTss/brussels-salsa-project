@@ -21,7 +21,7 @@ export const InputContainer = styled.div`
   }
 `;
 
-export const Input = styled.input`
+export const Input = styled.input<{ size: string; isDisabled: boolean }>`
   padding: ${({ size }) => getSize(size)};
   outline: none;
   border: none;

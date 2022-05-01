@@ -74,7 +74,7 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
               <WeekDay
                 key={weekDay}
                 classes={dayClasses}
-                dayName={capitalize(weekDay)}
+                dayName={weekDay}
                 dayDate={offsetDays ? monday.add(offsetDays, 'day') : monday}
                 isAdminMode={isAdminMode}
               />
@@ -84,7 +84,7 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
       ) : (
         <WeekDay
           classes={getDayClasses(classes, getDisplayDayOfWeek(currentDate))}
-          dayName={capitalize(getDisplayDayOfWeek(currentDate))}
+            dayName={getDisplayDayOfWeek(currentDate)}
             dayDate={currentDate} isAdminMode={undefined} />
       )}
     </CalendarContainer>

@@ -4,8 +4,9 @@ import { fireStore } from '../../utils/firebase/clientApp';
 import type {
   Children,
   UsersContext as UsersContextType,
-  NewUserData as NewUserDataType,
-  User as UserType,
+  NewUser,
+  User,
+  UpdateUser
 } from '../../types';
 
 const fireStoreInstance = fireStore.getFirestore();
@@ -20,9 +21,9 @@ export const UsersContext = createContext<UsersContextType>({
 });
 
 export const UsersProvider = ({ children }: { children: Children }) => {
-  const [list, setList] = useState<UserType[]>([]);
+  const [list, setList] = useState<User[]>([]);
 
-  const add = (newUser: UserType) => {
+  const add = (newUser: User) => {
     const userIndex = list.findIndex((user) => user.id === newUser.id);
 
     if (userIndex > -1) return;
@@ -38,7 +39,7 @@ export const UsersProvider = ({ children }: { children: Children }) => {
     return list[userIndex];
   };
 
-  const create = async (newData: NewUserDataType) =>
+  const create = async (newData: NewUser) =>
     await fireStore.setDoc(
       fireStore.doc(fireStoreInstance, 'users', newData.email as string),
       newData
@@ -49,17 +50,17 @@ export const UsersProvider = ({ children }: { children: Children }) => {
       fireStore.collection(fireStoreInstance, 'users')
     );
     const querySnapshot = await fireStore.getDocs(query);
-    const results: UserType[] = [];
+    const results: User[] = [];
     querySnapshot.forEach((doc) => {
       results.push({
         id: doc.id,
         ...doc.data(),
-      } as UserType);
+      } as User);
     });
     setList(() => results);
   };
 
-  const edit = async (id: string, newData: NewUserDataType) => {
+  const edit = async (id: string, newData: UpdateUser) => {
     const userIndex = list.findIndex((user) => user.id === id);
 
     if (userIndex === -1) throw new Error('User not in list');

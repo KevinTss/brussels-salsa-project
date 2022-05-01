@@ -3,37 +3,38 @@ import { createContext } from 'react';
 import { fireStore } from '../../utils/firebase/clientApp';
 import { useUsers } from '../../hooks';
 import {
+  // ClasseEventFetchOneParams,
   Children,
-  EventsContext as EventsContextType,
   ClasseEvent,
-  NewEventData,
-  DancerJoinType,
-  EventFetchOneParams,
+  DancerJoin,
+  EventsContext as EventsContextType,
+  NewClasseEvent,
+  UpdateClasseEvent,
   User,
 } from '../../types';
 
 const fireStoreInstance = fireStore.getFirestore();
 
 export const EventsContext = createContext<EventsContextType>({
-  update: (id, data) => new Promise(() => {}),
-  add: (data) => new Promise(() => {}),
-  fetchOne: (data) => new Promise(() => {}),
-  fetch: (dateFrom, dateTo) => new Promise(() => {}),
+  update: () => new Promise(() => ({})),
+  add: () => new Promise(() => ({})),
+  fetchOne: () => new Promise(() => ({})),
+  fetch: () => new Promise(() => ({})),
 });
 
 export const EventsProvider = ({ children }: { children: Children }) => {
-  const { list: usersList, getById: getUserById, add: addUser } = useUsers();
+  const { list: usersList, add: addUser } = useUsers();
 
-  const add = async (data: NewEventData) =>
+  const add = async (data: NewClasseEvent) =>
     await fireStore.addDoc(
       fireStore.collection(fireStoreInstance, 'events'),
       data
     );
 
-  const update = (id: string, newData: NewEventData) => {
+  const update = (id: string, data: UpdateClasseEvent) => {
     const documentRef = fireStore.doc(fireStoreInstance, 'events', id);
 
-    return fireStore.updateDoc(documentRef, newData);
+    return fireStore.updateDoc(documentRef, data);
   };
 
   const fetch = (dateFrom: Date, dateTo: Date): Promise<ClasseEvent[]> => {
@@ -57,16 +58,16 @@ export const EventsProvider = ({ children }: { children: Children }) => {
         const userListIds = usersList.map((u) => u.id);
         const dancers = results.reduce<string[]>((acc, event) => {
           let newUsers: string[] = [];
-          const extractUserIds = ({ userId }: DancerJoinType) => {
+          const extractUserIds = ({ userId }: DancerJoin) => {
             if (!userListIds.includes(userId) && !newUsers.includes(userId)) {
               newUsers.push(userId);
             }
           };
-          event.dancers?.males?.forEach(extractUserIds);
-          event.dancers?.females?.forEach(extractUserIds);
+          event.dancers?.leaders?.forEach(extractUserIds);
+          event.dancers?.followers?.forEach(extractUserIds);
           if (event?.waitingList) {
-            event.waitingList.males?.forEach(extractUserIds);
-            event.waitingList.females?.forEach(extractUserIds);
+            event.waitingList.leaders?.forEach(extractUserIds);
+            event.waitingList.followers?.forEach(extractUserIds);
           }
 
           return [...acc, ...newUsers];
@@ -100,7 +101,8 @@ export const EventsProvider = ({ children }: { children: Children }) => {
     dateFrom,
     dateTo,
     eventId,
-  }: EventFetchOneParams): Promise<ClasseEvent | null> => {
+    // TODO: find why the type `ClasseEventFetchOneParams` is not working here
+  }: any): Promise<ClasseEvent | null> => {
     if (eventId) {
       const docRef = fireStore.doc(fireStoreInstance, 'events', eventId);
       const docSnap = await fireStore.getDoc(docRef);

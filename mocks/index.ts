@@ -23,7 +23,7 @@ export const MOCK_CLASSE: Classe = {
 };
 
 const getMockedDancer = (): DancerJoin => ({
-  joinOn: new Date().toDateString(),
+  joinOn: new Date(),
   userId: faker.internet.email(),
 });
 export const getMockedDancers = (amount: number = 1): DancerJoin[] =>

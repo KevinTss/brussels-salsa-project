@@ -25,6 +25,7 @@ type Props = {
   isIconReverse?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   type?: string;
+  style?: any;
 };
 
 const ButtonEl = ({
@@ -43,6 +44,7 @@ const ButtonEl = ({
   const iconColorHover = appearance === 'primary' ? 'white' : undefined;
 
   return (
+    // @ts-ignore: Unreachable code error
     <Button
       {...props}
       $hasMarginRight={!!children}
