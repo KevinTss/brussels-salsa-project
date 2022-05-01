@@ -2,9 +2,9 @@ import { Avatar, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/r
 import { useRouter } from 'next/router'
 
 import { Container, Left, Right } from './styles'
-import { useAuth } from '../../../hooks';
 import { capitalize } from '../../../utils';
 import { RoutePaths } from '../../../types';
+import AuthState from '../../auth/auth-state/AuthState';
 
 function getLastBreadcrumbLabel(path: string): string {
   const [, , lastPath] = path.split('/')
@@ -24,7 +24,6 @@ function getLastBreadcrumbHref(path: string): RoutePaths {
 }
 
 const AdminHeader = () => {
-  const { currentUser } = useAuth()
   const { pathname } = useRouter()
 
   return (
@@ -42,7 +41,7 @@ const AdminHeader = () => {
         </Breadcrumb>
       </Left>
       <Right>
-        <Avatar size='sm' name={currentUser?.fullName} src={currentUser?.avatarUrl || undefined} />
+        <AuthState />
       </Right>
     </Container>
   )
