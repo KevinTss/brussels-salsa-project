@@ -1,4 +1,5 @@
 import { Container as ContainerCkakra, useTheme, Flex, Button } from '@chakra-ui/react';
+import { forwardRef, ReactElement } from 'react'
 
 export const Container = ({ ...props }) => {
   const theme = useTheme()
@@ -26,11 +27,12 @@ export const MenuContainer = ({ ...props }) => {
   );
 }
 
-export const MenuItem = ({ ...props }) => {
+export const MenuItem = forwardRef<HTMLButtonElement>(({ ...props }, ref) => {
   const theme = useTheme()
 
   return (
     <Button
+      ref={ref}
       justifyContent='flex-start'
       variant='ghost'
       color={theme.colors.gray[50]}
@@ -41,4 +43,4 @@ export const MenuItem = ({ ...props }) => {
       {...props}
     />
   );
-}
+})

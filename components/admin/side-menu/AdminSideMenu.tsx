@@ -9,17 +9,20 @@ const AdminSideMenu = () => {
       <OrganisationState />
       <MenuContainer>
         <Link href='/admin/users' passHref>
+          {/* @ts-ignore */}
           <MenuItem as='a'>
             Users
           </MenuItem>
         </Link>
         <Link href='/admin/classes' passHref>
-          <MenuItem>
+          {/* @ts-ignore */}
+          <MenuItem as='a'>
             Classes
           </MenuItem>
         </Link>
         <Link href='/admin/calendar' passHref>
-          <MenuItem>
+          {/* @ts-ignore */}
+          <MenuItem as='a'>
             Calendar
           </MenuItem>
         </Link>
