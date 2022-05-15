@@ -18,7 +18,7 @@ const Home = ({ viewProps }) => {
 
   useEffect(() => {
     getAll();
-  }, []);
+  }, [getAll]);
 
   if (!currentUser?.isAdmin) return null;
 
