@@ -23,7 +23,6 @@ import {
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from './style';
 import { User, ClasseLevel } from '../../../types';
@@ -41,14 +40,12 @@ export default function UsersList() {
 
   return (
     <>
-    <UsersContainer>
+      <UsersContainer>
         <TableContainer>
           <Table variant='simple'>
-            <TableCaption>Imperial to metric conversion factors</TableCaption>
             <Thead>
               <Tr>
-                <Th>Name</Th>
-                <Th>Email</Th>
+                <Th>Dancer</Th>
                 <Th>Level</Th>
                 <Th>Action</Th>
               </Tr>
@@ -56,8 +53,11 @@ export default function UsersList() {
             <Tbody>
               {list.map((user) => (
                 <Tr key={user.id}>
-                  <Td>{user.fullName}</Td>
-                  <Td>{user.email}</Td>
+                  <Td>
+                    {user.fullName}
+                    <br />
+                    {user.email}
+                  </Td>
                   <Td>-</Td>
                   <Td>
                     <Menu>

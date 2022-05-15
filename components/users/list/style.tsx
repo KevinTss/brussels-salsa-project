@@ -5,7 +5,6 @@ import {
   Tr as ChakraTr,
   Th as ChakraTh,
   Td as ChakraTd,
-  TableCaption as ChakraTableCaption,
   TableContainer as ChakraTableContainer,
   Flex,
 } from '@chakra-ui/react'
@@ -14,6 +13,7 @@ export const UsersContainer = ({ ...props }) =>
   <Flex
     width="100%"
     flexDirection='column'
+    overflowY='visible'
     {...props}
   />
 
@@ -29,6 +29,4 @@ export const Th = ({ ...props }) => <ChakraTh {...props} />
 
 export const Td = ({ ...props }) => <ChakraTd {...props} />
 
-export const TableCaption = ({ ...props }) => <ChakraTableCaption {...props} />
-
-export const TableContainer = ({ ...props }) => <ChakraTableContainer {...props} />
+export const TableContainer = ({ ...props }) => <ChakraTableContainer overflowY='visible' {...props} />
