@@ -34,8 +34,10 @@ export default function UsersList() {
   const { getAll, list, edit } = useUsers();
 
   useEffect(() => {
-    getAll();
-  }, [getAll]);
+    if (!list.length) {
+      getAll();
+    }
+  }, [getAll, list]);
 
   return (
     <>

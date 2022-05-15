@@ -14,11 +14,13 @@ const Home = ({ viewProps }) => {
   const { currentUser } = useOnlyAuthGuard();
   const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
   const [editClassId, setEditClassId] = useState('');
-  const { getAll } = useUsers();
+  const { getAll, list } = useUsers();
 
   useEffect(() => {
-    getAll();
-  }, [getAll]);
+    if (!list.length) {
+      getAll();
+    }
+  }, [list, getAll]);
 
   if (!currentUser?.isAdmin) return null;
 

@@ -46,18 +46,22 @@ export const UsersProvider = ({ children }: { children: Children }) => {
     );
 
   const getAll = async () => {
-    const query = fireStore.query(
-      fireStore.collection(fireStoreInstance, 'users')
-    );
-    const querySnapshot = await fireStore.getDocs(query);
-    const results: User[] = [];
-    querySnapshot.forEach((doc) => {
-      results.push({
-        id: doc.id,
-        ...doc.data(),
-      } as User);
-    });
-    setList(() => results);
+    try {
+      const query = fireStore.query(
+        fireStore.collection(fireStoreInstance, 'users')
+      );
+      const querySnapshot = await fireStore.getDocs(query);
+      const results: User[] = [];
+      querySnapshot.forEach((doc) => {
+        results.push({
+          id: doc.id,
+          ...doc.data(),
+        } as User);
+      });
+      setList(() => results);
+    } catch (e) {
+      console.warn('error on get all users', e)
+    }
   };
 
   const edit = async (id: string, newData: UpdateUser) => {
