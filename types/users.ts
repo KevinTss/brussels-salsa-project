@@ -52,7 +52,7 @@ export type UpdateUser = {
 };
 
 export type UsersContext = {
-  add: (data: User) => void;
+  add: (data: User, singleList?: boolean) => void;
   create: (data: NewUser) => void;
   edit: (id: string, data: UpdateUser) => void;
   getAll: () => void;

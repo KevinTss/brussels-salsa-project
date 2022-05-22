@@ -24,26 +24,35 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const query = fireStore.query(
-      fireStore.collection(fireStore.getFirestore(), 'classes')
-    );
-    const unsubscribe = fireStore.onSnapshot(query, (querySnapshot) => {
-      const classes: Classe[] = [];
-      querySnapshot.forEach((doc) => {
-        classes.push({
-          id: doc.id,
-          ...doc.data(),
-        } as Classe);
+    console.log(
+      'get classes'
+    )
+    try {
+      const query = fireStore.query(
+        fireStore.collection(fireStore.getFirestore(), 'classes')
+      );
+      const unsubscribe = fireStore.onSnapshot(query, (querySnapshot) => {
+        const classes: Classe[] = [];
+        querySnapshot.forEach((doc) => {
+          classes.push({
+            id: doc.id,
+            ...doc.data(),
+          } as Classe);
+        });
+        console.group();
+        console.warn('Classes fetched');
+        console.warn('Data', classes);
+        console.groupEnd();
+        setList(classes);
+        setLoading(false);
       });
-      console.group();
-      console.warn('Classes fetched');
-      console.warn('Data', classes);
-      console.groupEnd();
-      setList(classes);
-      setLoading(false);
-    });
 
-    return unsubscribe;
+      return unsubscribe;
+    } catch (e) {
+      console.warn(e)
+      setLoading(false);
+    }
+
   }, []);
 
   const add = async (data: NewClasse) => {

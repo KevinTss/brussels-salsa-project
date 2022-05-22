@@ -84,7 +84,7 @@ export const EventsProvider = ({ children }: { children: Children }) => {
               addUser({
                 id: doc.id,
                 ...doc.data(),
-              } as User);
+              } as User, true);
             });
 
             resolve(results);

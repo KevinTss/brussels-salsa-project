@@ -22,21 +22,36 @@ export const UsersContext = createContext<UsersContextType>({
 
 export const UsersProvider = ({ children }: { children: Children }) => {
   const [list, setList] = useState<User[]>([]);
+  const [listByIds, setListByIds] = useState<User[]>([]);
 
-  const add = (newUser: User) => {
-    const userIndex = list.findIndex((user) => user.id === newUser.id);
+  const add = (newUser: User, singleList = false) => {
+    const listToAdd = singleList ? listByIds : list
+    const userIndex = listToAdd.findIndex((user) => user.id === newUser.id);
 
     if (userIndex > -1) return;
 
-    setList((previousList) => [...previousList, newUser]);
+    if (singleList) {
+      setListByIds((previousList) => [...previousList, newUser]);
+    } else {
+      setList((previousList) => [...previousList, newUser]);
+    }
   };
 
   const getById = (id: string) => {
-    const userIndex = list.findIndex((user) => user.id === id);
+    let isListByIds = false
+    let userIndex = list.findIndex((user) => user.id === id);
 
-    if (userIndex === -1) return null;
+    if (userIndex === -1) {
+      userIndex = listByIds.findIndex((user) => user.id === id);
 
-    return list[userIndex];
+      if (userIndex === -1) {
+        return null
+      } else {
+        isListByIds = true
+      }
+    }
+
+    return isListByIds ? listByIds[userIndex] : list[userIndex];
   };
 
   const create = async (newData: NewUser) =>
