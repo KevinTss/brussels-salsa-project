@@ -28,6 +28,7 @@ export type Classe = {
   time: string;
   type: ClasseType;
   balanceOffset: number;
+  isArchived: boolean;
 };
 
 export type ClassesContext = {

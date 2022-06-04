@@ -1,3 +1,5 @@
+import { Dayjs as DayJs } from 'dayjs';
+
 export enum WeekDay {
   MONDAY = 'monday',
   TUESDAY = 'tuesday',
@@ -7,3 +9,5 @@ export enum WeekDay {
   SATURDAY = 'saturday',
   SUNDAY = 'sunday',
 }
+
+export type Dayjs = DayJs;

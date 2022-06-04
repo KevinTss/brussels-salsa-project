@@ -1,9 +1,4 @@
-import {
-  AuthProvider,
-  ClassesProvider,
-  EventsProvider,
-  UsersProvider,
-} from '../../contexts';
+import { AuthProvider, EventsProvider, UsersProvider } from '../../contexts';
 import Header from './header';
 import ThemeProvider from '../../styles/ThemeProvider';
 import GlobalStyle from '../../styles/GlobalStyle';
@@ -14,10 +9,8 @@ const DefaultLayout = ({ children }) => (
     <AuthProvider>
       <UsersProvider>
         <EventsProvider>
-          <ClassesProvider>
-            <Header />
-            {children}
-          </ClassesProvider>
+          <Header />
+          {children}
         </EventsProvider>
       </UsersProvider>
     </AuthProvider>

@@ -11,7 +11,7 @@ import {
 const fireStoreInstance = fireStore.getFirestore();
 
 export const AuthContext = createContext<AuthContextType>({
-  currentUser: null,
+  currentUser: undefined,
   isLoading: false,
   logout: () => undefined,
   setCurrentUser: () => undefined,
@@ -21,7 +21,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: Children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

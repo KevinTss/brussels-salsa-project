@@ -12,11 +12,12 @@ import { ClassesContext as ClassesContextType, Classe } from '../types';
 import { fireStore } from '../utils/firebase/clientApp';
 
 export const useClasses = () => {
-  const { data: classesList } = useQuery(
+  const { data: classesList, isLoading } = useQuery(
     'classesList',
     () =>
       new Promise((resolve, reject) => {
         try {
+          console.info('fetch classes');
           const query = fireStore.query(
             fireStore.collection(fireStore.getFirestore(), 'classes')
           );
@@ -29,18 +30,15 @@ export const useClasses = () => {
               } as Classe);
             });
             console.group();
-            console.warn('Classes fetched');
-            console.warn('Data', classes);
+            console.info('Classes fetched');
+            console.info('Data', classes);
             console.groupEnd();
-            // setList(classes);
-            // setLoading(false);
             resolve(classes);
           });
 
           return unsubscribe;
         } catch (e) {
           console.warn(e);
-          // setLoading(false);
           reject('Could not fetch classes');
         }
       })
@@ -56,7 +54,25 @@ export const useClasses = () => {
   //   loading: data?.loading || false,
   // };
 
+  const add = (data) => {
+    console.log('add classe', data);
+  };
+  const edit = (data) => {
+    console.log('add classe', data);
+  };
+  const deleteById = (data) => {
+    console.log('add classe', data);
+  };
+  const getById = (data) => {
+    console.log('add classe', data);
+  };
+
   return {
-    list: classesList,
+    list: (classesList as Classe[]) || [],
+    isLoading,
+    add,
+    edit,
+    deleteById,
+    getById,
   };
 };

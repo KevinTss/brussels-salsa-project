@@ -9,7 +9,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../styles/globals.css';
 import '../components/ui/toast/style.css';
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false
+    }
+  }
+})
 
 const MyApp = ({ Component, pageProps }: AppProps) => (
   <ChakraProvider theme={theme}>

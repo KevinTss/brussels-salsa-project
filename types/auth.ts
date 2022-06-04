@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { User, UpdateUser } from './users';
 
 export type AuthContext = {
-  currentUser: User | null;
+  currentUser: User | undefined;
   isLoading: boolean;
   logout: () => void;
   setCurrentUser: Dispatch<SetStateAction<User | null>>;

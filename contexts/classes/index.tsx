@@ -1,3 +1,10 @@
+/**
+ * // TODO: REMOVE THIS COMPONENT
+ * NOT USED ANYMORE
+ * 
+ * be sure all methods are migrated
+ */
+
 import { createContext, useState, useEffect } from 'react';
 
 import { fireStore } from '../../utils/firebase/clientApp';
@@ -24,9 +31,6 @@ export const ClassesProvider = ({ children }: { children: Children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(
-      'get classes'
-    )
     try {
       const query = fireStore.query(
         fireStore.collection(fireStore.getFirestore(), 'classes')

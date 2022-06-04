@@ -9,64 +9,50 @@ import {
   EventPrimariesInfo,
   CallToActions,
 } from './style';
-import { useUsers, useAuth } from '../../../../../hooks';
-import { Button, Avatar, Tag, triggerToast, ButtonGroup } from '../../../../ui';
+import { useUsers, useAuth, useJoinEvent, useCancelJoinEvent } from '../../../../../hooks';
+import { Button, Avatar, Tag, ButtonGroup } from '../../../../ui';
 import {
-  addUserToDancers,
-  addUserToWaitingList,
   djs,
-  getDateAndDayAfter,
   getEventNameDisplay,
   getFollowerDancerIds,
   getIsUserInDancers,
   getIsUserInWaitingList,
   getLeaderDancerIds,
-  getNewEvent,
   getTotalWaitingList,
-  handleWaitingList,
-  hasUserClassLevelRequired,
-  isEventFull,
-  isLimitOffsetReached_v2,
-  isOppositeRoleInMajority,
-  removeUserFromEvent,
-  shouldCheckBalance_v2,
 } from '../../../../../utils';
 import DetailsDrawer from './details-drawer';
 import AddDancerDrawer from './add-dancer-drawer';
-import {
-  ClasseEventFetchOneParams,
-  ClasseEvent,
-  Classe,
-  UpdateClasseEvent,
-  NewClasseEvent, ClasseEventWithOptionalId
-} from '../../../../../types';
+import { ClasseEvent, Classe } from '../../../../../types';
 
 type Props = {
   classData: Classe;
   event?: ClasseEvent;
-  fetchEvents: () => Promise<ClasseEvent[]>;
-  fetchEvent: (data: ClasseEventFetchOneParams) => Promise<ClasseEvent | null>;
+  refetchEvents: () => void;
   dayDate: Dayjs;
-  addEvent: (data: NewClasseEvent) => void;
-  updateEvent: (id: string, data: UpdateClasseEvent) => void;
-  isAdminMode: boolean;
+  isAdminMode?: boolean;
 };
 
 const Event = ({
   classData,
   event,
-  fetchEvents,
-  fetchEvent,
+  refetchEvents,
   dayDate,
-  addEvent,
-  updateEvent,
-  isAdminMode,
+  isAdminMode = false,
 }: Props) => {
   const { getById } = useUsers();
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isAddDancerModalOpen, setIsAddDancerModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { join } = useJoinEvent({
+    classe: classData,
+    event: event,
+    dayDate
+  })
+  const { cancelJoin } = useCancelJoinEvent({
+    classe: classData,
+    event: event as ClasseEvent,
+    dayDate
+  })
 
   const eventDate = djs()
     .year(dayDate.year())
@@ -80,138 +66,25 @@ const Event = ({
   const waitingListLength = event ? getTotalWaitingList(event) : 0
 
   const joinHandle = async () => {
-    if (
-      isAdminMode ||
-      isEventPast ||
-      isUserInDancers ||
-      isUserInWaitingList ||
-      !currentUser?.dancerRole
-    ) {
-      console.group()
-      console.log('isAdminMode', isAdminMode)
-      console.log('isEventPast', isEventPast)
-      console.log('isUserInDancers', isUserInDancers)
-      console.log('isUserInWaitingList', isUserInWaitingList)
-      console.log('currentUser', currentUser)
-      console.groupEnd()
-
-      return
-    }
-
-
-    if (!hasUserClassLevelRequired(currentUser, classData)) {
-      triggerToast.error(
-        "Sorry, you don't have yet the level to join this class"
-      );
-
-      return;
-    }
-
-    setIsLoading(true);
-
-    let newlyFetchedEvent;
-    if (event?.id) {
-      newlyFetchedEvent = await fetchEvent({ eventId: event.id });
-    } else {
-      const [dateFrom, dateTo] = getDateAndDayAfter(dayDate);
-      newlyFetchedEvent = await fetchEvent({
-        classId: classData.id,
-        dateFrom,
-        dateTo,
-      });
-    }
+    if (isAdminMode) return
 
     try {
-      // In case the user is the first to join, no event exist in DB
-      if (!newlyFetchedEvent) {
-        const newEvent = getNewEvent(currentUser, classData, dayDate);
-        await addEvent(newEvent);
-        await fetchEvents();
-        setIsLoading(false);
-
-        return
-      }
-
-      let updatedEvent: ClasseEventWithOptionalId
-      let whereTheUserWhereAdded: 'waitingList' | 'dancers'
-      /**
-       * The order of checks is IMPORTANT
-       */
-      if (isEventFull(newlyFetchedEvent, classData)) {
-        updatedEvent = addUserToWaitingList(newlyFetchedEvent, currentUser)
-        whereTheUserWhereAdded = 'waitingList'
-      } else if (!shouldCheckBalance_v2(newlyFetchedEvent, classData)) {
-        updatedEvent = addUserToDancers(newlyFetchedEvent, currentUser)
-        whereTheUserWhereAdded = 'dancers'
-      } else if (isOppositeRoleInMajority(newlyFetchedEvent, currentUser)) {
-        updatedEvent = addUserToDancers(newlyFetchedEvent, currentUser)
-        whereTheUserWhereAdded = 'dancers'
-      } else if (isLimitOffsetReached_v2(newlyFetchedEvent, classData)) {
-        updatedEvent = addUserToWaitingList(newlyFetchedEvent, currentUser)
-        whereTheUserWhereAdded = 'waitingList'
-      } else {
-        updatedEvent = addUserToDancers(newlyFetchedEvent, currentUser)
-        whereTheUserWhereAdded = 'dancers'
-      }
-
-      const { updatedEvent: finalUpdatedEvent, addedDancerIds } = handleWaitingList(updatedEvent, classData)
-
-      const eventId = finalUpdatedEvent.id
-      // TODO: send email to added users
-      console.log('addedDancerIds', addedDancerIds)
-      delete updatedEvent.id
-
-      await updateEvent(eventId as string, updatedEvent);
-      await fetchEvents()
-
-      if (whereTheUserWhereAdded === 'waitingList') {
-        triggerToast.success("The classe is full, you have been successfully added in the waiting list");
-      } else {
-        triggerToast.success("You've been successfully added");
-      }
-
-      setIsLoading(false);
-
-    } catch (error: any) {
-      setIsLoading(false);
-      console.warn('error on join', error);
-      console.warn('message', error.message);
+      await join(currentUser)
+      await refetchEvents()
+    } catch (e) {
+      console.log('e', e)
     }
   };
 
   const cancelHandle = async () => {
-    if (!currentUser) return
-    if (
-      !event?.id ||
-      isAdminMode ||
-      isEventPast ||
-      (!isUserInDancers && !isUserInWaitingList)
-    )
-      return;
+    if (isAdminMode || !currentUser) return
 
-    setIsLoading(true)
-
-    const newlyFetchedEvent = await fetchEvent({ eventId: event.id });
-
-    if (!newlyFetchedEvent) {
-      triggerToast.error("Sorry, something went wrong");
-      setIsLoading(false)
-
-      return
+    try {
+      await cancelJoin(currentUser)
+      await refetchEvents()
+    } catch (e) {
+      console.log('e', e)
     }
-
-    const updatedEvent = removeUserFromEvent(newlyFetchedEvent, currentUser)
-    const { updatedEvent: finalUpdatedEvent, addedDancerIds } = handleWaitingList(updatedEvent, classData)
-
-    const eventId = finalUpdatedEvent.id
-    // TODO: send email to added users
-    console.log('addedDancerIds', addedDancerIds)
-    delete finalUpdatedEvent.id
-
-    await updateEvent(eventId as string, finalUpdatedEvent);
-    await fetchEvents()
-
-    setIsLoading(false)
   };
 
   return (
@@ -270,8 +143,7 @@ const Event = ({
           !isUserInWaitingList && (
             <Button
               appearance='primary'
-              onClick={joinHandle}
-            isLoading={isLoading}
+            onClick={joinHandle}
             isDisabled={isEventPast}
             >
               Join
@@ -317,7 +189,7 @@ const Event = ({
             event={event}
             classe={classData}
             dayDate={dayDate}
-            refetchEvents={fetchEvents}
+            refetchEvents={refetchEvents}
           />}
         </>
       )}

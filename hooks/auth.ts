@@ -8,7 +8,7 @@ export const useAuth = () => {
   const data = useContext<AuthContextType>(AuthContext);
 
   const typedData: AuthContextType = {
-    currentUser: data?.currentUser || null,
+    currentUser: data?.currentUser || undefined,
     isLoading: data?.isLoading || false,
     logout: data?.logout || (() => undefined),
     setCurrentUser: data?.setCurrentUser || (() => undefined),

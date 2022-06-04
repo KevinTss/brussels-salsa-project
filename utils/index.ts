@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { Classe, ClasseLevel, User } from '../types';
 
 export * from './constants';
@@ -40,9 +40,9 @@ export const levelOptions = Object.entries(ClasseLevel)
  * Will return the current date (in JS Date object) and the next day
  *
  * @param {Dayjs} dayDate Day JS desired date
- * @returns {Array} [Date, DateTomorrow]
+ * @returns {[Dayjs, Dayjs]} [DateToday, DateTomorrow]
  */
-export const getDateAndDayAfter = (dayDate: Dayjs): [Date, Date] => {
+export const getDateAndDayAfter = (dayDate: Dayjs): [Dayjs, Dayjs] => {
   const date = new Date(dayDate.year(), dayDate.month(), dayDate.date());
   const nextDay = dayDate.add(1, 'day');
   const dateTomorrow = new Date(
@@ -51,7 +51,7 @@ export const getDateAndDayAfter = (dayDate: Dayjs): [Date, Date] => {
     nextDay.date()
   );
 
-  return [date, dateTomorrow];
+  return [dayjs(date), dayjs(dateTomorrow)];
 };
 
 /**
