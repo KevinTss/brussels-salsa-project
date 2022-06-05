@@ -64,6 +64,8 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
   function renderDayView() {
     if (isLoading) return '...'
 
+    if (!list.length) return 'No classes today'
+
     return (
       <WeekDay
         classes={list}
