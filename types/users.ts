@@ -38,15 +38,11 @@ export type NewUser = {
 };
 
 export type UpdateUser = {
-  accessToken?: string;
-  accounts?: Account[];
   avatarUrl?: string;
   dancerRole?: DancerRole;
   email?: string;
   fullName?: string;
   gender?: Gender;
-  id?: string;
-  isAdmin?: boolean;
   levels?: UserLevel;
   phone?: string;
 };

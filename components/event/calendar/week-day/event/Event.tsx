@@ -9,7 +9,7 @@ import {
   EventPrimariesInfo,
   CallToActions,
 } from './style';
-import { useUsers, useAuth, useJoinEvent, useCancelJoinEvent } from '../../../../../hooks';
+import { useAuth, useJoinEvent, useCancelJoinEvent } from '../../../../../hooks';
 import { Button, Avatar, Tag, ButtonGroup } from '../../../../ui';
 import {
   djs,
@@ -39,7 +39,6 @@ const Event = ({
   dayDate,
   isAdminMode = false,
 }: Props) => {
-  const { getById } = useUsers();
   const { currentUser } = useAuth();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isAddDancerModalOpen, setIsAddDancerModalOpen] = useState(false);
@@ -102,7 +101,7 @@ const Event = ({
             <span>{waitingListLength} on waiting list</span>
           )}
         </h4>
-        <MalesContainer>
+        {/* <MalesContainer>
           <p>Leaders</p>
           <div>
             {getLeaderDancerIds(event).map((userId, i) => {
@@ -118,8 +117,8 @@ const Event = ({
               );
             })}
           </div>
-        </MalesContainer>
-        <FemalesContainer>
+        </MalesContainer> */}
+        {/* <FemalesContainer>
           <p>Followers</p>
           <div>
             {getFollowerDancerIds(event).map((userId, i) => {
@@ -135,7 +134,7 @@ const Event = ({
               );
             })}
           </div>
-        </FemalesContainer>
+        </FemalesContainer> */}
       </DancersContainer>}
       <CallToActions>
         {!isAdminMode &&

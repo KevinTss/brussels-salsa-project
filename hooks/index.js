@@ -6,5 +6,6 @@ export * from './useDayClasses';
 export * from './useEvents';
 export * from './useFetchEventByDateRange';
 export * from './useJoinEvent';
-export * from './users';
 export * from './useUpdateEvent';
+export * from './useUserEdit';
+export * from './useUsers';

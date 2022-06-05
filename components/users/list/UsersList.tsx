@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { FaEllipsisV } from 'react-icons/fa'
 
-import { useUsers } from '../../../hooks';
+import { useUsers, useAuth, useUserEdit } from '../../../hooks';
 import {
   UsersContainer,
   Table,
@@ -27,16 +27,13 @@ import {
 } from './style';
 import { User, ClasseLevel } from '../../../types';
 import UserForm from '../user-form'
+import UserLevelCard from '../level-card'
 
 export default function UsersList() {
+  const { currentUser } = useAuth();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const { getAll, list, edit } = useUsers();
-
-  useEffect(() => {
-    if (!list.length) {
-      getAll();
-    }
-  }, [getAll, list]);
+  const { list, refetch } = useUsers({ admin: currentUser });
+  const { edit } = useUserEdit()
 
   return (
     <>
@@ -51,14 +48,16 @@ export default function UsersList() {
               </Tr>
             </Thead>
             <Tbody>
-              {list.map((user) => (
+              {list?.map((user) => (
                 <Tr key={user.id}>
                   <Td>
                     {user.fullName}
                     <br />
                     {user.email}
                   </Td>
-                  <Td>-</Td>
+                  <Td>
+                    <UserLevelCard levels={user?.levels} />
+                  </Td>
                   <Td>
                     <Menu>
                       <MenuButton as={Button} variant='ghost'>
@@ -94,15 +93,19 @@ export default function UsersList() {
                   ClasseLevel.BEGINNER) as ClasseLevel,
               }}
               onSubmit={(values) => {
-                if (selectedUser?.id) {
-                  edit(selectedUser.id, {
-                    levels: {
-                      salsa: values.salsaLevel,
-                      bachata: values.bachataLevel,
-                    },
+                if (selectedUser?.id && currentUser) {
+                  edit({
+                    user: selectedUser,
+                    admin: currentUser,
+                    newData: {
+                      levels: {
+                        salsa: values.salsaLevel,
+                        bachata: values.bachataLevel,
+                      },
+                    }
                   });
                   setSelectedUser(null);
-                  getAll();
+                  refetch();
                 }
               }}
             />
