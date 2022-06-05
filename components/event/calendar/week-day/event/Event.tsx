@@ -20,8 +20,8 @@ import {
   getLeaderDancerIds,
   getTotalWaitingList,
 } from '../../../../../utils';
-import DetailsDrawer from './details-drawer';
-import AddDancerDrawer from './add-dancer-drawer';
+// import DetailsDrawer from './details-drawer';
+// import AddDancerDrawer from './add-dancer-drawer';
 import { ClasseEvent, Classe } from '../../../../../types';
 
 type Props = {
@@ -173,7 +173,7 @@ const Event = ({
           </ButtonGroup>
         )}
       </CallToActions>
-      {isAdminMode && (
+      {/* {isAdminMode && (
         <>
           <DetailsDrawer
             dayDate={dayDate}
@@ -191,7 +191,7 @@ const Event = ({
             refetchEvents={refetchEvents}
           />}
         </>
-      )}
+      )} */}
     </EventContainer>
   );
 };

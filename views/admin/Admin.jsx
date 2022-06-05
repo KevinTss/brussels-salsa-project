@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { Main } from './style';
-import { useOnlyAuthGuard, useUsers } from '../../hooks';
+import { useOnlyAuthGuard } from '../../hooks';
 import CreateClassDrawer from '../../components/classes/create-class-drawer';
 import Calendar from '../../components/event/calendar';
 import Cockpit from '../../components/admin/cockpit';
@@ -14,13 +14,6 @@ const Home = ({ viewProps }) => {
   const { currentUser } = useOnlyAuthGuard();
   const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
   const [editClassId, setEditClassId] = useState('');
-  const { getAll, list } = useUsers();
-
-  useEffect(() => {
-    if (!list.length) {
-      getAll();
-    }
-  }, [list, getAll]);
 
   if (!currentUser?.isAdmin) return null;
 
