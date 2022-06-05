@@ -1,4 +1,4 @@
-import { AuthProvider, EventsProvider, UsersProvider } from '../../contexts';
+import { AuthProvider } from '../../contexts';
 import ThemeProvider from '../../styles/ThemeProvider';
 import AdminGlobalStyle from '../../styles/AdminGlobalStyle';
 import AdminSideMenu from '../admin/side-menu';
@@ -8,12 +8,8 @@ const AdminLayout = ({ children }) => (
   <ThemeProvider>
     <AdminGlobalStyle />
     <AuthProvider>
-      <UsersProvider>
-        <EventsProvider>
-          <AdminSideMenu />
-          <AdminMain>{children}</AdminMain>
-        </EventsProvider>
-      </UsersProvider>
+      <AdminSideMenu />
+      <AdminMain>{children}</AdminMain>
     </AuthProvider>
   </ThemeProvider>
 );
