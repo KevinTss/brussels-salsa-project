@@ -1,3 +1,5 @@
+import { useQueryClient } from 'react-query';
+
 import { ClasseEvent, Classe, User, Dayjs } from '../types';
 import {
   hasUserClassLevelRequired,
@@ -34,6 +36,7 @@ export const useJoinEvent = ({
   classe,
   dayDate,
 }: useJoinEventParams) => {
+  const queryClient = useQueryClient();
   const { fetch: fetchById } = useFetchEvent();
   // const { fetch: fetchByDateRange } = useFetchEventByDateRange();
   const { create } = useCreateEvent();
@@ -106,6 +109,8 @@ export const useJoinEvent = ({
             dayDate,
           });
         }
+
+        queryClient.invalidateQueries('eventsList');
 
         resolve(true);
       } catch (error: any) {

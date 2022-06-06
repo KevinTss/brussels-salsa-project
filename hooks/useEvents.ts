@@ -13,7 +13,7 @@ type useEventsParams = {
 
 export const useEvents = ({ dateFrom, dateTo, classeIds }: useEventsParams) => {
   const { data, isLoading, refetch } = useQuery<ClasseEvent[], Error>(
-    ['classesList', dateFrom.toDate(), dateTo.toDate()],
+    ['eventsList', dateFrom.toDate(), dateTo.toDate()],
     () =>
       new Promise((resolve, reject) => {
         try {
