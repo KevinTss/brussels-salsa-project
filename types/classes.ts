@@ -48,4 +48,15 @@ export type NewClasse = {
   time: string;
   type: ClasseType;
   balanceOffset: number;
+  isArchived: boolean;
+};
+
+export type ClasseUpdateData = {
+  day?: WeekDay;
+  level?: ClasseLevel;
+  spots?: { base: number; max: number };
+  time?: string;
+  type?: ClasseType;
+  balanceOffset?: number;
+  isArchived?: boolean;
 };

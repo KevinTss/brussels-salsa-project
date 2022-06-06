@@ -1,7 +1,6 @@
 import { ClasseEvent, Classe, User, Dayjs } from '../types';
 import {
   hasUserClassLevelRequired,
-  getDateAndDayAfter,
   isEventFull,
   addUserToWaitingList,
   shouldCheckBalance_v2,
@@ -11,7 +10,7 @@ import {
   handleWaitingList,
 } from '../utils';
 import { useFetchEvent } from './useFetchEvent';
-import useFetchEventByDateRange from './useFetchEventByDateRange';
+// import useFetchEventByDateRange from './useFetchEventByDateRange';
 import { useCreateEvent } from './useCreateEvent';
 import { useUpdateEvent } from './useUpdateEvent';
 

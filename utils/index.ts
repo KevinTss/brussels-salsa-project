@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { Classe, ClasseLevel, User } from '../types';
+import { Classe, ClasseLevel, User, ClasseType, WeekDay } from '../types';
 
 export * from './constants';
 export * from './dayjs';
@@ -33,8 +33,28 @@ export const levelOptions = Object.entries(ClasseLevel)
   )
   .map(([label, value]) => ({
     value: value,
-    label: label,
+    label: capitalize(label.toLowerCase()),
   }));
+
+export const typeOptions = Object.values(ClasseType).map((key) => ({
+  value: key,
+  label: capitalize(key),
+}));
+
+export const hourOptions = [...Array(24).keys()].map((i) => ({
+  value: i.toString().padStart(2, '0'),
+  label: i.toString().padStart(2, '0') + 'h',
+}));
+
+export const minuteOptions = [
+  { value: '30', label: '30' },
+  { value: '00', label: '00' },
+];
+
+export const weekDayOptions = Object.values(WeekDay).map((key) => ({
+  value: key,
+  label: capitalize(key),
+}));
 
 /**
  * Will return the current date (in JS Date object) and the next day
@@ -73,3 +93,30 @@ export const normalize = (str: string): string =>
     .toLowerCase()
     .normalize()
     .replace(/[\u0300-\u036f]/g, '');
+
+export const getTimeFromClasse = (classe: Classe): string[] =>
+  classe.time.split(':');
+
+const getNumberDay = (day: WeekDay): number => {
+  const index = Object.values(WeekDay).findIndex((val) => val === day);
+
+  return index >= 0 ? index : 0;
+};
+
+export const getClassesSortedByDayAndTime = (
+  classesList: Classe[]
+): Classe[] => {
+  const clonedList = [...classesList];
+
+  const sortedList = clonedList.sort((classeA, classeB) => {
+    if (classeA.day === classeB.day) {
+      return classeA.time.localeCompare(classeB.time);
+    }
+    const dayA = getNumberDay(classeA.day);
+    const dayB = getNumberDay(classeB.day);
+
+    return dayA - dayB;
+  });
+
+  return sortedList;
+};

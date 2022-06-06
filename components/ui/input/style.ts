@@ -2,11 +2,11 @@ import styled from 'styled-components';
 
 import { Icon } from '../icon/style';
 
-const getSize = (size = 'm') =>
-  ({
-    m: '11.5px',
-    s: '6px',
-  }[size]);
+// const getSize = (size = 'm') =>
+//   ({
+//     m: '11.5px',
+//     s: '6px',
+//   }[size]);
 
 export const InputContainer = styled.div`
   display: flex;
@@ -21,8 +21,9 @@ export const InputContainer = styled.div`
   }
 `;
 
+// padding: ${({ size }) => getSize(size)};
 export const Input = styled.input<{ size: string; isDisabled: boolean }>`
-  padding: ${({ size }) => getSize(size)};
+  padding: 6px 12px;
   outline: none;
   border: none;
   background-color: rgba(255, 255, 255, 0);

@@ -1,48 +1,40 @@
-import { useState } from 'react';
-
 import { Main } from './style';
 import { useOnlyAuthGuard } from '../../hooks';
-import CreateClassDrawer from '../../components/classes/create-class-drawer';
 import Calendar from '../../components/event/calendar';
-import Cockpit from '../../components/admin/cockpit';
 import { AdminView } from '../../types';
-import ClassesRecurringList from '../../components/classes/recurring/list';
-import EditClassDrawer from '../../components/classes/edit-class-drawer';
+
 import UsersList from '../../components/users/list';
+import ClasseList from '../../components/classes/list';
+import ClasseAdminCockpit from '../../components/classes/admin-cockpit';
 
 const Home = ({ viewProps }) => {
   const { currentUser } = useOnlyAuthGuard();
-  const [isCreateClassDrawerOpen, setIsCreateClassDrawerOpen] = useState(false);
-  const [editClassId, setEditClassId] = useState('');
 
   if (!currentUser?.isAdmin) return null;
 
-  return (
-    <Main>
-      <Cockpit
-        currentView={viewProps}
-        onAddClass={() => setIsCreateClassDrawerOpen(true)}
-      />
-      {viewProps === AdminView.CALENDAR && <Calendar isAdminMode />}
-      {viewProps === AdminView.CLASSES && (
-        <>
-          <ClassesRecurringList
-            onEdit={(classeId) => setEditClassId(classeId)}
-          />
-          <CreateClassDrawer
-            isOpen={isCreateClassDrawerOpen}
-            onClose={() => setIsCreateClassDrawerOpen(false)}
-          />
-          <EditClassDrawer
-            classeId={editClassId}
-            isOpen={!!editClassId}
-            onClose={() => setEditClassId('')}
-          />
-        </>
-      )}
-      {viewProps === AdminView.USERS && <UsersList />}
-    </Main>
-  );
+  return <Main>{renderContent()}</Main>;
+
+  function renderContent() {
+    switch (viewProps) {
+      case AdminView.CALENDAR:
+        return <Calendar isAdminMode />;
+      case AdminView.CLASSES:
+        return (
+          <>
+            <ClasseAdminCockpit />
+            <ClasseList />
+          </>
+        );
+      case AdminView.USERS:
+        return (
+          <>
+            <UsersList />
+          </>
+        );
+      default:
+        return null;
+    }
+  }
 };
 
 export default Home;
