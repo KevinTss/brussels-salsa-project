@@ -1,5 +1,5 @@
 import { Container as ContainerCkakra, useTheme, Flex, Button } from '@chakra-ui/react';
-import { forwardRef, ReactElement } from 'react'
+import { forwardRef, ReactElement, FC, ForwardRefExoticComponent, RefAttributes } from 'react'
 
 export const Container = ({ ...props }) => {
   const theme = useTheme()
@@ -26,8 +26,10 @@ export const MenuContainer = ({ ...props }) => {
     />
   );
 }
-
-export const MenuItem = forwardRef<HTMLButtonElement>(({ ...props }, ref) => {
+type Props = {
+  isActive: boolean,
+}
+export const MenuItem = forwardRef<HTMLButtonElement, Props>(({ isActive, ...props }, ref) => {
   const theme = useTheme()
 
   return (
@@ -35,7 +37,8 @@ export const MenuItem = forwardRef<HTMLButtonElement>(({ ...props }, ref) => {
       ref={ref}
       justifyContent='flex-start'
       variant='ghost'
-      color={theme.colors.gray[50]}
+      color={isActive ? theme.colors.gray[50] : theme.colors.gray[50]}
+      background={isActive ? theme.colors.gray[700] : 'transparent'}
       _hover={{
         color: theme.colors.gray[50],
         background: theme.colors.gray[700]
