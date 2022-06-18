@@ -20,6 +20,7 @@ export const Content = ({ ...props }) => (
     maxWidth='100%'
     padding="16px"
     overflowY="auto"
+    zIndex={0}
     {...props}
   />
 );

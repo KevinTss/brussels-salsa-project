@@ -49,7 +49,7 @@ export const addUserToDancers = (
   return updatedEvent;
 };
 
-const getTotalDancers = (event: ClasseEvent): number => {
+export const getTotalDancers = (event: ClasseEvent): number => {
   let total: number = 0;
   if (event.dancers.leaders?.length) {
     total += event.dancers.leaders?.length;

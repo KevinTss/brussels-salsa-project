@@ -11,6 +11,7 @@ export const Container = ({ ...props }) => {
       height="60px"
       alignItems='center'
       padding='0 16px'
+      zIndex={1}
       {...props}
     />
   );

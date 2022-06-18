@@ -4,6 +4,7 @@ import { Classe, ClasseLevel, User, ClasseType, WeekDay } from '../types';
 export * from './constants';
 export * from './dayjs';
 export * from './event';
+export * from './date.utils';
 
 export const getLevelDisplay = (level: number) =>
   ['Beginner', 'Improver'][level];
@@ -87,17 +88,16 @@ export const hasUserClassLevelRequired = (
   return userLevel >= classe.level;
 };
 
-export const normalize = (str: string): string =>
+export const normalize = (str: string) =>
   str
     .trim()
     .toLowerCase()
     .normalize()
     .replace(/[\u0300-\u036f]/g, '');
 
-export const getTimeFromClasse = (classe: Classe): string[] =>
-  classe.time.split(':');
+export const getTimeFromClasse = (classe: Classe) => classe.time.split(':');
 
-const getNumberDay = (day: WeekDay): number => {
+const getNumberDay = (day: WeekDay) => {
   const index = Object.values(WeekDay).findIndex((val) => val === day);
 
   return index >= 0 ? index : 0;

@@ -1,4 +1,4 @@
-import { DocumentReference } from 'firebase/firestore';
+import { DocumentReference, Timestamp } from 'firebase/firestore';
 
 export type DancerJoin = {
   joinOn: Date;
@@ -20,7 +20,7 @@ export type NewClasseEvent = {
 export type ClasseEvent = {
   id: string;
   classId: string;
-  date: string;
+  date: Timestamp;
   dancers: Dancers;
   waitingList: Dancers;
 };
