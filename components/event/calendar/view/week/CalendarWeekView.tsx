@@ -13,25 +13,18 @@ import ColumnBody from './column/body'
 import ColumnHeader from './column/header'
 import { useRangeEvents, useClasses } from '../../../../../hooks'
 
-// const days = [
-//   'monday',
-//   'tuesday',
-//   'wednesday',
-//   'thursday',
-//   'friday',
-//   'saturday',
-//   'sunday',
-// ]
-
 const days = weekDayOptions.map(o => o.value)
 
-const CalendarWeekView: FC = () => {
-  const today = djs()
+type Props = {
+  baseDate?: Dayjs
+}
+
+const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
   const data = useMemo(() => ({
-    currentWeekDay: getWeekDay(today),
-    mondayDate: getStartWeekDate(today),
-    sundayDate: getEndWeekDate(today),
-  }), [today])
+    currentWeekDay: getWeekDay(baseDate),
+    mondayDate: getStartWeekDate(baseDate),
+    sundayDate: getEndWeekDate(baseDate),
+  }), [baseDate])
   const { list: events } = useRangeEvents({
     dateFrom: data.mondayDate,
     dateTo: data.sundayDate
@@ -61,7 +54,7 @@ const CalendarWeekView: FC = () => {
 
   function renderColumn(isHeader = false, index = 0) {
     const diff = data.currentWeekDay - index
-    const columnDate = today.subtract(diff, 'day')
+    const columnDate = baseDate.subtract(diff, 'day')
 
     if (isHeader) {
       return <DayColumn key={`header-${index}`}>

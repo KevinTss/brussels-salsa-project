@@ -52,7 +52,7 @@ const EventsCalendar = ({ isAdminMode = false }: Props) => {
   function renderWeekView() {
     if (isLoading) return '...'
 
-    return <CalendarWeekView />
+    return <CalendarWeekView baseDate={currentDate} />
   }
 };
 
