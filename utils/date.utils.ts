@@ -21,3 +21,13 @@ export const getEndWeekDate = (date: Dayjs) => {
 
   return date.add(6 - weekDay, 'day');
 };
+
+export const days: WeekDay[] = [
+  WeekDay.SUNDAY,
+  WeekDay.MONDAY,
+  WeekDay.TUESDAY,
+  WeekDay.WEDNESDAY,
+  WeekDay.THURSDAY,
+  WeekDay.FRIDAY,
+  WeekDay.SATURDAY,
+];
