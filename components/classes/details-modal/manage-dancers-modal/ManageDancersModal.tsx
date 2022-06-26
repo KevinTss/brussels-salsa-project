@@ -145,6 +145,7 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
               value: pId
             })) : null}
             maxMenuHeight="150px"
+            isLoading={isLoading}
           />
           <Button onClick={() => addParticipants(type)}>Add</Button>
         </Flex>

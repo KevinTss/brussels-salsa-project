@@ -21,6 +21,7 @@ type InputProps = {
   isSearchable?: boolean
   placeholder?: string
   maxMenuHeight?: string
+  isLoading?: boolean
 };
 
 export default forwardRef<JSX.Element, InputProps>(
