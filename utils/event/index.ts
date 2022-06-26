@@ -67,6 +67,19 @@ export const getLeaderDancerIds = (event?: ClasseEvent): string[] =>
 export const getFollowerDancerIds = (event?: ClasseEvent): string[] =>
   event?.dancers?.followers?.map(({ userId }) => userId) || [];
 
+const getWaitingLeaderDancerIds = (event?: ClasseEvent): string[] =>
+  event?.waitingList?.leaders?.map(({ userId }) => userId) || [];
+
+const getWaitingFollowerDancerIds = (event?: ClasseEvent): string[] =>
+  event?.waitingList?.followers?.map(({ userId }) => userId) || [];
+
+export const getParticipantsIds = (event: ClasseEvent) => ({
+  leadersIds: getLeaderDancerIds(event),
+  followersIds: getFollowerDancerIds(event),
+  waitingLeadersIds: getWaitingLeaderDancerIds(event),
+  waitingFollowersIds: getWaitingFollowerDancerIds(event),
+});
+
 export const shouldCheckBalance_v2 = (
   event: ClasseEvent,
   classe: Classe

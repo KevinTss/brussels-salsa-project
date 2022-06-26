@@ -7,6 +7,7 @@ export * from './useClasseUpdate';
 export * from './useCreateEvent';
 export * from './useDayClasses';
 export * from './useEvents';
+export * from './useEventUpdate';
 export * from './useFetchEventByDateRange';
 export * from './useJoinEvent';
 export * from './useRangeEvents';

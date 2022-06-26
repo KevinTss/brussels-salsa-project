@@ -1,0 +1,92 @@
+import { FC, useState } from 'react'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Button,
+  Avatar,
+  AvatarGroup,
+  Heading,
+  Text,
+  Flex
+} from '@chakra-ui/react'
+
+import { Classe, ClasseEvent } from '../../../types'
+import {
+  capitalize,
+  getLeaderDancerIds,
+  getFollowerDancerIds,
+  getParticipantsIds
+} from '../../../utils'
+import ManageDancersModal from './manage-dancers-modal'
+
+type Props = {
+  event?: ClasseEvent,
+  classe?: Classe,
+  onClose: () => void
+}
+
+const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
+  const [manageModal, setManageModal] = useState<'l' | 'f' | ''>('')
+  const title = event && classe
+    ? `${capitalize(classe.type)} classe on ${classe.day} at ${classe.time}`
+    : 'Event'
+  const participantsIds = event ? getParticipantsIds(event) : null
+  // const leaders = event ? getLeaderDancerIds(event) : []
+  // const followers = event ? getFollowerDancerIds(event) : []
+  // const waitingLeaders = event ? getWaitingLeaderDancerIds(event) : []
+  // const waitingFollowers = event ? getWaitingFollowerDancerIds(event) : []
+
+  return (
+    <>
+      <Modal isOpen={!!event} onClose={onClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{title}</ModalHeader>
+
+          <ModalBody>
+            <Flex>
+              <Flex flexDirection="column" flex="1">
+                <Heading size='sm'>Base spots</Heading>
+                <Text>{classe?.spots.base}</Text>
+              </Flex>
+              <Flex flexDirection="column" flex="1">
+                <Heading size='sm'>Max spots</Heading>
+                <Text>{classe?.spots.max}</Text>
+              </Flex>
+            </Flex>
+            <Flex mt="24px" justifyContent="space-between" borderBottom="1px solid rgba(0,0,0,0.1)">
+              <Heading size='sm'>Leaders ({participantsIds?.leadersIds.length})</Heading>
+              <Button variant='ghost' onClick={() => setManageModal('l')} size='xs'>manage</Button>
+            </Flex>
+            <AvatarGroup size='sm' max={5} mt="6px">
+              {participantsIds?.leadersIds.map(l => <Avatar key={l} name={l} />)}
+            </AvatarGroup>
+            <Flex mt="24px" justifyContent="space-between" borderBottom="1px solid rgba(0,0,0,0.1)">
+              <Heading size='sm'>Followers ({participantsIds?.followersIds.length})</Heading>
+              <Button variant='ghost' onClick={() => setManageModal('f')} size='xs'>manage</Button>
+            </Flex>
+            <AvatarGroup size='sm' max={5} mt="6px">
+              {participantsIds?.followersIds.map(f => <Avatar key={f} name={f} />)}
+            </AvatarGroup>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button variant='ghost' onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      {!!event && !!participantsIds && !!manageModal && <ManageDancersModal
+        state={manageModal}
+        onClose={() => setManageModal('')}
+        participantsIds={participantsIds}
+        event={event}
+      />}
+    </>
+  )
+}
+
+export default ClasseDetailsModal

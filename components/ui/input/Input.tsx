@@ -16,6 +16,11 @@ type InputProps = {
   options?: any;
   onChange?: (any: any) => void;
   onBlur?: (any: any) => void;
+  isMulti?: boolean,
+  closeMenuOnSelect?: boolean
+  isSearchable?: boolean
+  placeholder?: string
+  maxMenuHeight?: string
 };
 
 export default forwardRef<JSX.Element, InputProps>(

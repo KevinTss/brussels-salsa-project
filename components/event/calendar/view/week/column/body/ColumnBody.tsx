@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { Container, AbsoluteContainer, HourCell } from './styles'
 import { ClasseEvent, Classe } from '../../../../../../../types'
 import EventCell from './EventCell'
+import { triggerToast } from '../../../../../../ui'
 
 const hoursArray = [...Array(24).keys()]
 const hourRangeToShow = [6, 24]
@@ -13,11 +14,13 @@ type Props = {
   showHour: boolean,
   events: ClasseEvent[]
   classes: Classe[]
+  onEventSelected: (event: ClasseEvent) => void
 }
 const ColumnBody: FC<Props> = ({
   showHour = false,
   events,
-  classes
+  classes,
+  onEventSelected
 }) => {
   return <Container>
     <AbsoluteContainer>
@@ -33,14 +36,23 @@ const ColumnBody: FC<Props> = ({
     </AbsoluteContainer>
     <AbsoluteContainer>
       {classes.map(c =>
-        <EventCell
+      {
+        const ev = events.find(e => e.classId === c.id)
+
+        return (<EventCell
           key={c.id}
           classe={c}
-          // classe={classes.find(c => c.id === event.classId)}
-          event={events.find(e => e.classId === c.id)}
-
+          event={ev}
           hiddenHoursBefore={hourRangeToShow[0]}
-        />
+          onClick={() => {
+            if (ev) {
+              onEventSelected(ev)
+            } else {
+              triggerToast.info(`There are no participants for ${c.type} classe on ${c.day} ${c.time}`)
+            }
+          }}
+        />)
+      }
       )}
     </AbsoluteContainer>
   </Container>

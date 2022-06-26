@@ -10,7 +10,7 @@ type UseUsersParams = {
 };
 
 export const useUsers = ({ admin }: UseUsersParams) => {
-  const { data, refetch } = useQuery<User[], Error>(
+  const { data, refetch, isLoading } = useQuery<User[], Error>(
     'users',
     () =>
       new Promise(async (resolve, reject) => {
@@ -40,5 +40,6 @@ export const useUsers = ({ admin }: UseUsersParams) => {
   return {
     list: data,
     refetch,
+    isLoading,
   };
 };

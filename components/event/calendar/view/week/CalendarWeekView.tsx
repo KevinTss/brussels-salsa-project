@@ -1,7 +1,7 @@
-import { FC, useMemo, useCallback } from 'react'
+import { FC, useMemo, useCallback, useState } from 'react'
 
 import { Container, DayColumn, Header, Body } from './styles'
-import { WeekDay, Day, Dayjs, ClasseEvent } from '../../../../../types'
+import { Dayjs, ClasseEvent } from '../../../../../types'
 import {
   weekDayOptions,
   djs,
@@ -12,6 +12,7 @@ import {
 import ColumnBody from './column/body'
 import ColumnHeader from './column/header'
 import { useRangeEvents, useClasses } from '../../../../../hooks'
+import ClasseDetailsModal from '../../../../classes/details-modal'
 
 const days = weekDayOptions.map(o => o.value)
 
@@ -20,6 +21,7 @@ type Props = {
 }
 
 const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
+  const [selectedEvent, setSelectedEvent] = useState<ClasseEvent | undefined>(undefined)
   const data = useMemo(() => ({
     currentWeekDay: getWeekDay(baseDate),
     mondayDate: getStartWeekDate(baseDate),
@@ -42,14 +44,21 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
   }), [classes])
 
   return (
-    <Container>
-      <Header>
-        {days.map((day, index) => renderColumn(true, index))}
-      </Header>
-      <Body>
-        {days.map((day, index) => renderColumn(false, index))}
-      </Body>
-    </Container>
+    <>
+      <Container>
+        <Header>
+          {days.map((_day, index) => renderColumn(true, index))}
+        </Header>
+        <Body>
+          {days.map((_day, index) => renderColumn(false, index))}
+        </Body>
+      </Container>
+      <ClasseDetailsModal
+        event={selectedEvent}
+        classe={selectedEvent ? classes.find(c => c.id === selectedEvent.classId) : undefined}
+        onClose={() => setSelectedEvent(undefined)}
+      />
+    </>
   )
 
   function renderColumn(isHeader = false, index = 0) {
@@ -67,6 +76,7 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
         showHour={!index}
         events={getEventsByDay(columnDate)}
         classes={getClassesByDay(index)}
+        onEventSelected={setSelectedEvent}
       />
     </DayColumn>
   }

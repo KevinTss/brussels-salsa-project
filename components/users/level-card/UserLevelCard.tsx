@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Badge } from '@chakra-ui/react'
+import { Badge, Text } from '@chakra-ui/react'
 
 import { Container, LevelRow } from './styles'
 import { UserLevel } from '../../../types'
@@ -18,21 +18,23 @@ const UserLevelCard: FC<Props> = ({ levels }) => {
   return (
     <Container>
       <LevelRow>
-        Salsa:
+        <Text fontSize='xs'>Salsa:</Text>
         <Badge
           colorScheme={getBadgeColorScheme(salsaLevel)}
           variant='subtle'
           ml='4px'
+          fontSize='10px'
         >
           {getLevelDisplay(salsaLevel)}
         </Badge>
       </LevelRow>
       <LevelRow>
-        Bachata:
+        <Text fontSize='xs'>Bachata:</Text>
         <Badge
           colorScheme={getBadgeColorScheme(bachataLevel)}
           variant='subtle'
           ml='4px'
+          fontSize='10px'
         >
           {getLevelDisplay(bachataLevel)}
         </Badge>

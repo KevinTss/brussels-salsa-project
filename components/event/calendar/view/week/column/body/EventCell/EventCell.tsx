@@ -7,9 +7,10 @@ import { capitalize, getLevelDisplay, getTotalDancers } from '../../../../../../
 type Props = {
   event?: ClasseEvent,
   classe: Classe,
-  hiddenHoursBefore: number
+  hiddenHoursBefore: number,
+  onClick: () => void
 }
-const EventCell: FC<Props> = ({ event, hiddenHoursBefore, classe }) => {
+const EventCell: FC<Props> = ({ event, hiddenHoursBefore, classe, onClick }) => {
   const [hour, minutes] = classe.time.split(':')
   let offset = Number(hour)
   if (Number(minutes) === 30) {
@@ -19,7 +20,7 @@ const EventCell: FC<Props> = ({ event, hiddenHoursBefore, classe }) => {
   const participants = event ? getTotalDancers(event) : 0
 
   return (
-    <Container offset={offset}>
+    <Container offset={offset} onClick={onClick}>
       <Text>{`${capitalize(classe.type)} ${getLevelDisplay(classe.level).toLowerCase()}`}</Text>
       {!!participants && <Text>{`${participants} participant${participants > 1 ? 's' : ''}`}</Text>}
     </Container>

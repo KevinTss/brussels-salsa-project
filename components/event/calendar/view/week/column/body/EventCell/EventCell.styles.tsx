@@ -23,7 +23,8 @@ export const Container = ({ offset = 0, ...props }) =>
 export const Text = ({ ...props }) =>
   <TextChakra
     color="white"
-    fontSize="12px"
+    fontSize="10px"
+    lineHeight="12px"
     fontWeight="bold"
     margin="0"
     {...props}

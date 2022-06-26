@@ -33,10 +33,7 @@ export type ClasseEventWithOptionalId = {
   waitingList: Dancers;
 };
 
-export type UpdateClasseEvent = {
-  id?: string;
-  classId?: string;
-  date?: string;
+export type ClasseEventUpdate = {
   dancers?: Dancers;
   waitingList?: Dancers;
 };
@@ -50,10 +47,3 @@ export type ClasseEventFetchOneParams =
       dateFrom: Date;
       dateTo: Date;
     };
-
-export type EventsContext = {
-  fetch: (dateFrom: Date, dateTo: Date) => Promise<ClasseEvent[]>;
-  fetchOne: (data: ClasseEventFetchOneParams) => Promise<ClasseEvent | null>;
-  update: (id: string, data: UpdateClasseEvent) => Promise<void>;
-  add: (data: NewClasseEvent) => Promise<DocumentReference>;
-};
