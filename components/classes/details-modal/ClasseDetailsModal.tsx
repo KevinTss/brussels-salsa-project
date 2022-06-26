@@ -17,11 +17,10 @@ import {
 import { Classe, ClasseEvent } from '../../../types'
 import {
   capitalize,
-  getLeaderDancerIds,
-  getFollowerDancerIds,
   getParticipantsIds
 } from '../../../utils'
 import ManageDancersModal from './manage-dancers-modal'
+import { useAuth, useUsers } from '../../../hooks'
 
 type Props = {
   event?: ClasseEvent,
@@ -30,15 +29,13 @@ type Props = {
 }
 
 const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
+  const { currentUser } = useAuth();
+  const { list } = useUsers({ admin: currentUser })
   const [manageModal, setManageModal] = useState<'l' | 'f' | ''>('')
   const title = event && classe
     ? `${capitalize(classe.type)} classe on ${classe.day} at ${classe.time}`
     : 'Event'
   const participantsIds = event ? getParticipantsIds(event) : null
-  // const leaders = event ? getLeaderDancerIds(event) : []
-  // const followers = event ? getFollowerDancerIds(event) : []
-  // const waitingLeaders = event ? getWaitingLeaderDancerIds(event) : []
-  // const waitingFollowers = event ? getWaitingFollowerDancerIds(event) : []
 
   return (
     <>
@@ -79,12 +76,20 @@ const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {!!event && !!participantsIds && !!manageModal && <ManageDancersModal
-        state={manageModal}
-        onClose={() => setManageModal('')}
-        participantsIds={participantsIds}
-        event={event}
-      />}
+      {!!event &&
+        !!participantsIds &&
+        !!manageModal &&
+        !!list?.length &&
+        !!classe &&
+        <ManageDancersModal
+          state={manageModal}
+          onClose={() => setManageModal('')}
+          participantsIds={participantsIds}
+          event={event}
+          list={list}
+          classe={classe}
+        />
+      }
     </>
   )
 }

@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react'
 
 import { useUsers, useAuth, useEventUpdate } from '../../../../hooks'
-import { ClasseEvent, User } from '../../../../types'
+import { ClasseEvent, User, Classe } from '../../../../types'
 import { Input } from '../../../ui'
 import UserLevelCard from '../../../users/level-card'
 
@@ -51,7 +51,9 @@ type Props = {
     waitingLeadersIds: string[],
     waitingFollowersIds: string[],
   },
-  event: ClasseEvent
+  event: ClasseEvent,
+  classe: Classe,
+  list: User[]
 }
 
 const onlyLeaders = (user: User) => user.dancerRole === 'leader'
@@ -61,9 +63,7 @@ const usersToOptions = (users: User[]) => users.map(u => ({
   value: u.id
 }))
 
-const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event }) => {
-  const { currentUser } = useAuth();
-  const { list, isLoading } = useUsers({ admin: currentUser })
+const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event, list, classe }) => {
   const dancersIds = useMemo(
     () => state === 'l'
       ? participantsIds.leadersIds
@@ -161,7 +161,6 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
               value: pId
             })) : null}
             maxMenuHeight="150px"
-            isLoading={isLoading}
             onReset={() => setWarningInfo(null)}
           />
           <Button onClick={() => addParticipants(type)}>Add</Button>
@@ -272,8 +271,6 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
   function addParticipants(type: ListType) {
     const newSelectedParticipants = [...type === 'participants' ? selectedParticipant : selectedWaiting]
     const ids = type === 'participants' ? selectedParticipantIds : selectedWaitingIds
-    const warningInfoItemsData = []
-    // TODO: handle case where participant is on other list
     usersList
       .filter(({ id }) => ids.includes(id))
       .forEach(u => {
@@ -281,7 +278,17 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
         const oppositeList = type === 'participants' ? selectedWaiting : selectedParticipant
         const isUserInOppositeList = !!oppositeList.find(({ id }) => id === u.id)
 
-        if (!isUserInOppositeList && userIndex === -1) {
+        if (isUserInOppositeList) {
+          const setSelection = type === 'participants' ? setSelectedWaiting : setSelectedWaiting
+          // Rome user from waiting list
+          setSelection((currentWaitingList) => {
+            const newWaitingList = [...currentWaitingList]
+            const waitingUserIndex = currentWaitingList.findIndex(waitUser => waitUser.id === u.id)
+            newWaitingList.splice(waitingUserIndex, 1)
+            return newWaitingList
+          })
+        }
+        if (userIndex === -1) {
           newSelectedParticipants.push(u)
         }
       })
@@ -313,7 +320,7 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
 
   function onUpdateDancers() {
     console.log('participants to sync', selectedParticipant)
-    console.log('participants to sync', selectedParticipant)
+    console.log('waiting to sync', selectedWaiting)
 
     // const updatedEvent = getUpdatedEvent(event,)
     // update
