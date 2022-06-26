@@ -374,3 +374,36 @@ export const removeUserFromEvent = (
 
   return clonedEvent;
 };
+
+type GetUpdatedEventWithNewParticipantsParams = {
+  event: ClasseEvent;
+  newDancers: User[];
+  newWaitingUsers: User[];
+  role: DancerRole;
+};
+export const getUpdatedEventWithNewParticipants = ({
+  event,
+  newDancers,
+  newWaitingUsers,
+  role,
+}: GetUpdatedEventWithNewParticipantsParams) => {
+  const updatedEvent = cloneDeep(event);
+  const list = role === 'leader' ? 'leaders' : 'followers';
+
+  if (newDancers.length) {
+    updatedEvent.dancers[list] = newDancers.map((newD) => ({
+      joinOn: new Date(),
+      userId: newD.id,
+      by: 'admin',
+    }));
+  }
+  if (newWaitingUsers.length) {
+    updatedEvent.waitingList[list] = newWaitingUsers.map((newD) => ({
+      joinOn: new Date(),
+      userId: newD.id,
+      by: 'admin',
+    }));
+  }
+
+  return updatedEvent;
+};

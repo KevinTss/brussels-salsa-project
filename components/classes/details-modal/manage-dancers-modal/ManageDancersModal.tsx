@@ -27,6 +27,7 @@ import { useUsers, useAuth, useEventUpdate } from '../../../../hooks'
 import { ClasseEvent, User, Classe } from '../../../../types'
 import { Input } from '../../../ui'
 import UserLevelCard from '../../../users/level-card'
+import { getUpdatedEventWithNewParticipants } from '../../../../utils'
 
 type ListType = 'participants' | 'waiting-list'
 type Reason = 'in-opposite-list' | 'in-same-list'
@@ -322,7 +323,13 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event,
     console.log('participants to sync', selectedParticipant)
     console.log('waiting to sync', selectedWaiting)
 
-    // const updatedEvent = getUpdatedEvent(event,)
+    const updatedEvent = getUpdatedEventWithNewParticipants({
+      event,
+      newDancers: selectedParticipant,
+      newWaitingUsers: selectedWaiting,
+      role: state === 'l' ? 'leader' : 'follower'
+    })
+    console.log('updatedEvent', updatedEvent)
     // update
   }
 }
