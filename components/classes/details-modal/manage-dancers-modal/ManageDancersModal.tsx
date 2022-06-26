@@ -11,8 +11,8 @@ import {
   AlertTitle,
   Box,
   Button,
-  CloseButton,
   Flex,
+  ListItem,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,6 +20,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  UnorderedList,
 } from '@chakra-ui/react'
 
 import { useUsers, useAuth, useEventUpdate } from '../../../../hooks'
@@ -28,11 +29,19 @@ import { Input } from '../../../ui'
 import UserLevelCard from '../../../users/level-card'
 
 type ListType = 'participants' | 'waiting-list'
+type Reason = 'in-opposite-list' | 'in-same-list'
+type WarningInfoItem = {
+  userId: string,
+  reason: Reason
+}
+type WarningInfo = {
+  type: ListType,
+  items: WarningInfoItem[]
+} | null
 type Options = {
   label: string,
   value: string
 }[]
-
 type Props = {
   state: 'l' | 'f',
   onClose: () => void,
@@ -79,6 +88,7 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
   const [selectedParticipantIds, setSelectedParticipantIds] = useState<string[]>([])
   const [selectedWaiting, setSelectedWaiting] = useState<User[]>(waitingDefaultOptions)
   const [selectedWaitingIds, setSelectedWaitingIds] = useState<string[]>([])
+  const [warningInfo, setWarningInfo] = useState<WarningInfo>(null)
 
   return (
     <Modal isOpen={!!state} onClose={onClose} size="2xl">
@@ -87,9 +97,12 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
         <ModalHeader>Manage {state === 'l' ? 'leaders 🕺' : 'followers 💃'}</ModalHeader>
 
         <ModalBody>
-          <Accordion allowMultiple>
+          <Accordion>
             <AccordionItem>
-              <AccordionButton>
+              <AccordionButton onClick={() => {
+                setSelectedWaitingIds([])
+                setWarningInfo(null)
+              }}>
                 <Box flex='1' textAlign='left'>
                   Participants ({selectedParticipant.length})
                 </Box>
@@ -101,7 +114,10 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
             </AccordionItem>
 
             <AccordionItem>
-              <AccordionButton>
+              <AccordionButton onClick={() => {
+                setSelectedParticipantIds([])
+                setWarningInfo(null)
+              }}>
                 <Box flex='1' textAlign='left'>
                   Waiting list ({selectedWaiting.length})
                 </Box>
@@ -146,9 +162,11 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
             })) : null}
             maxMenuHeight="150px"
             isLoading={isLoading}
+            onReset={() => setWarningInfo(null)}
           />
           <Button onClick={() => addParticipants(type)}>Add</Button>
         </Flex>
+        {renderWarning(type)}
         <Flex direction='column' gap={4} mt={4} minHeight="150px">
           {selection.map(u => {
             return <Flex
@@ -172,44 +190,101 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
     )
   }
 
-  // TODO: handle alert to inform of ignore behaviours
-  function renderWarning() {
-    return (<Alert status='warning' display="flex" justifyContent="flex-start" alignContent="flex-start" alignItems="flex-start">
-      <AlertIcon />
-      <Box>
-        <AlertTitle>Success!</AlertTitle>
-        <AlertDescription>
-          Your application has been received. We will review your application
-          and respond within the next 48 hours.
-        </AlertDescription>
-      </Box>
-      <CloseButton
-        alignSelf='flex-start'
-        position='relative'
-        right={-1}
-        top={-1}
-        onClick={onClose}
-      />
-    </Alert>)
+  function renderWarning(type: ListType) {
+    if (!warningInfo || warningInfo.type !== type) return null
+
+    return (
+      <Alert
+        status='warning'
+        display="flex"
+        alignItems="flex-start"
+        mt={4}
+      >
+        <AlertIcon />
+        <Box>
+          <AlertTitle>Pay attention!</AlertTitle>
+          <AlertDescription>
+            Some users you want to add will provoke some side effects.
+            <UnorderedList>
+              {warningInfo.items.map((item) => {
+                const user = usersList.find(({ id }) => id === item.userId)
+
+                if (!user) return null
+
+                return <ListItem key={user.id}>
+                  {renderWarningMessage(user.fullName, item.reason, type)}
+                </ListItem>
+              })}
+            </UnorderedList>
+          </AlertDescription>
+        </Box>
+      </Alert>
+    )
+
+    function renderWarningMessage(userName: string, reasonKey: Reason, type: ListType) {
+      const oppositeListName = type === 'participants' ? 'waiting list' : 'participants list'
+      const sameListName = type === 'participants' ? 'participants list' : 'waiting list'
+      if (reasonKey === 'in-opposite-list') {
+        return <Text>{userName} is inside the <Text as="span">{oppositeListName}</Text> will be remove from <Text as="span">{sameListName}</Text></Text>
+      } else {
+        return <Text>{userName} is already inside the <Text as="span">{sameListName}</Text>, it will be ignored</Text>
+      }
+    }
   }
 
   function setParticipants(options: Options, type: ListType) {
+    const newOptionsIds = options.map(n => n.value)
     if (type === 'participants') {
-      setSelectedParticipantIds(options.map(n => n.value))
+      setSelectedParticipantIds(newOptionsIds)
     } else {
-      setSelectedWaitingIds(options.map(n => n.value))
+      setSelectedWaitingIds(newOptionsIds)
+    }
+    // Check for warning
+    const warningInfoItemsData: WarningInfoItem[] = []
+    const oppositeList = type === 'participants' ? selectedWaiting : selectedParticipant
+    newOptionsIds.forEach(userId => {
+      const isUserInOppositeList = !!oppositeList.find(({ id }) => id === userId)
+      if (isUserInOppositeList) {
+        warningInfoItemsData.push({
+          userId,
+          reason: 'in-opposite-list'
+        })
+        return
+      }
+      const sameList = type === 'participants' ? selectedParticipant : selectedWaiting
+      const isUserInSameList = !!sameList.find(({ id }) => id === userId)
+      if (isUserInSameList) {
+        warningInfoItemsData.push({
+          userId,
+          reason: 'in-same-list'
+        })
+        return
+      }
+    })
+    if (warningInfoItemsData.length) {
+      setWarningInfo({
+        type,
+        items: warningInfoItemsData
+      })
     }
   }
 
   function addParticipants(type: ListType) {
     const newSelectedParticipants = [...type === 'participants' ? selectedParticipant : selectedWaiting]
     const ids = type === 'participants' ? selectedParticipantIds : selectedWaitingIds
+    const warningInfoItemsData = []
     // TODO: handle case where participant is on other list
-    usersList.filter(({ id }) => ids.includes(id)).forEach(u => {
-      if (newSelectedParticipants.findIndex(p => p.id === u.id) === -1) {
-        newSelectedParticipants.push(u)
-      }
-    })
+    usersList
+      .filter(({ id }) => ids.includes(id))
+      .forEach(u => {
+        const userIndex = newSelectedParticipants.findIndex(({ id }) => id === u.id)
+        const oppositeList = type === 'participants' ? selectedWaiting : selectedParticipant
+        const isUserInOppositeList = !!oppositeList.find(({ id }) => id === u.id)
+
+        if (!isUserInOppositeList && userIndex === -1) {
+          newSelectedParticipants.push(u)
+        }
+      })
     if (type === 'participants') {
       setSelectedParticipant(newSelectedParticipants)
       setSelectedParticipantIds([])
@@ -217,6 +292,7 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event 
       setSelectedWaiting(newSelectedParticipants)
       setSelectedWaitingIds([])
     }
+    setWarningInfo(null)
   }
 
   function removeParticipant(user: User, type: ListType) {

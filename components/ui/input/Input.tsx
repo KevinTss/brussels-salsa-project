@@ -22,6 +22,7 @@ type InputProps = {
   placeholder?: string
   maxMenuHeight?: string
   isLoading?: boolean
+  onReset?: (any: any) => void
 };
 
 export default forwardRef<JSX.Element, InputProps>(
