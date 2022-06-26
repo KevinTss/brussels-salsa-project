@@ -225,9 +225,9 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event,
       const oppositeListName = type === 'participants' ? 'waiting list' : 'participants list'
       const sameListName = type === 'participants' ? 'participants list' : 'waiting list'
       if (reasonKey === 'in-opposite-list') {
-        return <Text>{userName} is inside the <Text as="span">{oppositeListName}</Text> will be remove from <Text as="span">{sameListName}</Text></Text>
+        return <Text><Text as="span" fontWeight="bold">{userName}</Text> is inside the <Text as="span" fontWeight="bold">{oppositeListName}</Text> will be remove from it.</Text>
       } else {
-        return <Text>{userName} is already inside the <Text as="span">{sameListName}</Text>, it will be ignored</Text>
+        return <Text><Text as="span" fontWeight="bold">{userName}</Text> is already inside the <Text as="span" fontWeight="bold">{sameListName}</Text>, it will be ignored</Text>
       }
     }
   }
@@ -280,13 +280,13 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event,
         const isUserInOppositeList = !!oppositeList.find(({ id }) => id === u.id)
 
         if (isUserInOppositeList) {
-          const setSelection = type === 'participants' ? setSelectedWaiting : setSelectedWaiting
+          const setSelection = type === 'participants' ? setSelectedWaiting : setSelectedParticipant
           // Rome user from waiting list
-          setSelection((currentWaitingList) => {
-            const newWaitingList = [...currentWaitingList]
-            const waitingUserIndex = currentWaitingList.findIndex(waitUser => waitUser.id === u.id)
-            newWaitingList.splice(waitingUserIndex, 1)
-            return newWaitingList
+          setSelection((currentList) => {
+            const newList = [...currentList]
+            const userIndex = currentList.findIndex(user => user.id === u.id)
+            newList.splice(userIndex, 1)
+            return newList
           })
         }
         if (userIndex === -1) {
