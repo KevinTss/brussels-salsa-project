@@ -9,7 +9,7 @@ import {
   ClasseLevel,
   DancerRole,
   ClasseEventWithOptionalId,
-} from '../../types';
+} from '../types';
 
 export const addUserToWaitingList = (
   event: ClasseEvent,
