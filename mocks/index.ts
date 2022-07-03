@@ -20,6 +20,7 @@ export const MOCK_CLASSE: Classe = {
   },
   time: new Date().toDateString(),
   type: ClasseType.SALSA,
+  isArchived: false,
 };
 
 const getMockedDancer = (): DancerJoin => ({
@@ -41,4 +42,5 @@ export const commonClasseAttributes = {
   level: ClasseLevel.BEGINNER,
   time: new Date().toDateString(),
   type: ClasseType.SALSA,
+  isArchived: false,
 };
