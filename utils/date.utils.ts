@@ -1,7 +1,22 @@
-import { djs } from './dayjs';
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import localeData from 'dayjs/plugin/localeData';
+import isToday from 'dayjs/plugin/isToday';
+
 import { WeekDay, Day, Dayjs } from '../types';
 
-export const getWeekDay = (date = djs()): Day =>
+dayjs.extend(localeData);
+dayjs.extend(updateLocale);
+dayjs.updateLocale('en', {
+  weekStart: 1,
+});
+dayjs.extend(weekday);
+dayjs.extend(isToday);
+
+export const djs = dayjs;
+
+export const getWeekDay = (date: Dayjs): Day =>
   ((date.day() === 0 ? 7 : date.day()) - 1) as Day;
 
 export const getDisplayWeekDay = (day: Day) => Object.values(WeekDay)[day];

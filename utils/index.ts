@@ -2,9 +2,9 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Classe, ClasseLevel, User, ClasseType, WeekDay } from '../types';
 
 export * from './constants';
-export * from './dayjs';
 export * from './event';
 export * from './date.utils';
+export * from './string.utils';
 
 export const getLevelDisplay = (level: number) =>
   ['Beginner', 'Improver'][level];
