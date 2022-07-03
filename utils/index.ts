@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Classe, ClasseLevel, User, ClasseType, WeekDay } from '../types';
 
 export * from './constants';
-export * from './event';
+export * from './event.utils';
 export * from './date.utils';
 export * from './string.utils';
 
