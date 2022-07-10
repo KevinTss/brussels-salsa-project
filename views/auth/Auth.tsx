@@ -19,7 +19,7 @@ const Auth = () => {
   const { currentUser, setCurrentUser, signUpWithEmail, loginWithEmail } =
     useAuth();
   // @ts-ignore
-  const { create: createUser } = useUsers();
+  const { create: createUser } = useUsers({});
   const { handleSubmit: handleSubmitLogin, handleChange: handleChangeLogin } =
     useFormik({
       initialValues: { email: '', password: '' },
