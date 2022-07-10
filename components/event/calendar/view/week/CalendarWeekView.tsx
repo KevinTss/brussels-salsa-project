@@ -1,7 +1,7 @@
 import { FC, useMemo, useCallback, useState } from 'react'
 
 import { Container, DayColumn, Header, Body } from './styles'
-import { Dayjs, ClasseEvent, Classe } from '../../../../../types'
+import { Dayjs, Classe } from '../../../../../types'
 import {
   weekDayOptions,
   djs,

@@ -94,6 +94,7 @@ export const useJoinEvent = ({
           }
 
           const { updatedEvent: finalUpdatedEvent, addedDancerIds } =
+            // @ts-ignore
             handleWaitingList(updatedEvent, classe);
 
           const eventId = finalUpdatedEvent.id;

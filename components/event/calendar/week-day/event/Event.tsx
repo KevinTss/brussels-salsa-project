@@ -4,24 +4,18 @@ import { Dayjs } from 'dayjs';
 import {
   EventContainer,
   DancersContainer,
-  MalesContainer,
-  FemalesContainer,
   EventPrimariesInfo,
   CallToActions,
 } from './style';
 import { useAuth, useJoinEvent, useCancelJoinEvent } from '../../../../../hooks';
-import { Button, Avatar, Tag, ButtonGroup } from '../../../../ui';
+import { Button, Tag, ButtonGroup } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
-  getFollowerDancerIds,
   getIsUserInDancers,
   getIsUserInWaitingList,
-  getLeaderDancerIds,
   getTotalWaitingList,
 } from '../../../../../utils';
-// import DetailsDrawer from './details-drawer';
-// import AddDancerDrawer from './add-dancer-drawer';
 import { ClasseEvent, Classe } from '../../../../../types';
 
 type Props = {
@@ -101,40 +95,6 @@ const Event = ({
             <span>{waitingListLength} on waiting list</span>
           )}
         </h4>
-        {/* <MalesContainer>
-          <p>Leaders</p>
-          <div>
-            {getLeaderDancerIds(event).map((userId, i) => {
-              const user = getById(userId);
-
-              return (
-                <Avatar
-                  key={`l-${i}`}
-                  firstName={user?.fullName?.split(' ')[0]}
-                  lastName={user?.fullName?.split(' ')[1]}
-                  image={undefined}
-                />
-              );
-            })}
-          </div>
-        </MalesContainer> */}
-        {/* <FemalesContainer>
-          <p>Followers</p>
-          <div>
-            {getFollowerDancerIds(event).map((userId, i) => {
-              const user = getById(userId);
-
-              return (
-                <Avatar
-                  key={`f-${i}`}
-                  firstName={user?.fullName?.split(' ')[0]}
-                  lastName={user?.fullName?.split(' ')[1]}
-                  image={undefined}
-                />
-              );
-            })}
-          </div>
-        </FemalesContainer> */}
       </DancersContainer>}
       <CallToActions>
         {!isAdminMode &&
@@ -173,25 +133,6 @@ const Event = ({
           </ButtonGroup>
         )}
       </CallToActions>
-      {/* {isAdminMode && (
-        <>
-          <DetailsDrawer
-            dayDate={dayDate}
-            isOpen={isDetailsModalOpen}
-            onClose={() => setIsDetailsModalOpen(false)}
-            event={event}
-            classe={classData}
-          />
-          {event && <AddDancerDrawer
-            isOpen={isAddDancerModalOpen}
-            onClose={() => setIsAddDancerModalOpen(false)}
-            event={event}
-            classe={classData}
-            dayDate={dayDate}
-            refetchEvents={refetchEvents}
-          />}
-        </>
-      )} */}
     </EventContainer>
   );
 };

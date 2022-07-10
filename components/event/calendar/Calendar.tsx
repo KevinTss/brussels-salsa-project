@@ -12,7 +12,7 @@ type Props = {
 
 const EventsCalendar = ({ isAdminMode = false }: Props) => {
   const [view] = useState<CalendarView>(isAdminMode ? CalendarView.WEEK : CalendarView.DAY);
-  const [currentDate, setCurrentDate] = useState(djs());
+  const [currentDate] = useState(djs());
 
   return (<CalendarContainer>
     {renderView()}

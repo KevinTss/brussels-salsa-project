@@ -1,4 +1,10 @@
-import { ClasseEvent, Classe, User, Dayjs } from '../types';
+import {
+  ClasseEvent,
+  Classe,
+  User,
+  Dayjs,
+  ClasseEventWithOptionalId,
+} from '../types';
 import { handleWaitingList, removeUserFromEvent } from '../utils';
 import { useFetchEvent } from './useFetchEvent';
 import { useUpdateEvent } from './useUpdateEvent';
@@ -27,6 +33,7 @@ export const useCancelJoinEvent = ({ event, classe }: useJoinEventParams) => {
             user as User
           );
           const { updatedEvent: finalUpdatedEvent, addedDancerIds } =
+            // @ts-ignore
             handleWaitingList(updatedEvent, classe);
           const eventId = finalUpdatedEvent.id;
           // TODO: send email to added users

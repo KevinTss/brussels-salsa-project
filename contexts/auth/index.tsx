@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }: { children: Children }) => {
         currentUser.id as string
       );
 
+      // @ts-ignore
       delete newData.id;
 
       return fireStore.updateDoc(documentRef, newData);
@@ -98,6 +99,7 @@ export const AuthProvider = ({ children }: { children: Children }) => {
         currentUser,
         isLoading,
         logout,
+        // @ts-ignore
         setCurrentUser,
         signUpWithEmail,
         update,
