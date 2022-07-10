@@ -1,4 +1,3 @@
-import { Dayjs } from 'dayjs';
 import cloneDeep from 'lodash.clonedeep';
 
 import {
@@ -9,7 +8,9 @@ import {
   ClasseLevel,
   DancerRole,
   ClasseEventWithOptionalId,
+  Dayjs,
 } from '../types';
+import { djs } from './date.utils';
 
 export const addUserToWaitingList = (
   event: ClasseEvent,
@@ -406,4 +407,63 @@ export const getUpdatedEventWithNewParticipants = ({
   }
 
   return updatedEvent;
+};
+
+type GetNewEventWithParticipantsParams = {
+  classe: Classe;
+  newDancers: User[];
+  newWaitingUsers: User[];
+  role: DancerRole;
+  date: Dayjs;
+};
+export const getNewEventWithParticipants = ({
+  classe,
+  newDancers,
+  newWaitingUsers,
+  role,
+  date,
+}: GetNewEventWithParticipantsParams) => {
+  const list = role === 'leader' ? 'leaders' : 'followers';
+  const newEvent = {
+    classId: classe.id,
+    dancers: {
+      leaders:
+        list === 'leaders'
+          ? newDancers.map((d) => ({
+              joinOn: new Date(),
+              userId: d.id,
+              by: 'admin',
+            }))
+          : [],
+      followers:
+        list === 'followers'
+          ? newDancers.map((d) => ({
+              joinOn: new Date(),
+              userId: d.id,
+              by: 'admin',
+            }))
+          : [],
+    },
+    waitingList: {
+      leaders:
+        list === 'leaders'
+          ? newWaitingUsers.map((d) => ({
+              joinOn: new Date(),
+              userId: d.id,
+              by: 'admin',
+            }))
+          : [],
+      followers:
+        list === 'followers'
+          ? newWaitingUsers.map((d) => ({
+              joinOn: new Date(),
+              userId: d.id,
+              by: 'admin',
+            }))
+          : [],
+    },
+    date: date.hour(0).minute(0).second(0).toDate(),
+  };
+
+  return newEvent;
 };

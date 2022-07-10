@@ -20,7 +20,7 @@ export const useEventUpdate = () => {
           }
 
           await fireStore.updateDoc(
-            fireStore.doc(fireStore.getFirestore(), 'event', id),
+            fireStore.doc(fireStore.getFirestore(), 'events', id),
             data
           );
 

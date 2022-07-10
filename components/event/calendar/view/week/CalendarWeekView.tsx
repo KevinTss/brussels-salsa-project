@@ -1,7 +1,7 @@
 import { FC, useMemo, useCallback, useState } from 'react'
 
 import { Container, DayColumn, Header, Body } from './styles'
-import { Dayjs, ClasseEvent } from '../../../../../types'
+import { Dayjs, ClasseEvent, Classe } from '../../../../../types'
 import {
   weekDayOptions,
   djs,
@@ -21,7 +21,8 @@ type Props = {
 }
 
 const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
-  const [selectedEvent, setSelectedEvent] = useState<ClasseEvent | undefined>(undefined)
+  const [selectedClasse, setSelectedClasse] = useState<Classe | undefined>(undefined)
+  const [selectedClasseDate, setSelectedClasseDate] = useState<Dayjs | undefined>(undefined)
   const data = useMemo(() => ({
     currentWeekDay: getWeekDay(baseDate),
     mondayDate: getStartWeekDate(baseDate),
@@ -31,7 +32,7 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
     dateFrom: data.mondayDate,
     dateTo: data.sundayDate
   })
-  const { list: classes } = useClasses()
+  const { list: classes, refetch } = useClasses()
 
   const getEventsByDay = useCallback((date: Dayjs) => events.filter(event => {
     const eventDate = djs(event.date.toDate())
@@ -54,9 +55,14 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
         </Body>
       </Container>
       <ClasseDetailsModal
-        event={selectedEvent}
-        classe={selectedEvent ? classes.find(c => c.id === selectedEvent.classId) : undefined}
-        onClose={() => setSelectedEvent(undefined)}
+        classe={selectedClasse}
+        event={selectedClasse ? events.find(e => e.classId === selectedClasse.id) : undefined}
+        onClose={() => {
+          setSelectedClasseDate(undefined)
+          setSelectedClasse(undefined)
+        }}
+        date={selectedClasseDate}
+        refetchClasses={refetch}
       />
     </>
   )
@@ -76,7 +82,10 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
         showHour={!index}
         events={getEventsByDay(columnDate)}
         classes={getClassesByDay(index)}
-        onEventSelected={setSelectedEvent}
+        onClasseSelected={(classe) => {
+          setSelectedClasseDate(columnDate)
+          setSelectedClasse(classe)
+        }}
       />
     </DayColumn>
   }

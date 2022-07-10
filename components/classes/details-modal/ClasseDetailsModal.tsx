@@ -14,7 +14,7 @@ import {
   Flex
 } from '@chakra-ui/react'
 
-import { Classe, ClasseEvent } from '../../../types'
+import { Classe, ClasseEvent, Dayjs } from '../../../types'
 import {
   capitalize,
   getParticipantsIds
@@ -26,20 +26,20 @@ type Props = {
   event?: ClasseEvent,
   classe?: Classe,
   onClose: () => void
+  date?: Dayjs
+  refetchClasses: VoidFunction
 }
 
-const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
+const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose, date, refetchClasses }) => {
   const { currentUser } = useAuth();
   const { list } = useUsers({ admin: currentUser })
   const [manageModal, setManageModal] = useState<'l' | 'f' | ''>('')
-  const title = event && classe
-    ? `${capitalize(classe.type)} classe on ${classe.day} at ${classe.time}`
-    : 'Event'
+  const title = classe && `${capitalize(classe.type)} classe on ${classe.day} at ${classe.time}`
   const participantsIds = event ? getParticipantsIds(event) : null
 
   return (
     <>
-      <Modal isOpen={!!event} onClose={onClose} size="lg">
+      <Modal isOpen={!!classe} onClose={onClose} size="lg">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{title}</ModalHeader>
@@ -56,14 +56,20 @@ const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
               </Flex>
             </Flex>
             <Flex mt="24px" justifyContent="space-between" borderBottom="1px solid rgba(0,0,0,0.1)">
-              <Heading size='sm'>Leaders ({participantsIds?.leadersIds.length})</Heading>
+              <Heading size='sm'>
+                Leaders ({participantsIds?.leadersIds.length || 0})
+                {participantsIds?.waitingLeadersIds.length ? ` – Waiting: ${participantsIds.waitingLeadersIds.length}` : ''}
+              </Heading>
               <Button variant='ghost' onClick={() => setManageModal('l')} size='xs'>manage</Button>
             </Flex>
             <AvatarGroup size='sm' max={5} mt="6px">
               {participantsIds?.leadersIds.map(l => <Avatar key={l} name={l} />)}
             </AvatarGroup>
             <Flex mt="24px" justifyContent="space-between" borderBottom="1px solid rgba(0,0,0,0.1)">
-              <Heading size='sm'>Followers ({participantsIds?.followersIds.length})</Heading>
+              <Heading size='sm'>
+                Followers ({participantsIds?.followersIds.length || 0})
+                {participantsIds?.waitingFollowersIds.length ? ` – Waiting: ${participantsIds.waitingFollowersIds.length}` : ''}
+              </Heading>
               <Button variant='ghost' onClick={() => setManageModal('f')} size='xs'>manage</Button>
             </Flex>
             <AvatarGroup size='sm' max={5} mt="6px">
@@ -76,9 +82,7 @@ const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {!!event &&
-        !!participantsIds &&
-        !!manageModal &&
+      {!!manageModal &&
         !!list?.length &&
         !!classe &&
         <ManageDancersModal
@@ -88,6 +92,8 @@ const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose }) => {
           event={event}
           list={list}
           classe={classe}
+        date={date}
+        refetchClasses={refetchClasses}
         />
       }
     </>

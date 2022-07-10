@@ -24,10 +24,13 @@ import {
 } from '@chakra-ui/react'
 
 import { useUsers, useAuth, useEventUpdate } from '../../../../hooks'
-import { ClasseEvent, User, Classe } from '../../../../types'
+import { ClasseEvent, User, Classe, Dayjs } from '../../../../types'
 import { Input } from '../../../ui'
 import UserLevelCard from '../../../users/level-card'
-import { getUpdatedEventWithNewParticipants } from '../../../../utils'
+import {
+  getUpdatedEventWithNewParticipants,
+  getNewEventWithParticipants
+} from '../../../../utils'
 
 type ListType = 'participants' | 'waiting-list'
 type Reason = 'in-opposite-list' | 'in-same-list'
@@ -51,10 +54,12 @@ type Props = {
     followersIds: string[],
     waitingLeadersIds: string[],
     waitingFollowersIds: string[],
-  },
-  event: ClasseEvent,
+  } | null,
+  event?: ClasseEvent,
   classe: Classe,
   list: User[]
+  date?: Dayjs
+  refetchClasses: VoidFunction
 }
 
 const onlyLeaders = (user: User) => user.dancerRole === 'leader'
@@ -64,17 +69,29 @@ const usersToOptions = (users: User[]) => users.map(u => ({
   value: u.id
 }))
 
-const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event, list, classe }) => {
+const ManageDancersModal: FC<Props> = ({
+  state,
+  onClose,
+  participantsIds,
+  event,
+  list,
+  classe,
+  date,
+  refetchClasses
+}) => {
+  const { currentUser } = useAuth();
+  const { update, isLoading } = useEventUpdate()
+
   const dancersIds = useMemo(
     () => state === 'l'
-      ? participantsIds.leadersIds
-      : participantsIds.followersIds,
+      ? participantsIds?.leadersIds || []
+      : participantsIds?.followersIds || [],
     [state, participantsIds]
   )
   const waitingListIds = useMemo(
     () => state === 'l'
-      ? participantsIds.waitingLeadersIds
-      : participantsIds.waitingFollowersIds,
+      ? participantsIds?.waitingLeadersIds || []
+      : participantsIds?.waitingFollowersIds || [],
     [state, participantsIds]
   )
   const usersList = useMemo(
@@ -133,8 +150,8 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event,
         </ModalBody>
 
         <ModalFooter>
-          <Button variant='ghost' onClick={onClose}>Cancel</Button>
-          <Button variant='solid' onClick={onUpdateDancers}>Save</Button>
+          <Button variant='ghost' onClick={onClose} disabled={isLoading}>Cancel</Button>
+          <Button variant='solid' onClick={onUpdateDancers} isLoading={isLoading}>Save</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
@@ -320,17 +337,29 @@ const ManageDancersModal: FC<Props> = ({ state, onClose, participantsIds, event,
   }
 
   function onUpdateDancers() {
-    console.log('participants to sync', selectedParticipant)
-    console.log('waiting to sync', selectedWaiting)
-
-    const updatedEvent = getUpdatedEventWithNewParticipants({
-      event,
-      newDancers: selectedParticipant,
-      newWaitingUsers: selectedWaiting,
-      role: state === 'l' ? 'leader' : 'follower'
-    })
-    console.log('updatedEvent', updatedEvent)
-    // update
+    if (!currentUser) return
+    if (!event) {
+      if (!date) return
+      const newEvent = getNewEventWithParticipants({
+        classe,
+        newDancers: selectedParticipant,
+        newWaitingUsers: selectedWaiting,
+        role: state === 'l' ? 'leader' : 'follower',
+        date,
+      })
+      console.log('create event', newEvent)
+    } else {
+      const updatedEvent = getUpdatedEventWithNewParticipants({
+        event,
+        newDancers: selectedParticipant,
+        newWaitingUsers: selectedWaiting,
+        role: state === 'l' ? 'leader' : 'follower'
+      })
+      // console.log('updatedEvent', event.id, updatedEvent)
+      update({ id: event.id, data: updatedEvent, admin: currentUser })
+      refetchClasses()
+      onClose()
+    }
   }
 }
 
