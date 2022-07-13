@@ -5,7 +5,7 @@ import {
   hasUserClassLevelRequired,
   isEventFull,
   addUserToWaitingList,
-  shouldCheckBalance_v2,
+  shouldCheckBalance,
   addUserToDancers,
   isOppositeRoleInMajority,
   isLimitOffsetReached_v2,
@@ -74,7 +74,7 @@ export const useJoinEvent = ({
               user as User
             );
             whereTheUserWereAdded = 'waitingList';
-          } else if (!shouldCheckBalance_v2(newlyFetchedEvent, classe)) {
+          } else if (!shouldCheckBalance(newlyFetchedEvent, classe)) {
             updatedEvent = addUserToDancers(newlyFetchedEvent, user as User);
             whereTheUserWereAdded = 'dancers';
           } else if (

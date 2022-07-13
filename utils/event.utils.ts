@@ -50,7 +50,9 @@ export const addUserToDancers = (
   return updatedEvent;
 };
 
-export const getTotalDancers = (event: ClasseEvent): number => {
+export const getTotalDancers = (
+  event: Pick<ClasseEvent, 'dancers'>
+): number => {
   let total: number = 0;
   if (event.dancers.leaders?.length) {
     total += event.dancers.leaders?.length;
@@ -81,9 +83,9 @@ export const getParticipantsIds = (event: ClasseEvent) => ({
   waitingFollowersIds: getWaitingFollowerDancerIds(event),
 });
 
-export const shouldCheckBalance_v2 = (
-  event: ClasseEvent,
-  classe: Classe
+export const shouldCheckBalance = (
+  event: Pick<ClasseEvent, 'dancers'>,
+  classe: Pick<Classe, 'spots'>
 ): boolean => getTotalDancers(event) >= classe.spots.base;
 
 export const isLimitOffsetReached_v2 = (
@@ -210,12 +212,6 @@ const moveDancerFromWaitingList = (
   return { event: updatedEvent, addedDancerId };
 };
 
-const shouldCheckBalance = (
-  leadersAmount: number,
-  followersAmount: number,
-  classe: Classe
-): boolean => leadersAmount + followersAmount >= classe.spots.base;
-
 const moveDancersFromWaitingList = (
   event: ClasseEventWithOptionalId
 ): { event: ClasseEventWithOptionalId; movedDancerId: string | null } => {
@@ -311,8 +307,7 @@ export const handleWaitingList = (
 
     if (
       !majority ||
-      (majority &&
-        !shouldCheckBalance(leaders.length, followers.length, classe)) ||
+      (majority && !shouldCheckBalance(clonedEvent, classe)) ||
       (majority &&
         !isLimitOffsetReached(leaders.length, followers.length, classe))
     ) {
