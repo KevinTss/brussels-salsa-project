@@ -8,7 +8,7 @@ import {
   shouldCheckBalance,
   addUserToDancers,
   isOppositeRoleInMajority,
-  isLimitOffsetReached_v2,
+  isLimitOffsetReached,
   handleWaitingList,
 } from '../utils';
 import { useFetchEvent } from './useFetchEvent';
@@ -82,7 +82,7 @@ export const useJoinEvent = ({
           ) {
             updatedEvent = addUserToDancers(newlyFetchedEvent, user as User);
             whereTheUserWereAdded = 'dancers';
-          } else if (isLimitOffsetReached_v2(newlyFetchedEvent, classe)) {
+          } else if (isLimitOffsetReached(newlyFetchedEvent, classe)) {
             updatedEvent = addUserToWaitingList(
               newlyFetchedEvent,
               user as User

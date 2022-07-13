@@ -64,17 +64,21 @@ export const getTotalDancers = (
   return total;
 };
 
-export const getLeaderDancerIds = (event?: ClasseEvent): string[] =>
-  event?.dancers?.leaders?.map(({ userId }) => userId) || [];
+export const getLeaderDancerIds = (
+  event?: Pick<ClasseEvent, 'dancers'>
+): string[] => event?.dancers?.leaders?.map(({ userId }) => userId) || [];
 
-export const getFollowerDancerIds = (event?: ClasseEvent): string[] =>
-  event?.dancers?.followers?.map(({ userId }) => userId) || [];
+export const getFollowerDancerIds = (
+  event?: Pick<ClasseEvent, 'dancers'>
+): string[] => event?.dancers?.followers?.map(({ userId }) => userId) || [];
 
-export const getWaitingLeaderDancerIds = (event?: ClasseEvent): string[] =>
-  event?.waitingList?.leaders?.map(({ userId }) => userId) || [];
+export const getWaitingLeaderDancerIds = (
+  event?: Pick<ClasseEvent, 'waitingList'>
+): string[] => event?.waitingList?.leaders?.map(({ userId }) => userId) || [];
 
-export const getWaitingFollowerDancerIds = (event?: ClasseEvent): string[] =>
-  event?.waitingList?.followers?.map(({ userId }) => userId) || [];
+export const getWaitingFollowerDancerIds = (
+  event?: Pick<ClasseEvent, 'waitingList'>
+): string[] => event?.waitingList?.followers?.map(({ userId }) => userId) || [];
 
 export const getParticipantsIds = (event: ClasseEvent) => ({
   leadersIds: getLeaderDancerIds(event),
@@ -88,9 +92,9 @@ export const shouldCheckBalance = (
   classe: Pick<Classe, 'spots'>
 ): boolean => getTotalDancers(event) >= classe.spots.base;
 
-export const isLimitOffsetReached_v2 = (
-  event: ClasseEvent,
-  classe: Classe
+export const isLimitOffsetReached = (
+  event: Pick<ClasseEvent, 'dancers'>,
+  classe: Pick<Classe, 'balanceOffset'>
 ): boolean => {
   const leadersAmount = getLeaderDancerIds(event).length;
   const followersAmount = getFollowerDancerIds(event).length;
@@ -248,16 +252,6 @@ const moveDancersFromWaitingList = (
   };
 };
 
-const isLimitOffsetReached = (
-  leadersAmount: number,
-  followersAmount: number,
-  classe: Classe
-): boolean => {
-  const differenceDancersAbs = Math.abs(leadersAmount - followersAmount);
-
-  return differenceDancersAbs >= classe.balanceOffset;
-};
-
 export const handleWaitingList = (
   event: ClasseEventWithOptionalId,
   classe: Classe
@@ -308,8 +302,7 @@ export const handleWaitingList = (
     if (
       !majority ||
       (majority && !shouldCheckBalance(clonedEvent, classe)) ||
-      (majority &&
-        !isLimitOffsetReached(leaders.length, followers.length, classe))
+      (majority && !isLimitOffsetReached(clonedEvent, classe))
     ) {
       const { event, movedDancerId } = moveDancersFromWaitingList(clonedEvent);
 
