@@ -1,31 +1,21 @@
 import { handleWaitingList } from '../utils';
 import { Classe, ClasseEvent, DancerJoin } from '../types';
 import {
-  MOCK_CLASSE,
+  mockClasse,
   commonEventAttributes,
   commonClasseAttributes,
   getMockedDancers,
+  mockEventEmpty,
 } from '../mocks';
 
 describe('Test function: handleWaitingList', () => {
   it(`should not updated anything with empty waiting lists`, () => {
-    const MOCK_EVENT_EMPTY = {
-      ...commonEventAttributes,
-      dancers: {
-        followers: [],
-        leaders: [],
-      },
-      waitingList: {
-        followers: [],
-        leaders: [],
-      },
-    };
     const { updatedEvent, addedDancerIds } = handleWaitingList(
-      MOCK_EVENT_EMPTY,
-      MOCK_CLASSE
+      mockEventEmpty,
+      mockClasse
     );
 
-    expect(JSON.stringify(MOCK_EVENT_EMPTY)).toBe(JSON.stringify(updatedEvent));
+    expect(JSON.stringify(mockEventEmpty)).toBe(JSON.stringify(updatedEvent));
     expect(JSON.stringify(addedDancerIds)).toBe('[]');
   });
 
@@ -43,7 +33,7 @@ describe('Test function: handleWaitingList', () => {
     };
     const { updatedEvent, addedDancerIds } = handleWaitingList(
       MOCK_EVENT_EMPTY_WAITING_LIST,
-      MOCK_CLASSE
+      mockClasse
     );
 
     expect(JSON.stringify(MOCK_EVENT_EMPTY_WAITING_LIST)).toBe(
@@ -66,7 +56,7 @@ describe('Test function: handleWaitingList', () => {
     };
     const { updatedEvent, addedDancerIds } = handleWaitingList(
       MOCK_EVENT,
-      MOCK_CLASSE
+      mockClasse
     );
 
     expect(updatedEvent.dancers.leaders.length).toBe(2);
@@ -92,7 +82,7 @@ describe('Test function: handleWaitingList', () => {
     };
     const { updatedEvent, addedDancerIds } = handleWaitingList(
       MOCK_EVENT,
-      MOCK_CLASSE
+      mockClasse
     );
 
     expect(updatedEvent.dancers.leaders.length).toBe(1);

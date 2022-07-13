@@ -29,7 +29,7 @@ export type ClasseEvent = {
 export type ClasseEventWithOptionalId = {
   id?: string;
   classId: string;
-  date: string;
+  date: Timestamp;
   dancers: Dancers;
   waitingList: Dancers;
 };
