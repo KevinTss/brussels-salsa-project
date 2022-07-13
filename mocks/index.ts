@@ -15,12 +15,14 @@ import {
   DancerRole,
 } from '../types';
 
+const getNumberArray = (number: number) => Array.from(Array(number).keys());
+
 const getMockedDancer = (): DancerJoin => ({
   joinOn: new Date(),
   userId: faker.internet.email(),
 });
 export const getMockedDancers = (amount: number = 1): DancerJoin[] =>
-  Array.from(Array(amount).keys()).map(() => getMockedDancer());
+  getNumberArray(amount).map(() => getMockedDancer());
 
 type CommonEventAttributes = {
   classId: ClasseEvent['classId'];
@@ -71,7 +73,7 @@ export const mockUser: User = {
   accounts: [],
   avatarUrl: null,
   dancerRole: 'leader',
-  email: 'john.doe@email.com',
+  email: faker.internet.email(),
   fullName: 'John Doe',
   gender: 'male',
   id: 'qwertytrewq',
@@ -91,6 +93,35 @@ export const getMockUser = (options: GetMockUserOptions = {}) => {
 
   if (options.role) {
     mock.dancerRole = options.role;
+  }
+
+  return mock;
+};
+
+type GetMockEventOptions = {
+  dancerLeaderAmount?: number;
+  dancerFollowerAmount?: number;
+  dancerLeaderWaitingAmount?: number;
+  dancerFollowerWaitingAmount?: number;
+};
+export const getMockEvent = (options: GetMockEventOptions = {}) => {
+  const mock = cloneDeep(mockEventEmpty);
+
+  if (options.dancerLeaderAmount) {
+    mock.dancers.leaders = getMockedDancers(options.dancerLeaderAmount);
+  }
+  if (options.dancerFollowerAmount) {
+    mock.dancers.followers = getMockedDancers(options.dancerFollowerAmount);
+  }
+  if (options.dancerLeaderWaitingAmount) {
+    mock.waitingList.leaders = getMockedDancers(
+      options.dancerLeaderWaitingAmount
+    );
+  }
+  if (options.dancerFollowerWaitingAmount) {
+    mock.waitingList.followers = getMockedDancers(
+      options.dancerFollowerWaitingAmount
+    );
   }
 
   return mock;

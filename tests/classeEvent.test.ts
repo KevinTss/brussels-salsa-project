@@ -1,5 +1,13 @@
-import { addUserToWaitingList, addUserToDancers } from '../utils';
-import { mockEventEmpty, getMockUser } from '../mocks';
+import {
+  addUserToWaitingList,
+  addUserToDancers,
+  getTotalDancers,
+  getLeaderDancerIds,
+  getFollowerDancerIds,
+  getWaitingLeaderDancerIds,
+  getWaitingFollowerDancerIds,
+} from '../utils';
+import { mockEventEmpty, getMockUser, getMockEvent } from '../mocks';
 
 describe('Test function: addUserToWaitingList', () => {
   it(`should add leader to waiting lists`, () => {
@@ -34,5 +42,95 @@ describe('Test function: addUserToDancers', () => {
 
     expect(updatedEvent.dancers.followers.length).toBe(1);
     expect(updatedEvent.dancers.followers[0].userId).toBe(follower.id);
+  });
+});
+
+describe('Test function: getTotalDancers', () => {
+  it(`should get '0' dancers on empty event`, () => {
+    const event = getMockEvent();
+    const totalDancers = getTotalDancers(event);
+
+    expect(totalDancers).toBe(0);
+  });
+
+  it(`should get '3' dancers on: Leader 3 | Follower 0`, () => {
+    const event = getMockEvent({ dancerLeaderAmount: 3 });
+    const totalDancers = getTotalDancers(event);
+
+    expect(totalDancers).toBe(3);
+  });
+
+  it(`should get '8' dancers on: Leader 3 | Follower 5`, () => {
+    const event = getMockEvent({
+      dancerLeaderAmount: 3,
+      dancerFollowerAmount: 5,
+    });
+    const totalDancers = getTotalDancers(event);
+
+    expect(totalDancers).toBe(8);
+  });
+});
+
+describe('Test function: getLeaderDancerIds', () => {
+  it(`should get '0' leader ids`, () => {
+    const event = getMockEvent();
+    const leaderIds = getLeaderDancerIds(event);
+
+    expect(leaderIds.length).toBe(0);
+  });
+
+  it(`should get '2' leader ids`, () => {
+    const event = getMockEvent({ dancerLeaderAmount: 2 });
+    const leaderIds = getLeaderDancerIds(event);
+
+    expect(leaderIds.length).toBe(2);
+  });
+});
+
+describe('Test function: getFollowerDancerIds', () => {
+  it(`should get '0' follower ids`, () => {
+    const event = getMockEvent();
+    const followerIds = getFollowerDancerIds(event);
+
+    expect(followerIds.length).toBe(0);
+  });
+
+  it(`should get '6' follower ids`, () => {
+    const event = getMockEvent({ dancerFollowerAmount: 6 });
+    const followerIds = getFollowerDancerIds(event);
+
+    expect(followerIds.length).toBe(6);
+  });
+});
+
+describe('Test function: getWaitingLeaderDancerIds', () => {
+  it(`should get '0' waiting leader ids`, () => {
+    const event = getMockEvent();
+    const leaderIds = getWaitingLeaderDancerIds(event);
+
+    expect(leaderIds.length).toBe(0);
+  });
+
+  it(`should get '2' waiting leader ids`, () => {
+    const event = getMockEvent({ dancerLeaderWaitingAmount: 2 });
+    const leaderIds = getWaitingLeaderDancerIds(event);
+
+    expect(leaderIds.length).toBe(2);
+  });
+});
+
+describe('Test function: getWaitingFollowerDancerIds', () => {
+  it(`should get '0' waiting leader ids`, () => {
+    const event = getMockEvent();
+    const followerIds = getWaitingFollowerDancerIds(event);
+
+    expect(followerIds.length).toBe(0);
+  });
+
+  it(`should get '2' waiting leader ids`, () => {
+    const event = getMockEvent({ dancerFollowerWaitingAmount: 2 });
+    const followerIds = getWaitingFollowerDancerIds(event);
+
+    expect(followerIds.length).toBe(2);
   });
 });
