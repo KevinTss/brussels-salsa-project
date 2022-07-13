@@ -126,3 +126,16 @@ export const getMockEvent = (options: GetMockEventOptions = {}) => {
 
   return mock;
 };
+
+type GetMockClasseOptions = {
+  baseSpots?: number;
+};
+export const getMockClasse = (options: GetMockClasseOptions = {}) => {
+  const mock = cloneDeep(mockClasse);
+
+  if (options.baseSpots) {
+    mock.spots.base = options.baseSpots;
+  }
+
+  return mock;
+};

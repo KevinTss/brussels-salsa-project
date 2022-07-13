@@ -7,8 +7,14 @@ import {
   getWaitingLeaderDancerIds,
   getWaitingFollowerDancerIds,
   getParticipantsIds,
+  shouldCheckBalance,
 } from '../utils';
-import { mockEventEmpty, getMockUser, getMockEvent } from '../mocks';
+import {
+  mockEventEmpty,
+  getMockUser,
+  getMockEvent,
+  getMockClasse,
+} from '../mocks';
 
 describe('Test function: addUserToWaitingList', () => {
   it(`should add leader to waiting lists`, () => {
@@ -160,5 +166,54 @@ describe('Test function: getParticipantsIds', () => {
     expect(participantIds.followersIds.length).toBe(3);
     expect(participantIds.waitingLeadersIds.length).toBe(4);
     expect(participantIds.waitingFollowersIds.length).toBe(2);
+  });
+});
+
+describe.only('Test function: shouldCheckBalance', () => {
+  it(`should not check balance for empty events`, () => {
+    const event = getMockEvent();
+    const classe = getMockClasse();
+    const shouldCheckBalanceResult = shouldCheckBalance(event, classe);
+
+    expect(shouldCheckBalanceResult).toBe(false);
+  });
+
+  it(`should not check balance: baseSpots 5 | totalDancers 4`, () => {
+    const event = getMockEvent({
+      dancerLeaderAmount: 4,
+      dancerFollowerAmount: 0,
+    });
+    const classe = getMockClasse({
+      baseSpots: 5,
+    });
+    const shouldCheckBalanceResult = shouldCheckBalance(event, classe);
+
+    expect(shouldCheckBalanceResult).toBe(false);
+  });
+
+  it(`should check balance: baseSpots 5 | totalDancers 6`, () => {
+    const event = getMockEvent({
+      dancerLeaderAmount: 6,
+      dancerFollowerAmount: 0,
+    });
+    const classe = getMockClasse({
+      baseSpots: 5,
+    });
+    const shouldCheckBalanceResult = shouldCheckBalance(event, classe);
+
+    expect(shouldCheckBalanceResult).toBe(true);
+  });
+
+  it(`should check balance: baseSpots 5 | totalDancers 5`, () => {
+    const event = getMockEvent({
+      dancerLeaderAmount: 3,
+      dancerFollowerAmount: 2,
+    });
+    const classe = getMockClasse({
+      baseSpots: 5,
+    });
+    const shouldCheckBalanceResult = shouldCheckBalance(event, classe);
+
+    expect(shouldCheckBalanceResult).toBe(true);
   });
 });
