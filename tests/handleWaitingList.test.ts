@@ -1,5 +1,4 @@
 import { handleWaitingList } from '../utils';
-import { Classe, ClasseEvent, DancerJoin } from '../types';
 import {
   mockClasse,
   commonEventAttributes,
