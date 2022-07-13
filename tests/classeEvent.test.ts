@@ -6,6 +6,7 @@ import {
   getFollowerDancerIds,
   getWaitingLeaderDancerIds,
   getWaitingFollowerDancerIds,
+  getParticipantsIds,
 } from '../utils';
 import { mockEventEmpty, getMockUser, getMockEvent } from '../mocks';
 
@@ -132,5 +133,32 @@ describe('Test function: getWaitingFollowerDancerIds', () => {
     const followerIds = getWaitingFollowerDancerIds(event);
 
     expect(followerIds.length).toBe(2);
+  });
+});
+
+describe('Test function: getParticipantsIds', () => {
+  it(`should get no participant ids`, () => {
+    const event = getMockEvent();
+    const participantIds = getParticipantsIds(event);
+
+    expect(participantIds.leadersIds.length).toBe(0);
+    expect(participantIds.followersIds.length).toBe(0);
+    expect(participantIds.waitingLeadersIds.length).toBe(0);
+    expect(participantIds.waitingFollowersIds.length).toBe(0);
+  });
+
+  it(`should get participant ids`, () => {
+    const event = getMockEvent({
+      dancerLeaderAmount: 1,
+      dancerFollowerAmount: 3,
+      dancerLeaderWaitingAmount: 4,
+      dancerFollowerWaitingAmount: 2,
+    });
+    const participantIds = getParticipantsIds(event);
+
+    expect(participantIds.leadersIds.length).toBe(1);
+    expect(participantIds.followersIds.length).toBe(3);
+    expect(participantIds.waitingLeadersIds.length).toBe(4);
+    expect(participantIds.waitingFollowersIds.length).toBe(2);
   });
 });
