@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Timestamp } from 'firebase/firestore';
+import cloneDeep from 'lodash.clonedeep';
 
 import {
   Classe,
@@ -11,6 +12,7 @@ import {
   DancerJoin,
   User,
   ClasseEventWithOptionalId,
+  DancerRole,
 } from '../types';
 
 const getMockedDancer = (): DancerJoin => ({
@@ -79,4 +81,17 @@ export const mockUser: User = {
     salsa: 0,
   },
   phone: null,
+};
+
+type GetMockUserOptions = {
+  role?: DancerRole;
+};
+export const getMockUser = (options: GetMockUserOptions = {}) => {
+  const mock = cloneDeep(mockUser);
+
+  if (options.role) {
+    mock.dancerRole = options.role;
+  }
+
+  return mock;
 };
