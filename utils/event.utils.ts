@@ -147,7 +147,8 @@ export const getIsUserInWaitingList = (
 export const getNewEvent = (
   users: User[],
   classData: Classe,
-  dayDate: Dayjs
+  dayDate: Dayjs,
+  waitingUsers?: User[]
 ): NewClasseEvent => ({
   classId: classData.id,
   dancers: {
@@ -165,8 +166,20 @@ export const getNewEvent = (
       })),
   },
   waitingList: {
-    leaders: [],
-    followers: [],
+    leaders:
+      waitingUsers
+        ?.filter((u) => u.dancerRole === 'leader')
+        .map((u) => ({
+          joinOn: new Date(),
+          userId: u.id,
+        })) || [],
+    followers:
+      waitingUsers
+        ?.filter((u) => u.dancerRole === 'follower')
+        .map((u) => ({
+          joinOn: new Date(),
+          userId: u.id,
+        })) || [],
   },
   date: dayDate.hour(0).minute(0).second(0).toDate(),
 });

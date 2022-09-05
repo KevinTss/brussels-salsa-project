@@ -10,6 +10,7 @@ const fireStoreInstance = fireStore.getFirestore();
 
 type useCreateEventParams = {
   user: User | User[];
+  waitingUsers: User[];
   classe: Classe;
   dayDate: Dayjs;
 };
@@ -22,6 +23,7 @@ export const useCreateEvent = () => {
     user,
     classe,
     dayDate,
+    waitingUsers,
   }: useCreateEventParams): Promise<ClasseEvent> =>
     new Promise(async (resolve, reject) => {
       if (Array.isArray(user) && !user.length) throw Error('no-user');
@@ -32,7 +34,7 @@ export const useCreateEvent = () => {
       setIsLoading(true);
 
       const usersToAdd = Array.isArray(user) ? user : [user];
-      const newEvent = getNewEvent(usersToAdd, classe, dayDate);
+      const newEvent = getNewEvent(usersToAdd, classe, dayDate, waitingUsers);
       try {
         const docRef = await fireStore.addDoc(
           fireStore.collection(fireStoreInstance, 'events'),

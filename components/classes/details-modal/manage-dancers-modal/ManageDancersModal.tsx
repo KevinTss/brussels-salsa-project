@@ -347,6 +347,7 @@ const ManageDancersModal: FC<Props> = ({
       if (!date) return
       createEvent({
         user: selectedParticipant,
+        waitingUsers: selectedWaiting, 
         dayDate: date,
         classe
       })
