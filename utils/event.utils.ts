@@ -145,30 +145,24 @@ export const getIsUserInWaitingList = (
     : !!event.waitingList.followers?.find(({ userId }) => userId === user.id);
 
 export const getNewEvent = (
-  user: User,
+  users: User[],
   classData: Classe,
   dayDate: Dayjs
 ): NewClasseEvent => ({
   classId: classData.id,
   dancers: {
-    leaders:
-      user.dancerRole === 'leader'
-        ? [
-            {
-              joinOn: new Date(), //.toISOString(),
-              userId: user.id,
-            },
-          ]
-        : [],
-    followers:
-      user.dancerRole === 'follower'
-        ? [
-            {
-              joinOn: new Date(), //.toISOString(),
-              userId: user.id,
-            },
-          ]
-        : [],
+    leaders: users
+      .filter((u) => u.dancerRole === 'leader')
+      .map((u) => ({
+        joinOn: new Date(),
+        userId: u.id,
+      })),
+    followers: users
+      .filter((u) => u.dancerRole === 'follower')
+      .map((u) => ({
+        joinOn: new Date(),
+        userId: u.id,
+      })),
   },
   waitingList: {
     leaders: [],

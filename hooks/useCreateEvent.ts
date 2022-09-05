@@ -4,11 +4,12 @@ import { Dayjs, User, Classe, ClasseEvent } from '../types';
 import { fireStore } from '../utils/firebase/clientApp';
 import { getNewEvent } from '../utils';
 import { useFetchEvent } from './useFetchEvent';
+import { isArray } from 'react-select/dist/declarations/src/utils';
 
 const fireStoreInstance = fireStore.getFirestore();
 
 type useCreateEventParams = {
-  user: User;
+  user: User | User[];
   classe: Classe;
   dayDate: Dayjs;
 };
@@ -23,13 +24,15 @@ export const useCreateEvent = () => {
     dayDate,
   }: useCreateEventParams): Promise<ClasseEvent> =>
     new Promise(async (resolve, reject) => {
-      if (!user) throw Error('no-user');
+      if (Array.isArray(user) && !user.length) throw Error('no-user');
+      if (!Array.isArray(user) && !user) throw Error('no-user');
       if (!classe) throw Error('no-classe');
       if (!dayDate) throw Error('no-day-date');
 
       setIsLoading(true);
 
-      const newEvent = getNewEvent(user as User, classe, dayDate);
+      const usersToAdd = Array.isArray(user) ? user : [user];
+      const newEvent = getNewEvent(usersToAdd, classe, dayDate);
       try {
         const docRef = await fireStore.addDoc(
           fireStore.collection(fireStoreInstance, 'events'),

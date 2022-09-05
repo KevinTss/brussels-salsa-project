@@ -28,11 +28,11 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
     mondayDate: getStartWeekDate(baseDate),
     sundayDate: getEndWeekDate(baseDate),
   }), [baseDate])
-  const { list: events } = useRangeEvents({
+  const { list: events, refetch: refetchEvents } = useRangeEvents({
     dateFrom: data.mondayDate,
     dateTo: data.sundayDate
   })
-  const { list: classes, refetch } = useClasses()
+  const { list: classes, refetch: refetchClasses } = useClasses()
 
   const getEventsByDay = useCallback((date: Dayjs) => events.filter(event => {
     const eventDate = djs(event.date.toDate())
@@ -62,7 +62,8 @@ const CalendarWeekView: FC<Props> = ({ baseDate = djs() }) => {
           setSelectedClasse(undefined)
         }}
         date={selectedClasseDate}
-        refetchClasses={refetch}
+        refetchClasses={refetchClasses}
+        refetchEvents={refetchEvents}
       />
     </>
   )

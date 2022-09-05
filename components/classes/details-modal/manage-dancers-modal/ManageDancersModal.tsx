@@ -1,4 +1,4 @@
-import { FC, useState, useMemo, useCallback } from 'react'
+import { FC, useState, useMemo } from 'react'
 import {
   Accordion,
   AccordionButton,
@@ -23,14 +23,14 @@ import {
   UnorderedList,
 } from '@chakra-ui/react'
 
-import { useUsers, useAuth, useEventUpdate } from '../../../../hooks'
+import { useAuth, useEventUpdate } from '../../../../hooks'
 import { ClasseEvent, User, Classe, Dayjs } from '../../../../types'
 import { Input } from '../../../ui'
 import UserLevelCard from '../../../users/level-card'
 import {
   getUpdatedEventWithNewParticipants,
-  getNewEventWithParticipants
 } from '../../../../utils'
+import { useCreateEvent } from '../../../../hooks/useCreateEvent'
 
 type ListType = 'participants' | 'waiting-list'
 type Reason = 'in-opposite-list' | 'in-same-list'
@@ -60,6 +60,7 @@ type Props = {
   list: User[]
   date?: Dayjs
   refetchClasses: VoidFunction
+  refetchEvents: VoidFunction
 }
 
 const onlyLeaders = (user: User) => user.dancerRole === 'leader'
@@ -77,10 +78,13 @@ const ManageDancersModal: FC<Props> = ({
   list,
   classe,
   date,
-  refetchClasses
+  refetchClasses,
+  refetchEvents
 }) => {
   const { currentUser } = useAuth();
-  const { update, isLoading } = useEventUpdate()
+  const { update: updateEvent, isLoading: isUpdateEventLoading } = useEventUpdate()
+  const { create: createEvent, isLoading: isCreateEventLoading } = useCreateEvent()
+  const isLoading = isCreateEventLoading || isUpdateEventLoading
 
   const dancersIds = useMemo(
     () => state === 'l'
@@ -340,14 +344,15 @@ const ManageDancersModal: FC<Props> = ({
     if (!currentUser) return
     if (!event) {
       if (!date) return
-      const newEvent = getNewEventWithParticipants({
-        classe,
-        newDancers: selectedParticipant,
-        newWaitingUsers: selectedWaiting,
-        role: state === 'l' ? 'leader' : 'follower',
-        date,
+      createEvent({
+        user: selectedParticipant,
+        dayDate: date,
+        classe
       })
-      console.log('create event', newEvent)
+      refetchClasses()
+      refetchEvents()
+      onClose()
+      // TODO: Problem to refetch events, ranger is not correct
     } else {
       const updatedEvent = getUpdatedEventWithNewParticipants({
         event,
@@ -355,9 +360,9 @@ const ManageDancersModal: FC<Props> = ({
         newWaitingUsers: selectedWaiting,
         role: state === 'l' ? 'leader' : 'follower'
       })
-      // console.log('updatedEvent', event.id, updatedEvent)
-      update({ id: event.id, data: updatedEvent, admin: currentUser })
+      updateEvent({ id: event.id, data: updatedEvent, admin: currentUser })
       refetchClasses()
+      refetchEvents()
       onClose()
     }
   }

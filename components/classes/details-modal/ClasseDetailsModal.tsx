@@ -28,9 +28,10 @@ type Props = {
   onClose: () => void
   date?: Dayjs
   refetchClasses: VoidFunction
+  refetchEvents: VoidFunction
 }
 
-const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose, date, refetchClasses }) => {
+const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose, date, refetchClasses, refetchEvents }) => {
   const { currentUser } = useAuth();
   const { list } = useUsers({ admin: currentUser })
   const [manageModal, setManageModal] = useState<'l' | 'f' | ''>('')
@@ -94,6 +95,7 @@ const ClasseDetailsModal: FC<Props> = ({ event, classe, onClose, date, refetchCl
           classe={classe}
         date={date}
         refetchClasses={refetchClasses}
+        refetchEvents={refetchEvents}
         />
       }
     </>
