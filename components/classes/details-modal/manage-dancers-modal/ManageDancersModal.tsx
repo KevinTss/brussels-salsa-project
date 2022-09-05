@@ -353,7 +353,6 @@ const ManageDancersModal: FC<Props> = ({
       refetchClasses()
       refetchEvents()
       onClose()
-      // TODO: Problem to refetch events, ranger is not correct
     } else {
       const updatedEvent = getUpdatedEventWithNewParticipants({
         event,
