@@ -8,6 +8,7 @@ import {
   getWaitingFollowerDancerIds,
   getParticipantsIds,
   shouldCheckBalance,
+  isLimitOffsetReached,
 } from '../utils';
 import {
   mockEventEmpty,
@@ -169,7 +170,7 @@ describe('Test function: getParticipantsIds', () => {
   });
 });
 
-describe.only('Test function: shouldCheckBalance', () => {
+describe('Test function: shouldCheckBalance', () => {
   it(`should not check balance for empty events`, () => {
     const event = getMockEvent();
     const classe = getMockClasse();
@@ -215,5 +216,15 @@ describe.only('Test function: shouldCheckBalance', () => {
     const shouldCheckBalanceResult = shouldCheckBalance(event, classe);
 
     expect(shouldCheckBalanceResult).toBe(true);
+  });
+});
+
+describe('Test function: isLimitOffsetReached', () => {
+  it(`should not reach offset limit with empty event`, () => {
+    const event = getMockEvent();
+    const classe = getMockClasse();
+    const isLimitOffsetReachedResult = isLimitOffsetReached(event, classe);
+
+    expect(isLimitOffsetReachedResult).toBe(false);
   });
 });
