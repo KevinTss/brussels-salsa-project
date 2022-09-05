@@ -24,17 +24,27 @@ export const getDisplayWeekDay = (day: Day) => Object.values(WeekDay)[day];
 export const getStartWeekDate = (date: Dayjs) => {
   const weekDay = getWeekDay(date);
 
-  if (weekDay === 0) return date;
+  if (weekDay === 0) return date.hour(0).minute(0).second(0).millisecond(0);
 
-  return date.subtract(weekDay, 'day');
+  return date
+    .subtract(weekDay, 'day')
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
 };
 
 export const getEndWeekDate = (date: Dayjs) => {
   const weekDay = getWeekDay(date);
 
-  if (weekDay === 6) return date;
+  if (weekDay === 6) return date.hour(0).minute(0).second(0).millisecond(0);
 
-  return date.add(6 - weekDay, 'day');
+  return date
+    .add(6 - weekDay, 'day')
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
 };
 
 export const days: WeekDay[] = [
