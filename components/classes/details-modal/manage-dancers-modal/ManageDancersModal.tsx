@@ -342,6 +342,7 @@ const ManageDancersModal: FC<Props> = ({
 
   function onUpdateDancers() {
     if (!currentUser) return
+    if (!selectedParticipant.length && !selectedWaiting.length) return
     if (!event) {
       if (!date) return
       createEvent({
