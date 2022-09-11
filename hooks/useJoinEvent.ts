@@ -108,6 +108,7 @@ export const useJoinEvent = ({
             user: user as User,
             classe,
             dayDate,
+            waitingUsers: [],
           });
         }
 

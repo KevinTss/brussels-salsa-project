@@ -8,7 +8,7 @@ import {
   CallToActions,
 } from './style';
 import { useAuth, useJoinEvent, useCancelJoinEvent } from '../../../../../hooks';
-import { Button, Tag, ButtonGroup } from '../../../../ui';
+import { Button, Tag, ButtonGroup, triggerToast } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
@@ -34,8 +34,6 @@ const Event = ({
   isAdminMode = false,
 }: Props) => {
   const { currentUser } = useAuth();
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [isAddDancerModalOpen, setIsAddDancerModalOpen] = useState(false);
   const { join } = useJoinEvent({
     classe: classData,
     event: event,
@@ -66,6 +64,9 @@ const Event = ({
       await refetchEvents()
     } catch (e) {
       console.log('e', e)
+      if (e === 'no-required-level') {
+        triggerToast.error("You don't have the required level")
+      }
     }
   };
 
@@ -115,22 +116,6 @@ const Event = ({
           >
             Cancel
           </Button>
-        )}
-        {isAdminMode && (
-          <ButtonGroup isVertical>
-            <Button
-              appearance='default'
-              onClick={() => setIsDetailsModalOpen(true)}
-            >
-              See details
-            </Button>
-            <Button
-              appearance='default'
-              onClick={() => setIsAddDancerModalOpen(true)}
-            >
-              Add dancer
-            </Button>
-          </ButtonGroup>
         )}
       </CallToActions>
     </EventContainer>
