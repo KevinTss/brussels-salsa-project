@@ -15,7 +15,7 @@ import { useFormik } from 'formik';
 import { NewClasse, ClasseLevel, WeekDay, ClasseType, User, Classe } from '../../../types'
 import { useClasseUpdate, useAuth, useClasses } from '../../../hooks'
 import ClasseCreateForm from '../create-form'
-import { getTimeFromClasse } from '../../../utils'
+import { getTimeFromClasse, classeFormSchema } from '../../../utils'
 
 type Props = {
   isOpen: boolean,
@@ -42,6 +42,7 @@ const UpdateClasseDrawer: FC<Props> = ({ isOpen, onClose, classe }) => {
     values,
     setFieldValue,
     submitForm,
+    errors
   } = useFormik<FormData>({
     initialValues: {
       baseSpots: classe?.spots?.base || 10,
@@ -52,6 +53,7 @@ const UpdateClasseDrawer: FC<Props> = ({ isOpen, onClose, classe }) => {
       type: classe?.type || ClasseType.SALSA,
       weekDay: classe?.day || WeekDay.MONDAY,
     },
+    validationSchema: classeFormSchema,
     onSubmit: async (values, { resetForm }) => {
       if (!classe) return
 
@@ -97,6 +99,7 @@ const UpdateClasseDrawer: FC<Props> = ({ isOpen, onClose, classe }) => {
           zIndex="9"
         >
           <ClasseCreateForm
+            errors={errors}
             values={values}
             handleChange={handleChange}
             setFieldValue={setFieldValue}

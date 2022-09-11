@@ -3,6 +3,7 @@ import {
   FormControl,
   FormLabel,
   FormHelperText,
+  FormErrorMessage
 } from '@chakra-ui/react'
 
 import { Input } from '../../ui';
@@ -22,11 +23,12 @@ import {
 
 type Props = {
   values: any,
+  errors: any,
   handleChange: (e: ChangeEvent<any>) => void,
   setFieldValue: (field: string, data: string | number) => void
 }
 
-const ClasseCreateForm: FC<Props> = ({ values, handleChange, setFieldValue }) => {
+const ClasseCreateForm: FC<Props> = ({ values, handleChange, setFieldValue, errors }) => {
   return (
     <>
       <FormControl isInvalid={false}>
@@ -44,7 +46,7 @@ const ClasseCreateForm: FC<Props> = ({ values, handleChange, setFieldValue }) =>
         />
       </FormControl>
 
-      <FormControl isInvalid={false}>
+      <FormControl isInvalid={!!errors?.baseSpots}>
         <FormLabel htmlFor='baseSpots'>Base spots</FormLabel>
         <Input
           id='baseSpots'
@@ -53,10 +55,11 @@ const ClasseCreateForm: FC<Props> = ({ values, handleChange, setFieldValue }) =>
           onChange={handleChange}
           value={values.baseSpots}
         />
+        {!!errors?.baseSpots && <FormErrorMessage>{errors.baseSpots}</FormErrorMessage>}
         <FormHelperText>{`The amount of free spots where the balance won't be respected. Until the spot reached the dancers won't be able to join except the balance man/woman is respected (with a difference of 1)`}</FormHelperText>
       </FormControl>
 
-      <FormControl isInvalid={false}>
+      <FormControl isInvalid={!!errors?.maxSpots}>
         <FormLabel htmlFor='maxSpots'>Maximum spots</FormLabel>
         <Input
           id='maxSpots'
@@ -65,6 +68,7 @@ const ClasseCreateForm: FC<Props> = ({ values, handleChange, setFieldValue }) =>
           onChange={handleChange}
           value={values.maxSpots}
         />
+        {!!errors?.maxSpots && <FormErrorMessage>{errors.maxSpots}</FormErrorMessage>}
         <FormHelperText>{`You can specify a maximum of dancers per class ("99" by default)`}</FormHelperText>
       </FormControl>
 

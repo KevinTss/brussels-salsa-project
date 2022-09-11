@@ -15,6 +15,7 @@ import { useFormik } from 'formik';
 import { NewClasse, ClasseFrequency, ClasseLevel, WeekDay, ClasseType, User } from '../../../types'
 import { useClasseCreate, useAuth, useClasses } from '../../../hooks'
 import ClasseCreateForm from '../create-form'
+import { classeFormSchema } from '../../../utils'
 
 type Props = {
   isOpen: boolean,
@@ -39,7 +40,8 @@ const NewClasseDrawer: FC<Props> = ({ isOpen, onClose }) => {
     handleChange,
     values,
     setFieldValue,
-    submitForm
+    submitForm,
+    errors
   } = useFormik<FormData>({
     initialValues: {
       baseSpots: 10,
@@ -50,6 +52,7 @@ const NewClasseDrawer: FC<Props> = ({ isOpen, onClose }) => {
       type: ClasseType.SALSA,
       weekDay: WeekDay.MONDAY,
     },
+    validationSchema: classeFormSchema,
     onSubmit: async (values, { resetForm }) => {
       const objectToSend: NewClasse = {
         day: values.weekDay,
@@ -71,7 +74,7 @@ const NewClasseDrawer: FC<Props> = ({ isOpen, onClose }) => {
       resetForm();
       onClose()
       refetch()
-    }
+    },
   })
 
 
@@ -91,6 +94,7 @@ const NewClasseDrawer: FC<Props> = ({ isOpen, onClose }) => {
           zIndex="9"
         >
           <ClasseCreateForm
+            errors={errors}
             values={values}
             handleChange={handleChange}
             setFieldValue={setFieldValue}
@@ -103,7 +107,6 @@ const NewClasseDrawer: FC<Props> = ({ isOpen, onClose }) => {
           </ButtonGroup>
         </DrawerFooter>
       </DrawerContent>
-
     </Drawer>
   )
 }
