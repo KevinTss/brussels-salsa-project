@@ -18,6 +18,7 @@ export const AuthContext = createContext<AuthContextType>({
   signUpWithEmail: () => undefined,
   update: () => new Promise(() => { }),
   loginWithEmail: () => undefined,
+  sendPasswordResetEmail: (email: string) => undefined,
 });
 
 export const AuthProvider = ({ children }: { children: Children }) => {
@@ -93,6 +94,12 @@ export const AuthProvider = ({ children }: { children: Children }) => {
       password
     );
 
+  const sendPasswordResetEmail = async (email: string) =>
+    await firebaseAuth.sendPasswordResetEmail(
+      firebaseAuth.getAuth(),
+      email,
+    );
+
   return (
     <AuthContext.Provider
       value={{
@@ -104,6 +111,7 @@ export const AuthProvider = ({ children }: { children: Children }) => {
         signUpWithEmail,
         update,
         loginWithEmail,
+        sendPasswordResetEmail
       }}
     >
       {children}

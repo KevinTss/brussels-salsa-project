@@ -15,6 +15,7 @@ export const useAuth = () => {
     signUpWithEmail: data?.signUpWithEmail || (() => undefined),
     update: data?.update || (() => undefined),
     loginWithEmail: data?.loginWithEmail || (() => undefined),
+    sendPasswordResetEmail: data?.sendPasswordResetEmail || (() => undefined),
   };
 
   return typedData;

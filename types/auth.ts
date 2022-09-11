@@ -10,4 +10,5 @@ export type AuthContext = {
   signUpWithEmail: (email: string, password: string) => any;
   update: (data: UpdateUser) => Promise<void>;
   loginWithEmail: (email: string, password: string) => void;
+  sendPasswordResetEmail: (email: string) => void;
 };

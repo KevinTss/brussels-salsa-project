@@ -14,13 +14,22 @@ const auth = firebaseAuth.getAuth();
 auth.languageCode = 'en';
 
 const Auth = () => {
-  const [mode, setMode] = useState('login');
+  const [mode, setMode] = useState<'login' | 'sign-up' | 'forgot'>('login');
   const [isLoading, setIsLoading] = useState(false);
-  const { currentUser, setCurrentUser, signUpWithEmail, loginWithEmail } =
+  const {
+    currentUser,
+    setCurrentUser,
+    signUpWithEmail,
+    loginWithEmail,
+    sendPasswordResetEmail
+  } =
     useAuth();
   // @ts-ignore
   const { create: createUser } = useUsers({});
-  const { handleSubmit: handleSubmitLogin, handleChange: handleChangeLogin } =
+  const {
+    handleSubmit: handleSubmitLogin,
+    handleChange: handleChangeLogin,
+  } =
     useFormik({
       initialValues: { email: '', password: '' },
       onSubmit: async (values) => {
@@ -39,7 +48,10 @@ const Auth = () => {
         }
       },
     });
-  const { handleSubmit: handleSubmitSignUp, handleChange: handleChangeSignUp } =
+  const {
+    handleSubmit: handleSubmitSignUp,
+    handleChange: handleChangeSignUp,
+  } =
     useFormik({
       initialValues: { first: '', last: '', email: '', password: '' },
       onSubmit: async (values) => {
@@ -57,6 +69,26 @@ const Auth = () => {
         } catch (error: any) {
           if (error.code === 'auth/email-already-in-use') {
             triggerToast.error('This email is already used, try to login');
+          } else {
+            triggerToast.error('An error occurred, try later or contact us');
+            console.warn(error);
+          }
+        }
+      },
+    });
+  const {
+    handleSubmit: handleSubmitForgot,
+    handleChange: handleChangeForgot,
+  } =
+    useFormik({
+      initialValues: { email: '' },
+      onSubmit: async (values) => {
+        try {
+          await sendPasswordResetEmail(values.email);
+          triggerToast.success('An email has been send (check your SPAM)');
+        } catch (error: any) {
+          if (error.code === 'auth/user-not-found') {
+            triggerToast.error('This email was not found');
           } else {
             triggerToast.error('An error occurred, try later or contact us');
             console.warn(error);
@@ -111,6 +143,28 @@ const Auth = () => {
 
   if (currentUser) {
     Router.push('/');
+  }
+
+  if (mode === 'forgot') {
+    return (<Main>
+      <AuthBox>
+        <h2>Forget password?</h2>
+        <Form onSubmit={handleSubmitForgot}>
+          <Field
+            placeholder='Email'
+            name='email'
+            type='email'
+            onChange={handleChangeForgot}
+          />
+          <LoginButton type='submit'>
+            Send recovery email
+          </LoginButton>
+          <Text>
+            <Button onClick={() => setMode('login')}>Go to login</Button>
+          </Text>
+        </Form>
+      </AuthBox>
+    </Main>)
   }
 
   return (
@@ -186,7 +240,7 @@ const Auth = () => {
               </LoginButton>
               <Text>
                 {'Already have an account? '}
-                <Button onClick={() => setMode('login')}>Login</Button>
+                  <Button onClick={() => setMode('login')}>Login</Button>
               </Text>
             </Form>
           </>
@@ -202,6 +256,13 @@ const Auth = () => {
           />
           Continue with google
         </LoginButton>
+        <Text>
+          Forgot your password?
+          {' '}
+          <Button onClick={() => setMode('forgot')}>
+            Reset
+          </Button>
+        </Text>
       </AuthBox>
     </Main>
   );
