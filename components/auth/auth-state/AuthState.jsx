@@ -38,12 +38,12 @@ const AuthState = () => {
               <MenuDivider />
             </>
           )}
-          {/* <MenuItem
+          <MenuItem
             onClick={() => Router.push(RoutePaths.SETTINGS)}
             icon={<FaCog />}
           >
             Settings
-          </MenuItem> */}
+          </MenuItem>
           <MenuItem onClick={logout} icon={<FaPowerOff />}>
             Logout
           </MenuItem>

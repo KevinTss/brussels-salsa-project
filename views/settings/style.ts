@@ -6,4 +6,7 @@ export const Main = styled.main`
   max-width: 1097px;
   padding: 0 20px;
   margin: 0 auto;
+  padding-bottom: 100px;
 `;
+
+export const Form = styled.form``;
