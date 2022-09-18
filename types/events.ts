@@ -4,7 +4,7 @@ export type DancerJoin = {
   joinOn: Date;
   userId: string;
   wasPresent?: boolean;
-  by?: 'admin';
+  by?: 'admin' | 'partner';
 };
 export type Dancers = {
   leaders: DancerJoin[];

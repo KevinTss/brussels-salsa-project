@@ -15,6 +15,7 @@ import { useFetchEvent } from './useFetchEvent';
 // import useFetchEventByDateRange from './useFetchEventByDateRange';
 import { useCreateEvent } from './useCreateEvent';
 import { useUpdateEvent } from './useUpdateEvent';
+import { useState } from 'react';
 
 type useJoinEventParams = {
   classe: Classe;
@@ -36,20 +37,38 @@ export const useJoinEvent = ({
   classe,
   dayDate,
 }: useJoinEventParams) => {
+  const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   const { fetch: fetchById } = useFetchEvent();
   // const { fetch: fetchByDateRange } = useFetchEventByDateRange();
   const { create } = useCreateEvent();
   const { update } = useUpdateEvent();
 
-  const join = (user?: User) =>
+  const join = (user?: User, partner?: User) =>
     new Promise<boolean>(async (resolve, reject) => {
-      if (!classe) reject('no-classe');
+      setIsLoading(true);
+      if (!classe) {
+        setIsLoading(false);
+        reject('no-classe');
+        return;
+      }
 
-      if (!user) reject('no-user');
+      if (!user) {
+        setIsLoading(false);
+        reject('no-user');
+        return;
+      }
 
-      if (!hasUserClassLevelRequired(user as User, classe))
+      if (!hasUserClassLevelRequired(user as User, classe)) {
+        setIsLoading(false);
         reject('no-required-level');
+        return;
+      }
+      if (partner && !hasUserClassLevelRequired(partner, classe)) {
+        setIsLoading(false);
+        reject('no-required-level-partner');
+        return;
+      }
 
       try {
         const newlyFetchedEvent = event?.id
@@ -63,38 +82,47 @@ export const useJoinEvent = ({
         //     });
 
         if (newlyFetchedEvent) {
+          if (
+            partner &&
+            [
+              ...newlyFetchedEvent.dancers.followers,
+              ...newlyFetchedEvent.dancers.leaders,
+              ...newlyFetchedEvent.waitingList.followers,
+              ...newlyFetchedEvent.waitingList.leaders,
+            ].findIndex((j) => j.userId === partner?.id) >= 0
+          ) {
+            setIsLoading(false);
+            reject('partner-already-in-classe');
+            return;
+          }
+
           let updatedEvent: ClasseEvent;
           let whereTheUserWereAdded: 'waitingList' | 'dancers';
           /**
            * The order of checks is IMPORTANT
            */
-          if (isEventFull(newlyFetchedEvent, classe)) {
+          if (isEventFull(newlyFetchedEvent, classe, partner)) {
             updatedEvent = addUserToWaitingList(
               newlyFetchedEvent,
-              user as User
+              user,
+              partner
             );
             whereTheUserWereAdded = 'waitingList';
-          } else if (!shouldCheckBalance(newlyFetchedEvent, classe)) {
-            updatedEvent = addUserToDancers(newlyFetchedEvent, user as User);
+          } else if (!shouldCheckBalance(newlyFetchedEvent, classe, partner)) {
+            updatedEvent = addUserToDancers(newlyFetchedEvent, user, partner);
             whereTheUserWereAdded = 'dancers';
-          } else if (
-            isOppositeRoleInMajority(newlyFetchedEvent, user as User)
-          ) {
-            updatedEvent = addUserToDancers(newlyFetchedEvent, user as User);
+          } else if (isOppositeRoleInMajority(newlyFetchedEvent, user)) {
+            updatedEvent = addUserToDancers(newlyFetchedEvent, user);
             whereTheUserWereAdded = 'dancers';
           } else if (isLimitOffsetReached(newlyFetchedEvent, classe)) {
-            updatedEvent = addUserToWaitingList(
-              newlyFetchedEvent,
-              user as User
-            );
+            updatedEvent = addUserToWaitingList(newlyFetchedEvent, user);
             whereTheUserWereAdded = 'waitingList';
           } else {
-            updatedEvent = addUserToDancers(newlyFetchedEvent, user as User);
+            updatedEvent = addUserToDancers(newlyFetchedEvent, user);
             whereTheUserWereAdded = 'dancers';
           }
 
           const { updatedEvent: finalUpdatedEvent, addedDancerIds } =
-            // @ts-ignore
             handleWaitingList(updatedEvent, classe);
 
           const eventId = finalUpdatedEvent.id;
@@ -105,22 +133,26 @@ export const useJoinEvent = ({
           await update({ id: eventId as string, data: finalUpdatedEvent });
         } else {
           await create({
-            user: user as User,
+            user,
             classe,
             dayDate,
             waitingUsers: [],
+            partner,
           });
         }
 
         queryClient.invalidateQueries('eventsList');
 
+        setIsLoading(false);
         resolve(true);
       } catch (error: any) {
+        setIsLoading(false);
         reject(error.message);
       }
     });
 
   return {
+    isLoading,
     join,
   };
 };

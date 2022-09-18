@@ -14,7 +14,8 @@ import { djs } from './date.utils';
 
 export const addUserToWaitingList = (
   event: ClasseEvent,
-  user: User
+  user: User,
+  partner?: User
 ): ClasseEvent => {
   if (!user.dancerRole) {
     throw new Error('dancerRole is missing in user object');
@@ -28,12 +29,23 @@ export const addUserToWaitingList = (
     userId: user.id,
   });
 
+  if (partner) {
+    updatedEvent.waitingList[
+      partner.dancerRole === 'leader' ? 'leaders' : 'followers'
+    ].push({
+      joinOn: new Date(),
+      userId: partner.id,
+      by: 'partner',
+    });
+  }
+
   return updatedEvent;
 };
 
 export const addUserToDancers = (
   event: ClasseEvent,
-  user: User
+  user: User,
+  partner?: User
 ): ClasseEvent => {
   if (!user.dancerRole) {
     throw new Error('dancerRole is missing in user object');
@@ -46,6 +58,16 @@ export const addUserToDancers = (
     joinOn: new Date(),
     userId: user.id,
   });
+
+  if (partner) {
+    updatedEvent.dancers[
+      partner.dancerRole === 'leader' ? 'leaders' : 'followers'
+    ].push({
+      joinOn: new Date(),
+      userId: partner.id,
+      by: 'partner',
+    });
+  }
 
   return updatedEvent;
 };
@@ -89,8 +111,9 @@ export const getParticipantsIds = (event: ClasseEvent) => ({
 
 export const shouldCheckBalance = (
   event: Pick<ClasseEvent, 'dancers'>,
-  classe: Pick<Classe, 'spots'>
-): boolean => getTotalDancers(event) >= classe.spots.base;
+  classe: Pick<Classe, 'spots'>,
+  partner?: User
+): boolean => (partner ? false : getTotalDancers(event) >= classe.spots.base);
 
 export const isLimitOffsetReached = (
   event: Pick<ClasseEvent, 'dancers'>,
@@ -116,10 +139,18 @@ export const isOppositeRoleInMajority = (event: ClasseEvent, user: User) => {
   return sameRoleAmount < oppositeRoleAmount;
 };
 
-export const isEventFull = (event: ClasseEvent, classe: Classe): boolean => {
+export const isEventFull = (
+  event: ClasseEvent,
+  classe: Classe,
+  partner?: User
+): boolean => {
   const totalDancers = getTotalDancers(event);
 
-  return totalDancers >= (classe.spots?.max || 999);
+  const max = classe.spots?.max ? classe.spots.max : 999;
+
+  return partner
+    ? totalDancers >= max - 1 // Since we need to have one more spot for the partner
+    : totalDancers >= max;
 };
 
 export const getTotalWaitingList = (event: ClasseEvent): number =>

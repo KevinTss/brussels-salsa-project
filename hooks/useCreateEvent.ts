@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Dayjs, User, Classe, ClasseEvent } from '../types';
+import { Dayjs, User, Classe, ClasseEvent, Dancers } from '../types';
 import { fireStore } from '../utils/firebase/clientApp';
 import { getNewEvent } from '../utils';
 import { useFetchEvent } from './useFetchEvent';
@@ -13,6 +13,7 @@ type useCreateEventParams = {
   waitingUsers: User[];
   classe: Classe;
   dayDate: Dayjs;
+  partner?: User;
 };
 
 export const useCreateEvent = () => {
@@ -24,6 +25,7 @@ export const useCreateEvent = () => {
     classe,
     dayDate,
     waitingUsers,
+    partner,
   }: useCreateEventParams): Promise<ClasseEvent> =>
     new Promise(async (resolve, reject) => {
       if (Array.isArray(user) && !user.length) throw Error('no-user');
@@ -35,6 +37,16 @@ export const useCreateEvent = () => {
 
       const usersToAdd = Array.isArray(user) ? user : [user];
       const newEvent = getNewEvent(usersToAdd, classe, dayDate, waitingUsers);
+
+      if (partner) {
+        const partnerRole = `${partner.dancerRole}s` as keyof Dancers;
+        newEvent.dancers[partnerRole].push({
+          joinOn: new Date(),
+          userId: partner.id,
+          by: 'partner',
+        });
+      }
+
       try {
         const docRef = await fireStore.addDoc(
           fireStore.collection(fireStoreInstance, 'events'),

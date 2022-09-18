@@ -1,5 +1,16 @@
 import { useState } from 'react';
 import { Dayjs } from 'dayjs';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Button,
+  Flex,
+  Text
+} from '@chakra-ui/react'
 
 import {
   EventContainer,
@@ -7,8 +18,14 @@ import {
   EventPrimariesInfo,
   CallToActions,
 } from './style';
-import { useAuth, useJoinEvent, useCancelJoinEvent } from '../../../../../hooks';
-import { Button, Tag, ButtonGroup, triggerToast } from '../../../../ui';
+import {
+  useAuth,
+  useJoinEvent,
+  useCancelJoinEvent,
+  useLinkUsersGetByEmail,
+  useUserFetchById
+} from '../../../../../hooks';
+import { Tag, triggerToast } from '../../../../ui';
 import {
   djs,
   getEventNameDisplay,
@@ -16,7 +33,7 @@ import {
   getIsUserInWaitingList,
   getTotalWaitingList,
 } from '../../../../../utils';
-import { ClasseEvent, Classe } from '../../../../../types';
+import { ClasseEvent, Classe, LinkedUsers, User } from '../../../../../types';
 
 type Props = {
   classData: Classe;
@@ -34,7 +51,13 @@ const Event = ({
   isAdminMode = false,
 }: Props) => {
   const { currentUser } = useAuth();
-  const { join } = useJoinEvent({
+  const [partner, setPartner] = useState<User | null>(null)
+  const {
+    data: linkedUser,
+  } = useLinkUsersGetByEmail(currentUser)
+  const { fetch: fetchUserById } = useUserFetchById()
+
+  const { join, isLoading } = useJoinEvent({
     classe: classData,
     event: event,
     dayDate
@@ -44,6 +67,7 @@ const Event = ({
     event: event as ClasseEvent,
     dayDate
   })
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
 
   const eventDate = djs()
     .year(dayDate.year())
@@ -56,16 +80,39 @@ const Event = ({
   const isUserInWaitingList = currentUser && event ? getIsUserInWaitingList(event, currentUser) : false;
   const waitingListLength = event ? getTotalWaitingList(event) : 0
 
-  const joinHandle = async () => {
+  const onJoinClick = async () => {
     if (isAdminMode) return
 
+    if (!linkedUser || linkedUser.status !== 'confirmed') {
+      joinHandle()
+    }
+
+    if (!linkedUser) return // For TS
+
+    const partnerRole: keyof LinkedUsers = currentUser?.dancerRole === 'leader' ? 'follower' : 'leader'
+    setIsJoinModalOpen(true)
+    const p = await fetchUserById(linkedUser[partnerRole])
+    if (!p) {
+      console.warn("Error during the partner retrieving")
+    }
+    setPartner(p)
+  }
+
+  const joinHandle = async (withPartner = false) => {
     try {
-      await join(currentUser)
+      await join(currentUser, withPartner ? partner ?? undefined : undefined)
       await refetchEvents()
+      if (isJoinModalOpen) {
+        setIsJoinModalOpen(false)
+      }
     } catch (e) {
       console.log('e', e)
       if (e === 'no-required-level') {
         triggerToast.error("You don't have the required level")
+      } else if (e === 'partner-already-in-classe') {
+        triggerToast.error("Your partner is already in the class")
+      } else if (e === 'no-required-level-partner') {
+        triggerToast.error("Your partner doesn't have the required level")
       }
     }
   };
@@ -82,6 +129,7 @@ const Event = ({
   };
 
   return (
+    <>
     <EventContainer>
       <EventPrimariesInfo>
         <h4>{getEventNameDisplay(classData.type, classData.level)}</h4>
@@ -102,8 +150,9 @@ const Event = ({
           !isUserInDancers &&
           !isUserInWaitingList && (
             <Button
-              appearance='primary'
-            onClick={joinHandle}
+              variant='solid'
+              colorScheme='red'
+              onClick={onJoinClick}
             isDisabled={isEventPast}
             >
               Join
@@ -111,7 +160,8 @@ const Event = ({
           )}
         {!isAdminMode && (isUserInDancers || isUserInWaitingList) && (
           <Button
-            appearance='minimal'
+              variant='solid'
+              colorScheme='red'
             onClick={cancelHandle}
           >
             Cancel
@@ -119,6 +169,38 @@ const Event = ({
         )}
       </CallToActions>
     </EventContainer>
+      <Modal isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} size="md">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Do you want to join with {partner?.fullName}?</ModalHeader>
+
+          <ModalBody>
+            <Text>
+              You have a partner, if you join the class together {partner?.fullName} will also be added to the list as well.
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Flex flexDirection='column' w="100%" gap=".25rem">
+              <Button
+                variant='solid'
+                colorScheme='red'
+                onClick={() => joinHandle(true)}
+                isLoading={isLoading}
+              >
+                Yes join together
+              </Button>
+              <Button
+                variant='ghost'
+                onClick={() => joinHandle()}
+              >
+                No join alone
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

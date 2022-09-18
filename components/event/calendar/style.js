@@ -6,7 +6,7 @@ export const CalendarContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  padding-left: 30px;
+  padding: 0 30px;
 `;
 
 export const WeekContainer = styled.div`
