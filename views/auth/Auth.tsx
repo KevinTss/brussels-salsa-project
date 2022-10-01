@@ -5,9 +5,9 @@ import { useFormik } from 'formik';
 
 import { Main, AuthBox, LoginButton, OrSeparation, Form, Text } from './style';
 import { firebaseAuth, fireStore } from '../../utils/firebase/clientApp';
-import { useAuth, useUsers } from '../../hooks';
+import { useAuth, useUserCreate } from '../../hooks';
 import { Button, Field, triggerToast } from '../../components/ui';
-import { User } from '../../types';
+import { ClasseLevel, User } from '../../types';
 
 const googleProvider = new firebaseAuth.GoogleAuthProvider();
 const auth = firebaseAuth.getAuth();
@@ -24,8 +24,7 @@ const Auth = () => {
     sendPasswordResetEmail
   } =
     useAuth();
-  // @ts-ignore
-  const { create: createUser } = useUsers({});
+  const { create: createUser } = useUserCreate();
   const {
     handleSubmit: handleSubmitLogin,
     handleChange: handleChangeLogin,
@@ -64,6 +63,11 @@ const Auth = () => {
             avatarUrl: response.user.photoURL,
             fullName: `${values.first} ${values.last}`,
             phone: response.user.phoneNumber,
+            isAdmin: false,
+            levels: {
+              bachata: ClasseLevel.BEGINNER,
+              salsa: ClasseLevel.BEGINNER
+            }
           });
           Router.push('/');
         } catch (error: any) {
@@ -131,6 +135,11 @@ const Auth = () => {
             email: u.email,
             fullName: u.displayName,
             phone: u.phoneNumber,
+            isAdmin: false,
+            levels: {
+              bachata: ClasseLevel.BEGINNER,
+              salsa: ClasseLevel.BEGINNER
+            }
           });
         }
       })

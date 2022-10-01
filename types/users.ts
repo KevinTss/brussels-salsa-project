@@ -18,24 +18,25 @@ export type User = {
   dancerRole?: DancerRole;
   email: string;
   fullName: string;
-  gender: Gender;
+  gender?: Gender;
   id: string;
   isAdmin: boolean;
   levels: UserLevel;
   phone: string | null;
 };
 
-export type NewUser = {
-  accessToken: string;
-  accounts: Account[];
-  avatarUrl: string | null;
-  dancerRole?: DancerRole;
-  email: string;
-  fullName: string;
-  gender?: string;
-  levels?: UserLevel;
-  phone: string | null;
-};
+export type NewUser = Omit<User, 'id'>
+// export type NewUser = {
+//   accessToken: string;
+//   accounts: Account[];
+//   avatarUrl: string | null;
+//   dancerRole?: DancerRole;
+//   email: string;
+//   fullName: string;
+//   gender?: string;
+//   levels?: UserLevel;
+//   phone: string | null;
+// };
 
 export type UpdateUser = {
   avatarUrl?: string;

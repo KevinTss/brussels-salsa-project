@@ -15,6 +15,7 @@ export * from './useLinkUsersDelete';
 export * from './useLinkUsersGetByEmail';
 export * from './useRangeEvents';
 export * from './useUpdateEvent';
+export * from './useUserCreate';
 export * from './useUserEdit';
 export * from './useUserFetchById';
 export * from './useUsers';
