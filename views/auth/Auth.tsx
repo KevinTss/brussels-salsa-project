@@ -18,7 +18,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { currentUser, setCurrentUser, signUpWithEmail, loginWithEmail } =
     useAuth();
-  const { create: createUser } = useUsers();
+  const { create: createUser } = useUsers({});
   const { handleSubmit: handleSubmitLogin, handleChange: handleChangeLogin } =
     useFormik({
       initialValues: { email: '', password: '' },

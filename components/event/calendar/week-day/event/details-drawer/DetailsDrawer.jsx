@@ -11,7 +11,7 @@ import {
 } from './style';
 
 const DetailsDrawer = ({ isOpen, onClose, event, dayDate, classe }) => {
-  const { getById, list } = useUsers();
+  const { getById, list } = useUsers({});
 
   const dancers = {
     males:
